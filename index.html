@@ -26,6 +26,15 @@ font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:12p
 .warn{color:#e74c3c}
 .good{color:#2ecc71}
 .pur{color:#9b59b6}
+.poster-container{max-width:340px;margin:18px auto 0;border:5px solid #2a2235;box-shadow:0 14px 30px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .3s ease,box-shadow .3s ease,filter .3s ease}
+.poster-link{display:block;position:relative;text-decoration:none;color:inherit}
+.horror-poster{display:block;width:100%;height:auto;filter:sepia(.25) contrast(1.2) brightness(.9) saturate(.8)}
+.poster-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:18px;background:linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,.08) 55%, rgba(0,0,0,0));opacity:.92;transition:opacity .3s ease}
+.poster-overlay h3{font-size:20px;letter-spacing:3px;color:#f0d9ff;text-shadow:0 0 12px rgba(155,89,182,.65)}
+.poster-overlay p{margin:6px 0 0;font-size:12px;letter-spacing:2px;color:#c77dff}
+.poster-link:hover .poster-overlay{opacity:1}
+.poster-container:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 18px 34px rgba(0,0,0,.7)}
+@media (max-width: 920px){body{overflow:auto;padding:20px 0}.poster-container{max-width:300px}}
 </style>
 </head>
 <body>
@@ -45,6 +54,17 @@ that sing when you pass — revealing your location.</p>
 <button id="startBtn">BEGIN</button>
 </div>
 </div>
+
+<section class="poster-container">
+  <a href="https://github.com/ibloud/violets-revenge" class="poster-link" target="_blank" rel="noopener noreferrer">
+    <img src="IMG_0874.jpeg" alt="Violet's Revenge Retro Horror Poster" class="horror-poster">
+    <div class="poster-overlay">
+      <h3>VIOLET'S REVENGE</h3>
+      <p>VIEW ON GITHUB</p>
+    </div>
+  </a>
+</section>
+
 <div id="ctrls">
 WASD / Arrow Keys — Move &nbsp;|&nbsp; Collect 3 Case Files (🟡) &nbsp;|&nbsp; Reach Exit (🚪) &nbsp;|&nbsp; Avoid Violet (🟣)
 </div>
