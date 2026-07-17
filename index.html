@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Violet's Revenge: The Morgue — Prototype v0.1</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#b8a9c9;font-family:'Courier New',monospace;
+display:flex;flex-direction:column;align-items:center;justify-content:center;
+min-height:100vh;overflow:hidden}
+h1{color:#9b59b6;margin-bottom:10px;text-shadow:0 0 15px rgba(155,89,182,0.4);font-size:22px}
+#wrap{position:relative;border:2px solid #3a2b4c;box-shadow:0 0 40px rgba(155,89,182,0.15)}
+canvas{display:block;background:#050508}
+#ui{position:absolute;top:8px;left:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none}
+#status{position:absolute;top:8px;right:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none;text-align:right}
+#overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;
+align-items:center;justify-content:center;background:rgba(5,5,8,0.92);text-align:center;z-index:10;padding:20px}
+#overlay h2{font-size:28px;color:#9b59b6;margin-bottom:16px;text-shadow:0 0 20px rgba(155,89,182,0.5)}
+#overlay p{margin-bottom:12px;max-width:420px;line-height:1.7;font-size:14px}
+#overlay button{background:#2a1b3c;color:#d4c5e9;border:1px solid #9b59b6;padding:12px 36px;
+font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:12px;letter-spacing:2px}
+#overlay button:hover{background:#9b59b6;color:#fff;box-shadow:0 0 20px rgba(155,89,182,0.6)}
+.hid{display:none!important}
+#ctrls{margin-top:12px;font-size:11px;color:#5c4d6d;text-align:center;line-height:1.8}
+.warn{color:#e74c3c}
+.good{color:#2ecc71}
+.pur{color:#9b59b6}
+</style>
+</head>
+<body>
+<h1>🟣 VIOLET'S REVENGE: THE MORGUE</h1>
+<div id="wrap">
+<canvas id="cv" width="800" height="600"></canvas>
+<div id="ui"></div>
+<div id="status"></div>
+<div id="overlay" id="ov">
+<h2>VIOLET'S REVENGE</h2>
+<p class="pur"><strong>PROTOTYPE v0.1 — Game Jam Build</strong></p>
+<p>You are <span class="warn">THE GUILTY</span>. You wake in a morgue. 
+Collect <strong>3 Case Files</strong> and reach the <strong>Exit Door</strong>.</p>
+<p>Violet hunts you. She leaves <span class="pur">Nightingale Traps</span> 
+that sing when you pass — revealing your location.</p>
+<p class="warn">She catches you 3 times... it's the Autopsy Slab.</p>
+<button id="startBtn">BEGIN</button>
+</div>
+</div>
+<div id="ctrls">
+WASD / Arrow Keys — Move &nbsp;|&nbsp; Collect 3 Case Files (🟡) &nbsp;|&nbsp; Reach Exit (🚪) &nbsp;|&nbsp; Avoid Violet (🟣)
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// VIOLET'S REVENGE — PROTOTYPE v0.1
+// Single-file 1v1 asymmetrical horror prototype
+// ═══════════════════════════════════════════
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const W = 800, H = 600;
+const TILE = 40;
+const COLS = 20, ROWS = 15;
+
+// ─── Map: 1=wall, 0=floor ───
+const MAP = [
+  '11111111111111111111',
+  '10000000000000000001',
+  '10001100000000110001',
+  '10000000000000000001',
+  '10000000000000000001',
+  '11000000000000000011',
+  '10000001100000000001',
+  '10000001100000000001',
+  '10000000000000000001',
+  '10000000000000000001',
+  '10001100000000110001',
+  '10000000000000000001',
+  '10000000000000000001',
+  '10000000000000000001',
+  '11111111111111111111'
+];
+
+// ─── Game State ───
+let state = 'menu';
+let frame = 0;
+let collected = 0;
+const TOTAL_FILES = 3;
+let health = 3;
+let iframes = 0;
+let shake = 0;
+let flashRed = 0;
+let particles = [];
+
+// ─── Entities ───
+let player, violet, files, traps, exitDoor;
+
+function initGame() {
+  player = { x: 1.5*TILE, y: 1.5*TILE, r: 12, spd: 2.4, ang: 0, vx:0, vy:0 };
+  violet = {
+    x: 9.5*TILE, y: 8.5*TILE, r: 14, spd: 1.6, chaseSpd: 2.2, huntSpd: 3.0,
+    state: 'patrol', tx: 10*TILE, ty: 7*TILE, lmx: 0, lmy: 0,
+    boost: 0, trapCD: 0, caughtFlash: 0
+  };
+  files = [
+    { x: 3.5*TILE, y: 7.5*TILE, got: false, pulse: 0 },
+    { x: 10.5*TILE, y: 3.5*TILE, got: false, pulse: 0 },
+    { x: 16.5*TILE, y: 11.5*TILE, got: false, pulse: 0 }
+  ];
+  traps = [];
+  exitDoor = { x: 18*TILE+4, y: 1*TILE+4, w: TILE-8, h: TILE-8 };
+  collected = 0;
+  health = 3;
+  iframes = 0;
+  shake = 0;
+  flashRed = 0;
+  particles = [];
+  frame = 0;
+}
+
+// ─── Input ───
+const keys = {};
+window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+// ─── Wall Collision ───
+function hitsWall(x, y, r) {
+  const c1 = Math.floor((x - r) / TILE);
+  const c2 = Math.floor((x + r) / TILE);
+  const r1 = Math.floor((y - r) / TILE);
+  const r2 = Math.floor((y + r) / TILE);
+  for (let row = r1; row <= r2; row++) {
+    for (let col = c1; col <= c2; col++) {
+      if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return true;
+      if (MAP[row][col] === '1') return true;
+    }
+  }
+  return false;
+}
+
+// ─── Move with Wall Slide ───
+function move(e, dx, dy) {
+  if (!hitsWall(e.x + dx, e.y, e.r)) e.x += dx;
+  if (!hitsWall(e.x, e.y + dy, e.r)) e.y += dy;
+}
+
+// ─── Line of Sight (Bresenham) ───
+function hasLOS(x0, y0, x1, y1) {
+  let x0t = Math.floor(x0 / TILE), y0t = Math.floor(y0 / TILE);
+  let x1t = Math.floor(x1 / TILE), y1t = Math.floor(y1 / TILE);
+  let dx = Math.abs(x1t - x0t), dy = Math.abs(y1t - y0t);
+  let sx = x0t < x1t ? 1 : -1, sy = y0t < y1t ? 1 : -1;
+  let err = dx - dy;
+  while (true) {
+    if (MAP[y0t] && MAP[y0t][x0t] === '1') return false;
+    if (x0t === x1t && y0t === y1t) break;
+    let e2 = 2 * err;
+    if (e2 > -dy) { err -= dy; x0t += sx; }
+    if (e2 < dx) { err += dx; y0t += sy; }
+  }
+  return true;
+}
+
+// ─── New Patrol Target ───
+function newPatrol() {
+  let tries = 0;
+  while (tries++ < 20) {
+    let cx = Math.floor(Math.random() * (COLS - 2)) + 1;
+    let cy = Math.floor(Math.random() * (ROWS - 2)) + 1;
+    if (MAP[cy][cx] === '0') {
+      violet.tx = cx * TILE + TILE/2;
+      violet.ty = cy * TILE + TILE/2;
+      return;
+    }
+  }
+}
+
+// ─── Update Player ───
+function updatePlayer() {
+  let dx = 0, dy = 0;
+  if (keys['w'] || keys['arrowup']) dy -= 1;
+  if (keys['s'] || keys['arrowdown']) dy += 1;
+  if (keys['a'] || keys['arrowleft']) dx -= 1;
+  if (keys['d'] || keys['arrowright']) dx += 1;
+  if (dx || dy) {
+    let len = Math.hypot(dx, dy);
+    dx /= len; dy /= len;
+    let s = player.spd;
+    if (iframes > 0) s *= 1.4; // escape burst
+    move(player, dx * s, dy * s);
+    player.ang = Math.atan2(dy, dx);
+    player.vx = dx; player.vy = dy;
+  } else { player.vx = 0; player.vy = 0; }
+
+  // Collect files
+  for (let f of files) {
+    if (f.got) continue;
+    f.pulse += 0.06;
+    if (Math.hypot(player.x - f.x, player.y - f.y) < player.r + 12) {
+      f.got = true;
+      collected++;
+      for (let i = 0; i < 12; i++) {
+        particles.push({ x: f.x, y: f.y, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, life: 30, color: '#f1c40f' });
+      }
+    }
+  }
+
+  // Check exit
+  if (collected >= TOTAL_FILES) {
+    if (player.x > exitDoor.x - 4 && player.x < exitDoor.x + exitDoor.w + 4 &&
+        player.y > exitDoor.y - 4 && player.y < exitDoor.y + exitDoor.h + 4) {
+      state = 'win';
+    }
+  }
+
+  if (iframes > 0) iframes--;
+}
+
+// ─── Update Violet AI ───
+function updateViolet() {
+  let los = hasLOS(violet.x, violet.y, player.x, player.y);
+  let dist = Math.hypot(player.x - violet.x, player.y - violet.y);
+  let trapHit = traps.some(t => t.triggered && t.life > 0);
+
+  // State machine
+  if (los && dist < 320) {
+    violet.state = 'chase';
+    violet.lmx = player.x; violet.lmy = player.y;
+  } else if (trapHit) {
+    violet.state = 'hunt';
+  } else if (violet.state === 'chase' || violet.state === 'hunt') {
+    let d = Math.hypot(violet.lmx - violet.x, violet.lmy - violet.y);
+    if (d < 25) { violet.state = 'patrol'; newPatrol(); }
+  } else if (violet.state === 'patrol') {
+    let d = Math.hypot(violet.tx - violet.x, violet.ty - violet.y);
+    if (d < 25) newPatrol();
+  }
+
+  // Speed
+  let spd = violet.spd;
+  if (violet.state === 'chase') spd = violet.chaseSpd;
+  if (violet.state === 'hunt') spd = violet.huntSpd;
+  if (violet.boost > 0) { spd *= 1.3; violet.boost--; }
+
+  // Target
+  let tx, ty;
+  if (violet.state === 'chase') { tx = player.x; ty = player.y; }
+  else if (violet.state === 'hunt') { tx = violet.lmx; ty = violet.lmy; }
+  else { tx = violet.tx; ty = violet.ty; }
+
+  let ang = Math.atan2(ty - violet.y, tx - violet.x);
+  move(violet, Math.cos(ang) * spd, Math.sin(ang) * spd);
+
+  // Drop Nightingale traps
+  violet.trapCD++;
+  if (violet.trapCD > 240 && traps.length < 3) {
+    traps.push({ x: violet.x, y: violet.y, triggered: false, life: 0, pulse: 0, maxLife: 180 });
+    violet.trapCD = 0;
+  }
+
+  // Catch player
+  if (Math.hypot(player.x - violet.x, player.y - violet.y) < player.r + violet.r && iframes <= 0) {
+    health--;
+    iframes = 120;
+    flashRed = 30;
+    shake = 12;
+    violet.caughtFlash = 20;
+    for (let i = 0; i < 20; i++) {
+      particles.push({ x: player.x, y: player.y, vx: (Math.random()-0.5)*6, vy: (Math.random()-0.5)*6, life: 35, color: '#e74c3c' });
+    }
+    if (health <= 0) state = 'lose';
+  }
+  if (violet.caughtFlash > 0) violet.caughtFlash--;
+}
+
+// ─── Update Traps ───
+function updateTraps() {
+  for (let t of traps) {
+    t.pulse += 0.05;
+    if (!t.triggered) {
+      let d = Math.hypot(player.x - t.x, player.y - t.y);
+      if (d < 70) {
+        t.triggered = true;
+        t.life = t.maxLife;
+        violet.boost = 180;
+        violet.lmx = player.x; violet.lmy = player.y;
+        for (let i = 0; i < 15; i++) {
+          particles.push({ x: t.x, y: t.y, vx: (Math.random()-0.5)*5, vy: (Math.random()-0.5)*5, life: 40, color: '#9b59b6' });
+        }
+      }
+    } else {
+      t.life--;
+    }
+  }
+  traps = traps.filter(t => !(t.triggered && t.life <= 0));
+}
+
+// ─── Update Particles ───
+function updateParticles() {
+  for (let p of particles) {
+    p.x += p.vx; p.y += p.vy;
+    p.vx *= 0.95; p.vy *= 0.95;
+    p.life--;
+  }
+  particles = particles.filter(p => p.life > 0);
+}
+
+// ═══ RENDER ═══
+function render() {
+  ctx.save();
+  if (shake > 0) {
+    ctx.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake);
+    shake -= 0.5;
+  }
+
+  // Clear
+  ctx.fillStyle = '#050508';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw floor tiles
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      let x = c * TILE, y = r * TILE;
+      if (MAP[r][c] === '1') {
+        ctx.fillStyle = '#1a1520';
+        ctx.fillRect(x, y, TILE, TILE);
+        ctx.strokeStyle = '#2d2438';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, TILE, TILE);
+        // Brick pattern
+        ctx.strokeStyle = '#15101c';
+        ctx.beginPath();
+        ctx.moveTo(x, y + TILE/2); ctx.lineTo(x + TILE, y + TILE/2);
+        ctx.moveTo(x + TILE/2, y); ctx.lineTo(x + TILE/2, y + TILE/2);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#0c0a12';
+        ctx.fillRect(x, y, TILE, TILE);
+        // Floor grid
+        ctx.strokeStyle = '#100d18';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x, y, TILE, TILE);
+      }
+    }
+  }
+
+  // Draw exit door
+  let doorOpen = collected >= TOTAL_FILES;
+  ctx.fillStyle = doorOpen ? '#1a4d2e' : '#3a1a1a';
+  ctx.fillRect(exitDoor.x, exitDoor.y, exitDoor.w, exitDoor.h);
+  ctx.strokeStyle = doorOpen ? '#2ecc71' : '#666';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(exitDoor.x, exitDoor.y, exitDoor.w, exitDoor.h);
+  ctx.fillStyle = doorOpen ? '#2ecc71' : '#888';
+  ctx.font = '10px Courier New';
+  ctx.textAlign = 'center';
+  ctx.fillText(doorOpen ? 'EXIT' : 'LOCKED', exitDoor.x + exitDoor.w/2, exitDoor.y + exitDoor.h/2 + 3);
+
+  // Draw case files
+  for (let f of files) {
+    if (f.got) continue;
+    let p = Math.sin(f.pulse) * 3;
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    ctx.fillStyle = 'rgba(241,196,15,' + (0.15 + Math.sin(f.pulse)*0.1) + ')';
+    ctx.beginPath(); ctx.arc(0, 0, 18 + p, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#f1c40f';
+    ctx.fillRect(-8, -6, 16, 12);
+    ctx.fillStyle = '#d4ac0d';
+    ctx.fillRect(-8, -6, 16, 3);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(-5, -1, 10, 1);
+    ctx.fillRect(-5, 1, 7, 1);
+    ctx.restore();
+  }
+
+  // Draw traps
+  for (let t of traps) {
+    ctx.save();
+    ctx.translate(t.x, t.y);
+    if (!t.triggered) {
+      let pulse = Math.sin(t.pulse) * 0.3 + 0.7;
+      ctx.fillStyle = 'rgba(155,89,182,' + (0.08 * pulse) + ')';
+      ctx.beginPath(); ctx.arc(0, 0, 70, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'rgba(155,89,182,0.4)';
+      ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#9b59b6';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(0, 0, 8 + Math.sin(t.pulse*2)*3, 0, Math.PI*2); ctx.stroke();
+    } else {
+      let a = t.life / t.maxLife;
+      ctx.fillStyle = 'rgba(155,89,182,' + (0.2 * a) + ')';
+      ctx.beginPath(); ctx.arc(0, 0, 70 * (1 + (1-a)*2), 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = 'rgba(192,132,252,' + a + ')';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, 0, 70 * (1 + (1-a)*2), 0, Math.PI*2); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // Draw particles
+  for (let p of particles) {
+    ctx.globalAlpha = p.life / 40;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+  }
+  ctx.globalAlpha = 1;
+
+  // Draw player (The Guilty)
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath(); ctx.ellipse(0, player.r-2, player.r, player.r/3, 0, 0, Math.PI*2); ctx.fill();
+  // Body
+  let pColor = iframes > 0 ? '#5dade2' : '#3498db';
+  ctx.fillStyle = pColor;
+  ctx.beginPath(); ctx.arc(0, 0, player.r, 0, Math.PI*2); ctx.fill();
+  // Direction
+  ctx.strokeStyle = '#1a5276';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(Math.cos(player.ang) * player.r, Math.sin(player.ang) * player.r);
+  ctx.stroke();
+  ctx.restore();
+
+  // Draw Violet
+  ctx.save();
+  ctx.translate(violet.x, violet.y);
+  // Glow
+  let glowR = violet.state === 'chase' ? 40 : violet.state === 'hunt' ? 50 : 25;
+  let grad = ctx.createRadialGradient(0, 0, 0, 0, 0, glowR);
+  grad.addColorStop(0, 'rgba(155,89,182,0.3)');
+  grad.addColorStop(1, 'rgba(155,89,182,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(0, 0, glowR, 0, Math.PI*2); ctx.fill();
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath(); ctx.ellipse(0, violet.r-2, violet.r, violet.r/3, 0, 0, Math.PI*2); ctx.fill();
+  // Body
+  ctx.fillStyle = violet.caughtFlash > 0 ? '#e74c3c' : '#8e44ad';
+  ctx.beginPath(); ctx.arc(0, 0, violet.r, 0, Math.PI*2); ctx.fill();
+  // Hockey stick
+  ctx.strokeStyle = '#d2b4de';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(-violet.r, -violet.r);
+  ctx.lineTo(-violet.r - 8, -violet.r + 12);
+  ctx.lineTo(-violet.r - 14, -violet.r + 8);
+  ctx.stroke();
+  // Eyes
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(-4, -3, 2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -3, 2, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = violet.state === 'chase' || violet.state === 'hunt' ? '#e74c3c' : '#000';
+  ctx.beginPath(); ctx.arc(-4, -3, 1, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -3, 1, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Vignette
+  let vGrad = ctx.createRadialGradient(W/2, H/2, 150, W/2, H/2, 450);
+  vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  vGrad.addColorStop(1, 'rgba(0,0,0,0.6)');
+  ctx.fillStyle = vGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Red flash when hit
+  if (flashRed > 0) {
+    ctx.fillStyle = 'rgba(231,76,60,' + (flashRed/30 * 0.4) + ')';
+    ctx.fillRect(0, 0, W, H);
+    flashRed--;
+  }
+
+  ctx.restore();
+}
+
+// ─── UI ───
+function updateUI() {
+  let hearts = '';
+  for (let i = 0; i < 3; i++) hearts += i < health ? '❤️' : '🖤';
+  let fileStr = '';
+  for (let i = 0; i < TOTAL_FILES; i++) fileStr += i < collected ? '📁' : '▢';
+  document.getElementById('ui').innerHTML =
+    `HP: ${hearts}<br>FILES: ${fileStr} (${collected}/${TOTAL_FILES})`;
+
+  let st = '';
+  if (violet) {
+    if (violet.state === 'chase') st = '<span class="warn">⚠ SEEN</span>';
+    else if (violet.state === 'hunt') st = '<span class="pur">🦇 HUNTING</span>';
+    else st = '<span style="color:#5c4d6d">...searching</span>';
+  }
+  let trapStr = traps ? traps.filter(t => t.triggered).length : 0;
+  document.getElementById('status').innerHTML = `${st}<br>Traps: ${traps ? traps.length : 0} (${trapStr} active)`;
+}
+
+// ─── Overlay Screens ───
+function showOverlay(title, body, btn) {
+  const ov = document.getElementById('overlay');
+  ov.innerHTML = `<h2>${title}</h2>${body}<button id="restartBtn">${btn}</button>`;
+  ov.classList.remove('hid');
+  document.getElementById('restartBtn').onclick = () => {
+    ov.classList.add('hid');
+    initGame();
+    state = 'playing';
+  };
+}
+
+// ─── Main Loop ───
+function loop() {
+  if (state === 'playing') {
+    frame++;
+    updatePlayer();
+    updateViolet();
+    updateTraps();
+    updateParticles();
+    updateUI();
+    render();
+
+    if (state === 'win') {
+      showOverlay(
+        '✅ ESCAPED',
+        '<p class="good">You destroyed the evidence and escaped the Morgue.</p>' +
+        '<p>But Violet is still out there. Waiting.</p>',
+        'AGAIN'
+      );
+    } else if (state === 'lose') {
+      showOverlay(
+        '🟣 CAUGHT',
+        '<p class="warn">Violet drags you to the Autopsy Slab.</p>' +
+        '<p>The last thing you hear is the Nightingale singing.</p>',
+        'RETRY'
+      );
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+// ─── Start ───
+document.getElementById('startBtn').onclick = () => {
+  document.getElementById('overlay').classList.add('hid');
+  initGame();
+  state = 'playing';
+};
+
+initGame();
+loop();
+</script>
+</body>
+</html>
