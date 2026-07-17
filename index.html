@@ -12,8 +12,8 @@ min-height:100vh;overflow:hidden}
 h1{color:#9b59b6;margin-bottom:10px;text-shadow:0 0 15px rgba(155,89,182,0.4);font-size:22px}
 #wrap{position:relative;border:2px solid #3a2b4c;box-shadow:0 0 40px rgba(155,89,182,0.15)}
 canvas{display:block;background:#050508}
-#ui{position:absolute;top:8px;left:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none;white-space:pre-line}
-#status{position:absolute;top:8px;right:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none;text-align:right;white-space:pre-line}
+#ui{position:absolute;top:8px;left:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none}
+#status{position:absolute;top:8px;right:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none;text-align:right}
 #overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;
 align-items:center;justify-content:center;background:rgba(5,5,8,0.92);text-align:center;z-index:10;padding:20px}
 #overlay h2{font-size:28px;color:#9b59b6;margin-bottom:16px;text-shadow:0 0 20px rgba(155,89,182,0.5)}
@@ -62,12 +62,14 @@ body.high-contrast .pur{color:#e2b0ff}
 </header>
 <main>
 <section aria-labelledby="gameTitle">
+<p id="canvasDesc" class="sr-only">Game board for Violet's Revenge. Collect three case files, avoid Violet, and escape through the exit door.</p>
 <div id="wrap">
-<canvas id="cv" width="800" height="600" tabindex="0" role="application" aria-roledescription="top-down horror stealth game" aria-label="Violet's Revenge game board. Move through the morgue, collect three case files, avoid Violet, and escape through the exit." aria-describedby="gameDesc mechanicsHelp keyboardShortcuts"></canvas>
+<canvas id="cv" width="800" height="600" tabindex="0" role="application" aria-roledescription="top-down horror stealth game" aria-label="Violet's Revenge game board. Move through the morgue, collect three case files, avoid Violet, and escape through the exit." aria-describedby="canvasDesc keyboardShortcuts"></canvas>
 <div id="ui"></div>
 <div id="status"></div>
-<div id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="gameDesc">
+<div id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayDesc">
 <h2 id="overlayTitle">VIOLET'S REVENGE</h2>
+<p id="overlayDesc" class="sr-only">Collect three case files, avoid Violet, and reach the exit.</p>
 <p class="pur"><strong>PROTOTYPE v0.1 — Game Jam Build</strong></p>
 <p>You are <span class="warn">THE GUILTY</span>. You wake in a morgue. 
 Collect <strong>3 Case Files</strong> and reach the <strong>Exit Door</strong>.</p>
@@ -83,7 +85,7 @@ that sing when you pass — revealing your location.</p>
   <button id="toggleContrast" type="button" aria-pressed="false">High Contrast: Off</button>
   <button id="pauseBtn" type="button" disabled>Pause</button>
 </section>
-<p id="textStatus" class="text-status" aria-live="polite" aria-atomic="true" hidden></p>
+<p id="textStatus" class="text-status sr-only" aria-live="polite" aria-atomic="true"></p>
 </section>
 
 <section class="poster-container">
@@ -126,7 +128,7 @@ const textStatus = document.getElementById('textStatus');
 const pauseBtn = document.getElementById('pauseBtn');
 const toggleSrModeBtn = document.getElementById('toggleSrMode');
 const toggleContrastBtn = document.getElementById('toggleContrast');
-const FOCUSABLE_SELECTOR = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[contenteditable="true"],[tabindex]:not([tabindex="-1"])';
+const FOCUSABLE_SELECTOR = 'button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[contenteditable="true"],[tabindex]:not([tabindex="-1"])';
 const W = 800, H = 600;
 const TILE = 40;
 const COLS = 20, ROWS = 15;
@@ -224,7 +226,7 @@ function setScreenReaderMode(enabled) {
   screenReaderMode = enabled;
   toggleSrModeBtn.setAttribute('aria-pressed', String(enabled));
   toggleSrModeBtn.textContent = `Screen Reader Mode: ${enabled ? 'On' : 'Off'}`;
-  textStatus.hidden = !enabled;
+  textStatus.classList.toggle('sr-only', !enabled);
   announce(`Screen reader mode ${enabled ? 'enabled' : 'disabled'}.`);
 }
 
@@ -255,7 +257,7 @@ window.addEventListener('keydown', e => {
   trapOverlayFocus(e);
   const key = e.key.toLowerCase();
   keys[key] = true;
-  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && state === 'playing') e.preventDefault();
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && (state === 'playing' || state === 'paused') && document.activeElement === cv) e.preventDefault();
   if (!e.repeat && key === 'p') togglePause();
   if (!e.repeat && key === 'm') setScreenReaderMode(!screenReaderMode);
   if (!e.repeat && key === 'h') setHighContrastMode(!document.body.classList.contains('high-contrast'));
@@ -421,7 +423,7 @@ function updateViolet() {
   if (violet.caughtFlash > 0) violet.caughtFlash--;
   if (prevState !== violet.state) {
     const stateLabels = { patrol: 'searching', chase: 'chasing you', hunt: 'hunting your last known location' };
-    announce(`Violet is now ${stateLabels[violet.state] || violet.state}.`);
+    announce(`Violet is now ${stateLabels[violet.state] || violet.state}.`, violet.state === 'chase' || violet.state === 'hunt');
   }
 }
 
@@ -636,7 +638,7 @@ function updateUI() {
   for (let i = 0; i < TOTAL_FILES; i++) fileStr += i < collected ? '📁' : '▢';
   const healthDisplay = screenReaderMode ? `Health ${health}/3` : hearts;
   const fileDisplay = screenReaderMode ? `Case Files ${collected}/${TOTAL_FILES}` : `${fileStr} (${collected}/${TOTAL_FILES})`;
-  ui.textContent = `HP: ${healthDisplay}\nFILES: ${fileDisplay}`;
+  ui.textContent = `HP: ${healthDisplay} | FILES: ${fileDisplay}`;
 
   const violetStatus = {
     patrol: { visual: '...searching (Violet patrolling)', text: 'Violet is searching' },
@@ -645,8 +647,7 @@ function updateUI() {
   };
   const currentStatus = violet && violetStatus[violet.state] ? violetStatus[violet.state] : violetStatus.patrol;
   let trapStr = traps ? traps.filter(t => t.triggered).length : 0;
-  statusUI.textContent = `${currentStatus.visual}\nTraps: ${traps ? traps.length : 0} (${trapStr} active)${state === 'paused' ? '\nGame paused' : ''}`;
-  statusUI.setAttribute('aria-label', `${currentStatus.text}. Traps ${traps ? traps.length : 0}, active ${trapStr}${state === 'paused' ? '. Game paused.' : '.'}`);
+  statusUI.textContent = `${currentStatus.visual} | Traps: ${traps ? traps.length : 0} (${trapStr} active)${state === 'paused' ? ' | Game paused' : ''}`;
   const baseStateText = `Health ${health} of 3. Case files ${collected} of ${TOTAL_FILES}. ${currentStatus.text}. Traps deployed ${traps ? traps.length : 0}, active ${trapStr}.`;
   textStatus.textContent = state === 'paused' ? `${baseStateText} Game paused.` : baseStateText;
 }
@@ -656,9 +657,10 @@ function showOverlay(title, body, btn) {
   const ov = overlay;
   const activeEl = document.activeElement;
   lastFocusedBeforeOverlay = activeEl && activeEl !== document.body ? activeEl : cv;
-  ov.innerHTML = `<h2 id="overlayTitle">${title}</h2>${body}<button id="restartBtn">${btn}</button>`;
+  ov.innerHTML = `<h2 id="overlayTitle">${title}</h2><p id="overlayDesc" class="sr-only">Use the button below to restart the game.</p>${body}<button id="restartBtn">${btn}</button>`;
   ov.classList.remove('hid');
   ov.setAttribute('aria-labelledby', 'overlayTitle');
+  ov.setAttribute('aria-describedby', 'overlayDesc');
   document.getElementById('restartBtn').onclick = () => {
     ov.classList.add('hid');
     initGame();
