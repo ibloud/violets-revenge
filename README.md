@@ -123,3 +123,14 @@ Join our Discord: *Under Construction*
 Submit a Portfolio: Drop a link to your GitHub, ArtStation, or Audio.com via Bluesky. Build In Public
 Claim a Task: Check the #good-first-issues board. Pick a small task, submit a PR, and let's see if we're a good fit!
 This project is built on passion, respect, and the desire to create something terrifyingly beautiful. Let's build Violet's world together.
+
+## Project Documentation
+- CONTRIBUTING.md
+- CODE_OF_CONDUCT.md
+- docs/STORY-BIBLE.md
+- docs/CHARACTER-BIBLE.md
+- docs/SENSITIVE-CONTENT-GUIDE.md
+- docs/TECH_STACK.md
+- docs/ARCHITECTURE.md
+- docs/COMMUNITY.md
+- docs/EXTERNSHIP-AGREEMENT.md
