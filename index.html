@@ -64,7 +64,7 @@ body.high-contrast .pur{color:#e2b0ff}
 <section aria-labelledby="gameTitle">
 <p id="canvasDesc" class="sr-only">Game board for Violet's Revenge. Collect three case files, avoid Violet, and escape through the exit door.</p>
 <div id="wrap">
-<canvas id="cv" width="800" height="600" tabindex="0" role="application" aria-roledescription="top-down horror stealth game" aria-label="Violet's Revenge game board. Move through the morgue, collect three case files, avoid Violet, and escape through the exit." aria-describedby="canvasDesc keyboardShortcuts"></canvas>
+<canvas id="cv" width="800" height="600" tabindex="0" role="application" aria-roledescription="top-down horror stealth game" aria-label="Violet's Revenge game board. Move through the morgue, collect three case files, avoid Violet, and escape through the exit." aria-describedby="canvasDesc keyboardHelp"></canvas>
 <div id="ui"></div>
 <div id="status"></div>
 <div id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayDesc">
@@ -85,6 +85,7 @@ that sing when you pass — revealing your location.</p>
   <button id="toggleContrast" type="button" aria-pressed="false">High Contrast: Off</button>
   <button id="pauseBtn" type="button" disabled>Pause</button>
 </section>
+<p id="textStatusView" class="text-status" hidden></p>
 <p id="textStatus" class="text-status sr-only" aria-live="polite" aria-atomic="true"></p>
 </section>
 
@@ -100,6 +101,7 @@ that sing when you pass — revealing your location.</p>
 
 <section id="ctrls" aria-labelledby="controlsTitle">
 <h2 id="controlsTitle">Controls and Game Information</h2>
+<p id="keyboardHelp" class="sr-only">Keyboard controls: move with W A S D or arrow keys, pause with P, toggle screen reader mode with M, and toggle high contrast mode with H.</p>
 <ul id="keyboardShortcuts">
   <li>Move: W, A, S, D or Arrow Keys</li>
   <li>Pause or Resume: P</li>
@@ -124,6 +126,7 @@ const overlay = document.getElementById('overlay');
 const ui = document.getElementById('ui');
 const statusUI = document.getElementById('status');
 const srStatus = document.getElementById('srStatus');
+const textStatusView = document.getElementById('textStatusView');
 const textStatus = document.getElementById('textStatus');
 const pauseBtn = document.getElementById('pauseBtn');
 const toggleSrModeBtn = document.getElementById('toggleSrMode');
@@ -213,6 +216,12 @@ function trapOverlayFocus(e) {
     first.focus();
     return;
   }
+
+  function isFocusable(el) {
+    if (!el || !document.contains(el)) return false;
+    if (el.matches('[disabled],[hidden]')) return false;
+    return typeof el.focus === 'function';
+  }
   if (e.shiftKey && document.activeElement === first) {
     e.preventDefault();
     last.focus();
@@ -226,7 +235,7 @@ function setScreenReaderMode(enabled) {
   screenReaderMode = enabled;
   toggleSrModeBtn.setAttribute('aria-pressed', String(enabled));
   toggleSrModeBtn.textContent = `Screen Reader Mode: ${enabled ? 'On' : 'Off'}`;
-  textStatus.classList.toggle('sr-only', !enabled);
+  textStatusView.hidden = !enabled;
   announce(`Screen reader mode ${enabled ? 'enabled' : 'disabled'}.`);
 }
 
@@ -257,7 +266,7 @@ window.addEventListener('keydown', e => {
   trapOverlayFocus(e);
   const key = e.key.toLowerCase();
   keys[key] = true;
-  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && (state === 'playing' || state === 'paused') && document.activeElement === cv) e.preventDefault();
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && state === 'playing' && document.activeElement === cv) e.preventDefault();
   if (!e.repeat && key === 'p') togglePause();
   if (!e.repeat && key === 'm') setScreenReaderMode(!screenReaderMode);
   if (!e.repeat && key === 'h') setHighContrastMode(!document.body.classList.contains('high-contrast'));
@@ -636,20 +645,22 @@ function updateUI() {
   for (let i = 0; i < 3; i++) hearts += i < health ? '❤️' : '🖤';
   let fileStr = '';
   for (let i = 0; i < TOTAL_FILES; i++) fileStr += i < collected ? '📁' : '▢';
-  const healthDisplay = screenReaderMode ? `Health ${health}/3` : hearts;
-  const fileDisplay = screenReaderMode ? `Case Files ${collected}/${TOTAL_FILES}` : `${fileStr} (${collected}/${TOTAL_FILES})`;
+  const healthDisplay = screenReaderMode ? `Health ${health}/3` : `${hearts} (Health ${health}/3)`;
+  const fileDisplay = screenReaderMode ? `Case Files ${collected}/${TOTAL_FILES}` : `${fileStr} (Case Files ${collected}/${TOTAL_FILES})`;
   ui.textContent = `HP: ${healthDisplay} | FILES: ${fileDisplay}`;
 
   const violetStatus = {
-    patrol: { visual: '...searching (Violet patrolling)', text: 'Violet is searching' },
-    chase: { visual: '⚠ SEEN (Violet chasing)', text: 'Violet is chasing you' },
-    hunt: { visual: '🦇 HUNTING (Violet tracking)', text: 'Violet is hunting your last location' }
+    patrol: { visual: 'Searching (Violet patrolling)', text: 'Violet is searching' },
+    chase: { visual: 'Seen (Violet chasing)', text: 'Violet is chasing you' },
+    hunt: { visual: 'Hunting (Violet tracking)', text: 'Violet is hunting your last location' }
   };
   const currentStatus = violet && violetStatus[violet.state] ? violetStatus[violet.state] : violetStatus.patrol;
   let trapStr = traps ? traps.filter(t => t.triggered).length : 0;
   statusUI.textContent = `${currentStatus.visual} | Traps: ${traps ? traps.length : 0} (${trapStr} active)${state === 'paused' ? ' | Game paused' : ''}`;
   const baseStateText = `Health ${health} of 3. Case files ${collected} of ${TOTAL_FILES}. ${currentStatus.text}. Traps deployed ${traps ? traps.length : 0}, active ${trapStr}.`;
-  textStatus.textContent = state === 'paused' ? `${baseStateText} Game paused.` : baseStateText;
+  const fullStateText = state === 'paused' ? `${baseStateText} Game paused.` : baseStateText;
+  textStatusView.textContent = fullStateText;
+  textStatus.textContent = fullStateText;
 }
 
 // ─── Overlay Screens ───
@@ -668,7 +679,7 @@ function showOverlay(title, body, btn) {
     pauseBtn.disabled = false;
     pauseBtn.textContent = 'Pause';
     announce('Game restarted.');
-    if (lastFocusedBeforeOverlay && document.contains(lastFocusedBeforeOverlay)) lastFocusedBeforeOverlay.focus();
+    if (isFocusable(lastFocusedBeforeOverlay)) lastFocusedBeforeOverlay.focus();
     else cv.focus();
     lastFocusedBeforeOverlay = null;
   };
