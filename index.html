@@ -12,8 +12,8 @@ min-height:100vh;overflow:hidden}
 h1{color:#9b59b6;margin-bottom:10px;text-shadow:0 0 15px rgba(155,89,182,0.4);font-size:22px}
 #wrap{position:relative;border:2px solid #3a2b4c;box-shadow:0 0 40px rgba(155,89,182,0.15)}
 canvas{display:block;background:#050508}
-#ui{position:absolute;top:8px;left:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none}
-#status{position:absolute;top:8px;right:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none;text-align:right}
+#ui{position:absolute;top:8px;left:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none;white-space:pre-line}
+#status{position:absolute;top:8px;right:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none;text-align:right;white-space:pre-line}
 #overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;
 align-items:center;justify-content:center;background:rgba(5,5,8,0.92);text-align:center;z-index:10;padding:20px}
 #overlay h2{font-size:28px;color:#9b59b6;margin-bottom:16px;text-shadow:0 0 20px rgba(155,89,182,0.5)}
@@ -161,6 +161,8 @@ let flashRed = 0;
 let particles = [];
 let screenReaderMode = false;
 let lastAnnounce = '';
+let lastAnnounceAt = 0;
+let lastFocusedBeforeOverlay = null;
 
 // ─── Entities ───
 let player, violet, files, traps, exitDoor;
@@ -188,10 +190,33 @@ function initGame() {
   frame = 0;
 }
 
-function announce(msg) {
+function announce(msg, priority = false) {
   if (!msg || msg === lastAnnounce) return;
+  const now = Date.now();
+  if (!priority && now - lastAnnounceAt < 800) return;
+  lastAnnounceAt = now;
   lastAnnounce = msg;
   srStatus.textContent = msg;
+}
+
+function trapOverlayFocus(e) {
+  if (overlay.classList.contains('hid') || e.key !== 'Tab') return;
+  const focusables = overlay.querySelectorAll('button,[href],[tabindex]:not([tabindex="-1"])');
+  if (!focusables.length) return;
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  if (!overlay.contains(document.activeElement)) {
+    e.preventDefault();
+    first.focus();
+    return;
+  }
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
 }
 
 function setScreenReaderMode(enabled) {
@@ -226,9 +251,11 @@ function togglePause() {
 // ─── Input ───
 const keys = {};
 window.addEventListener('keydown', e => {
+  trapOverlayFocus(e);
   const key = e.key.toLowerCase();
   keys[key] = true;
-  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key) && (state === 'playing' || state === 'paused')) e.preventDefault();
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && (state === 'playing' || state === 'paused')) e.preventDefault();
+  if (key === ' ' && document.activeElement === cv && (state === 'playing' || state === 'paused')) e.preventDefault();
   if (!e.repeat && key === 'p') togglePause();
   if (!e.repeat && key === 'm') setScreenReaderMode(!screenReaderMode);
   if (!e.repeat && key === 'h') setHighContrastMode(!document.body.classList.contains('high-contrast'));
@@ -311,7 +338,7 @@ function updatePlayer() {
     if (Math.hypot(player.x - f.x, player.y - f.y) < player.r + 12) {
       f.got = true;
       collected++;
-      announce(`Case file collected. ${collected} of ${TOTAL_FILES} gathered.`);
+      announce(`Case file collected. ${collected} of ${TOTAL_FILES} gathered.`, true);
       for (let i = 0; i < 12; i++) {
         particles.push({ x: f.x, y: f.y, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, life: 30, color: '#f1c40f' });
       }
@@ -324,7 +351,7 @@ function updatePlayer() {
         player.y > exitDoor.y - 4 && player.y < exitDoor.y + exitDoor.h + 4) {
       state = 'win';
       pauseBtn.disabled = true;
-      announce('You reached the exit and escaped.');
+      announce('You reached the exit and escaped.', true);
     }
   }
 
@@ -377,7 +404,7 @@ function updateViolet() {
   // Catch player
   if (Math.hypot(player.x - violet.x, player.y - violet.y) < player.r + violet.r && iframes <= 0) {
     health--;
-    announce(`Violet hit you. Health ${health} of 3.`);
+    announce(`Violet hit you. Health ${health} of 3.`, true);
     iframes = 120;
     flashRed = 30;
     shake = 12;
@@ -388,7 +415,7 @@ function updateViolet() {
     if (health <= 0) {
       state = 'lose';
       pauseBtn.disabled = true;
-      announce('You were caught. Game over.');
+      announce('You were caught. Game over.', true);
     }
   }
   if (violet.caughtFlash > 0) violet.caughtFlash--;
@@ -409,7 +436,7 @@ function updateTraps() {
         t.life = t.maxLife;
         violet.boost = 180;
         violet.lmx = player.x; violet.lmy = player.y;
-        announce('Nightingale trap triggered. Violet is alerted.');
+        announce('Nightingale trap triggered. Violet is alerted.', true);
         for (let i = 0; i < 15; i++) {
           particles.push({ x: t.x, y: t.y, vx: (Math.random()-0.5)*5, vy: (Math.random()-0.5)*5, life: 40, color: '#9b59b6' });
         }
@@ -607,18 +634,16 @@ function updateUI() {
   for (let i = 0; i < 3; i++) hearts += i < health ? '❤️' : '🖤';
   let fileStr = '';
   for (let i = 0; i < TOTAL_FILES; i++) fileStr += i < collected ? '📁' : '▢';
-  ui.innerHTML =
-    `HP: ${hearts} (Health ${health}/3)<br>FILES: ${fileStr} (Case Files ${collected}/${TOTAL_FILES})`;
+  ui.textContent = `HP: ${hearts} (Health ${health}/3)\nFILES: ${fileStr} (Case Files ${collected}/${TOTAL_FILES})`;
 
-  let st = '';
+  let st = '...searching (Violet patrolling)';
   let stText = 'Violet is searching';
   if (violet) {
-    if (violet.state === 'chase') { st = '<span class="warn">⚠ SEEN (Violet chasing)</span>'; stText = 'Violet is chasing you'; }
-    else if (violet.state === 'hunt') { st = '<span class="pur">🦇 HUNTING (Violet tracking)</span>'; stText = 'Violet is hunting your last location'; }
-    else st = '<span class="muted">...searching (Violet patrolling)</span>';
+    if (violet.state === 'chase') { st = '⚠ SEEN (Violet chasing)'; stText = 'Violet is chasing you'; }
+    else if (violet.state === 'hunt') { st = '🦇 HUNTING (Violet tracking)'; stText = 'Violet is hunting your last location'; }
   }
   let trapStr = traps ? traps.filter(t => t.triggered).length : 0;
-  statusUI.innerHTML = `${st}<br>Traps: ${traps ? traps.length : 0} (${trapStr} active)${state === 'paused' ? '<br><span class="good">Game paused</span>' : ''}`;
+  statusUI.textContent = `${st}\nTraps: ${traps ? traps.length : 0} (${trapStr} active)${state === 'paused' ? '\nGame paused' : ''}`;
   const baseStateText = `Health ${health} of 3. Case files ${collected} of ${TOTAL_FILES}. ${stText}. Traps deployed ${traps ? traps.length : 0}, active ${trapStr}.`;
   textStatus.textContent = state === 'paused' ? `${baseStateText} Game paused.` : baseStateText;
 }
@@ -626,6 +651,7 @@ function updateUI() {
 // ─── Overlay Screens ───
 function showOverlay(title, body, btn) {
   const ov = overlay;
+  lastFocusedBeforeOverlay = document.activeElement;
   ov.innerHTML = `<h2 id="overlayTitle">${title}</h2>${body}<button id="restartBtn">${btn}</button>`;
   ov.classList.remove('hid');
   ov.setAttribute('aria-labelledby', 'overlayTitle');
@@ -636,7 +662,9 @@ function showOverlay(title, body, btn) {
     pauseBtn.disabled = false;
     pauseBtn.textContent = 'Pause';
     announce('Game restarted.');
-    cv.focus();
+    if (lastFocusedBeforeOverlay && typeof lastFocusedBeforeOverlay.focus === 'function') lastFocusedBeforeOverlay.focus();
+    else cv.focus();
+    lastFocusedBeforeOverlay = null;
   };
   document.getElementById('restartBtn').focus();
 }
