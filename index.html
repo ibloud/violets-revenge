@@ -22,7 +22,7 @@ align-items:center;justify-content:center;background:rgba(5,5,8,0.92);text-align
 font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:12px;letter-spacing:2px}
 #overlay button:hover{background:#9b59b6;color:#fff;box-shadow:0 0 20px rgba(155,89,182,0.6)}
 .hid{display:none!important}
-#ctrls{margin-top:12px;font-size:13px;color:#d4c5e9;text-align:center;line-height:1.8;max-width:840px;padding:0 12px}
+#ctrls{margin-top:12px;font-size:14px;color:#d4c5e9;text-align:center;line-height:1.8;max-width:840px;padding:0 12px}
 #ctrls ul{list-style:disc;text-align:left;display:inline-block;margin:8px 0 0;padding-left:20px}
 .muted{color:#b8a9c9}
 .warn{color:#e74c3c}
@@ -97,7 +97,7 @@ that sing when you pass — revealing your location.</p>
 </section>
 
 <section id="ctrls" aria-labelledby="controlsTitle">
-<h2 id="controlsTitle">Keyboard Shortcuts</h2>
+<h2 id="controlsTitle">Controls and Game Information</h2>
 <ul id="keyboardShortcuts">
   <li>Move: W, A, S, D or Arrow Keys</li>
   <li>Pause or Resume: P</li>
@@ -126,6 +126,7 @@ const textStatus = document.getElementById('textStatus');
 const pauseBtn = document.getElementById('pauseBtn');
 const toggleSrModeBtn = document.getElementById('toggleSrMode');
 const toggleContrastBtn = document.getElementById('toggleContrast');
+const FOCUSABLE_SELECTOR = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[contenteditable="true"],[tabindex]:not([tabindex="-1"])';
 const W = 800, H = 600;
 const TILE = 40;
 const COLS = 20, ROWS = 15;
@@ -201,7 +202,7 @@ function announce(msg, priority = false) {
 
 function trapOverlayFocus(e) {
   if (overlay.classList.contains('hid') || e.key !== 'Tab') return;
-  const focusables = overlay.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[contenteditable="true"],[tabindex]:not([tabindex="-1"])');
+  const focusables = overlay.querySelectorAll(FOCUSABLE_SELECTOR);
   if (!focusables.length) return;
   const first = focusables[0];
   const last = focusables[focusables.length - 1];
@@ -254,7 +255,7 @@ window.addEventListener('keydown', e => {
   trapOverlayFocus(e);
   const key = e.key.toLowerCase();
   keys[key] = true;
-  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && (state === 'playing' || state === 'paused')) e.preventDefault();
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && state === 'playing') e.preventDefault();
   if (!e.repeat && key === 'p') togglePause();
   if (!e.repeat && key === 'm') setScreenReaderMode(!screenReaderMode);
   if (!e.repeat && key === 'h') setHighContrastMode(!document.body.classList.contains('high-contrast'));
@@ -633,8 +634,8 @@ function updateUI() {
   for (let i = 0; i < 3; i++) hearts += i < health ? '❤️' : '🖤';
   let fileStr = '';
   for (let i = 0; i < TOTAL_FILES; i++) fileStr += i < collected ? '📁' : '▢';
-  const healthDisplay = screenReaderMode ? `Health ${health}/3` : `${hearts} (Health ${health}/3)`;
-  const fileDisplay = screenReaderMode ? `Case Files ${collected}/${TOTAL_FILES}` : `${fileStr} (Case Files ${collected}/${TOTAL_FILES})`;
+  const healthDisplay = screenReaderMode ? `Health ${health}/3` : hearts;
+  const fileDisplay = screenReaderMode ? `Case Files ${collected}/${TOTAL_FILES}` : `${fileStr} (${collected}/${TOTAL_FILES})`;
   ui.textContent = `HP: ${healthDisplay}\nFILES: ${fileDisplay}`;
 
   const violetStatus = {
@@ -645,6 +646,7 @@ function updateUI() {
   const currentStatus = violet && violetStatus[violet.state] ? violetStatus[violet.state] : violetStatus.patrol;
   let trapStr = traps ? traps.filter(t => t.triggered).length : 0;
   statusUI.textContent = `${currentStatus.visual}\nTraps: ${traps ? traps.length : 0} (${trapStr} active)${state === 'paused' ? '\nGame paused' : ''}`;
+  statusUI.setAttribute('aria-label', `${currentStatus.text}. Traps ${traps ? traps.length : 0}, active ${trapStr}${state === 'paused' ? '. Game paused.' : '.'}`);
   const baseStateText = `Health ${health} of 3. Case files ${collected} of ${TOTAL_FILES}. ${currentStatus.text}. Traps deployed ${traps ? traps.length : 0}, active ${trapStr}.`;
   textStatus.textContent = state === 'paused' ? `${baseStateText} Game paused.` : baseStateText;
 }
@@ -652,7 +654,8 @@ function updateUI() {
 // ─── Overlay Screens ───
 function showOverlay(title, body, btn) {
   const ov = overlay;
-  lastFocusedBeforeOverlay = document.activeElement;
+  const activeEl = document.activeElement;
+  lastFocusedBeforeOverlay = activeEl && activeEl !== document.body ? activeEl : cv;
   ov.innerHTML = `<h2 id="overlayTitle">${title}</h2>${body}<button id="restartBtn">${btn}</button>`;
   ov.classList.remove('hid');
   ov.setAttribute('aria-labelledby', 'overlayTitle');
@@ -663,7 +666,7 @@ function showOverlay(title, body, btn) {
     pauseBtn.disabled = false;
     pauseBtn.textContent = 'Pause';
     announce('Game restarted.');
-    if (lastFocusedBeforeOverlay) lastFocusedBeforeOverlay.focus();
+    if (lastFocusedBeforeOverlay && document.contains(lastFocusedBeforeOverlay)) lastFocusedBeforeOverlay.focus();
     else cv.focus();
     lastFocusedBeforeOverlay = null;
   };
