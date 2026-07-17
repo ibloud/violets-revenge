@@ -63,7 +63,7 @@ body.high-contrast .pur{color:#e2b0ff}
 <main>
 <section aria-labelledby="gameTitle">
 <div id="wrap">
-<canvas id="cv" width="800" height="600" tabindex="0" role="img" aria-label="Violet's Revenge game board. Move through the morgue, collect three case files, avoid Violet, and escape through the exit." aria-describedby="gameDesc mechanicsHelp keyboardShortcuts"></canvas>
+<canvas id="cv" width="800" height="600" tabindex="0" role="application" aria-roledescription="top-down horror stealth game" aria-label="Violet's Revenge game board. Move through the morgue, collect three case files, avoid Violet, and escape through the exit." aria-describedby="gameDesc mechanicsHelp keyboardShortcuts"></canvas>
 <div id="ui"></div>
 <div id="status"></div>
 <div id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="gameDesc">
@@ -105,8 +105,8 @@ that sing when you pass — revealing your location.</p>
   <li>Toggle High Contrast Mode: H</li>
   <li>Start or Retry: Enter or Space while button is focused</li>
 </ul>
-<p id="gameDesc"><strong>Objective:</strong> Collect 3 case files (📁 case file icon) and reach the exit door (🚪 exit icon).</p>
-<p id="mechanicsHelp"><strong>Mechanics:</strong> Violet (🟣, hostile hunter) patrols, chases when she sees you, and places Nightingale traps. Traps reveal your position when triggered. You have 3 health points.</p>
+<p id="gameDesc"><strong>Objective:</strong> Collect 3 case files and reach the exit door.</p>
+<p id="mechanicsHelp"><strong>Mechanics:</strong> Violet patrols, chases when she sees you, and places Nightingale traps. Traps reveal your position when triggered. You have 3 health points.</p>
 </section>
 </main>
 
@@ -201,7 +201,7 @@ function announce(msg, priority = false) {
 
 function trapOverlayFocus(e) {
   if (overlay.classList.contains('hid') || e.key !== 'Tab') return;
-  const focusables = overlay.querySelectorAll('button,[href],[tabindex]:not([tabindex="-1"])');
+  const focusables = overlay.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[contenteditable="true"],[tabindex]:not([tabindex="-1"])');
   if (!focusables.length) return;
   const first = focusables[0];
   const last = focusables[focusables.length - 1];
@@ -255,7 +255,6 @@ window.addEventListener('keydown', e => {
   const key = e.key.toLowerCase();
   keys[key] = true;
   if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key) && (state === 'playing' || state === 'paused')) e.preventDefault();
-  if (key === ' ' && document.activeElement === cv && (state === 'playing' || state === 'paused')) e.preventDefault();
   if (!e.repeat && key === 'p') togglePause();
   if (!e.repeat && key === 'm') setScreenReaderMode(!screenReaderMode);
   if (!e.repeat && key === 'h') setHighContrastMode(!document.body.classList.contains('high-contrast'));
@@ -634,17 +633,19 @@ function updateUI() {
   for (let i = 0; i < 3; i++) hearts += i < health ? '❤️' : '🖤';
   let fileStr = '';
   for (let i = 0; i < TOTAL_FILES; i++) fileStr += i < collected ? '📁' : '▢';
-  ui.textContent = `HP: ${hearts} (Health ${health}/3)\nFILES: ${fileStr} (Case Files ${collected}/${TOTAL_FILES})`;
+  const healthDisplay = screenReaderMode ? `Health ${health}/3` : `${hearts} (Health ${health}/3)`;
+  const fileDisplay = screenReaderMode ? `Case Files ${collected}/${TOTAL_FILES}` : `${fileStr} (Case Files ${collected}/${TOTAL_FILES})`;
+  ui.textContent = `HP: ${healthDisplay}\nFILES: ${fileDisplay}`;
 
-  let st = '...searching (Violet patrolling)';
-  let stText = 'Violet is searching';
-  if (violet) {
-    if (violet.state === 'chase') { st = '⚠ SEEN (Violet chasing)'; stText = 'Violet is chasing you'; }
-    else if (violet.state === 'hunt') { st = '🦇 HUNTING (Violet tracking)'; stText = 'Violet is hunting your last location'; }
-  }
+  const violetStatus = {
+    patrol: { visual: '...searching (Violet patrolling)', text: 'Violet is searching' },
+    chase: { visual: '⚠ SEEN (Violet chasing)', text: 'Violet is chasing you' },
+    hunt: { visual: '🦇 HUNTING (Violet tracking)', text: 'Violet is hunting your last location' }
+  };
+  const currentStatus = violet && violetStatus[violet.state] ? violetStatus[violet.state] : violetStatus.patrol;
   let trapStr = traps ? traps.filter(t => t.triggered).length : 0;
-  statusUI.textContent = `${st}\nTraps: ${traps ? traps.length : 0} (${trapStr} active)${state === 'paused' ? '\nGame paused' : ''}`;
-  const baseStateText = `Health ${health} of 3. Case files ${collected} of ${TOTAL_FILES}. ${stText}. Traps deployed ${traps ? traps.length : 0}, active ${trapStr}.`;
+  statusUI.textContent = `${currentStatus.visual}\nTraps: ${traps ? traps.length : 0} (${trapStr} active)${state === 'paused' ? '\nGame paused' : ''}`;
+  const baseStateText = `Health ${health} of 3. Case files ${collected} of ${TOTAL_FILES}. ${currentStatus.text}. Traps deployed ${traps ? traps.length : 0}, active ${trapStr}.`;
   textStatus.textContent = state === 'paused' ? `${baseStateText} Game paused.` : baseStateText;
 }
 
@@ -662,7 +663,7 @@ function showOverlay(title, body, btn) {
     pauseBtn.disabled = false;
     pauseBtn.textContent = 'Pause';
     announce('Game restarted.');
-    if (lastFocusedBeforeOverlay && typeof lastFocusedBeforeOverlay.focus === 'function') lastFocusedBeforeOverlay.focus();
+    if (lastFocusedBeforeOverlay) lastFocusedBeforeOverlay.focus();
     else cv.focus();
     lastFocusedBeforeOverlay = null;
   };
