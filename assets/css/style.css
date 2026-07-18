@@ -1,0 +1,38 @@
+.theater-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: #1a1a1a; /* Dark cinema background */
+}
+
+.poster-wall {
+  max-width: 300px;
+  border: 15px solid #2a2a2a; /* Thick frame */
+  box-shadow: 0 0 30px rgba(160, 32, 240, 0.3); /* Purple glow */
+}
+
+.game-display {
+  border: 4px solid #a020f0;
+  box-shadow: 0 0 50px rgba(160, 32, 240, 0.2);
+}
+
+.game-instructions {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #000;
+  color: #fff;
+  border-left: 5px solid #a020f0;
+}
+
+.game-instructions h2 {
+  font-size: 2rem; /* Larger header */
+  margin-bottom: 1rem;
+}
+
+.game-instructions p {
+  font-size: 1.25rem; /* Larger, readable body text */
+  line-height: 1.6;
+}
