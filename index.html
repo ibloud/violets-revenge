@@ -188,6 +188,38 @@ font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:10p
   #wrap{margin:0}
   canvas{max-width:100%;height:auto}
 }
+
+/* ── Touch controls: virtual joystick, shown on touch devices ── */
+#touchControls{display:none}
+@media (pointer:coarse){
+  #touchControls{display:block}
+  body{touch-action:pan-y}
+}
+body.force-touch #touchControls{display:block}
+#touchControls{
+  position:fixed;left:0;right:0;bottom:0;height:170px;
+  z-index:20;pointer-events:none;
+}
+#joyBase{
+  position:absolute;left:26px;bottom:26px;
+  width:130px;height:130px;border-radius:50%;
+  background:rgba(155,89,182,0.10);
+  border:2px solid rgba(199,125,255,0.35);
+  box-shadow:inset 0 0 20px rgba(0,0,0,0.4);
+  pointer-events:auto;touch-action:none;
+}
+#joyKnob{
+  position:absolute;left:50%;top:50%;width:56px;height:56px;
+  margin-left:-28px;margin-top:-28px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--violet-bright), var(--violet) 70%);
+  box-shadow:0 0 16px rgba(155,89,182,0.7);
+  transition:transform .05s linear;
+  pointer-events:none;
+}
+#joyLabel{
+  position:absolute;left:26px;bottom:8px;width:130px;text-align:center;
+  font-size:9px;letter-spacing:2px;color:#6b5a80;pointer-events:none;
+}
 </style>
 </head>
 <body>
@@ -229,7 +261,12 @@ font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:10p
   </svg>
 </div>
 
-
+<div id="touchControls">
+  <div id="joyBase">
+    <div id="joyKnob"></div>
+  </div>
+  <div id="joyLabel">DRAG TO MOVE</div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════
@@ -303,6 +340,81 @@ function initGame() {
 const keys = {};
 window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
 window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+// ─── Virtual Joystick (touch controls) ───
+// Maps drag direction onto the same wasd keys the keyboard uses,
+// so updatePlayer() doesn't need to know the input source.
+(function initJoystick(){
+  const base = document.getElementById('joyBase');
+  const knob = document.getElementById('joyKnob');
+  if (!base || !knob) return;
+
+  const MAX_R = 46;      // how far the knob can travel from center, px
+  const DEADZONE = 0.18; // fraction of MAX_R before a direction registers
+  let activeId = null;
+  let originX = 0, originY = 0;
+
+  function clearDirKeys(){
+    keys['w'] = keys['a'] = keys['s'] = keys['d'] = false;
+  }
+
+  function applyVector(dx, dy){
+    clearDirKeys();
+    const dist = Math.hypot(dx, dy);
+    if (dist < MAX_R * DEADZONE) return;
+    const nx = dx / dist, ny = dy / dist; // normalized, screen space
+    const T = 0.35; // threshold so diagonals trigger two keys at once
+    if (ny < -T) keys['w'] = true;
+    if (ny > T)  keys['s'] = true;
+    if (nx < -T) keys['a'] = true;
+    if (nx > T)  keys['d'] = true;
+  }
+
+  function setKnob(dx, dy){
+    const dist = Math.min(Math.hypot(dx, dy), MAX_R);
+    const ang = Math.atan2(dy, dx);
+    const kx = Math.cos(ang) * dist, ky = Math.sin(ang) * dist;
+    knob.style.transform = `translate(${kx}px, ${ky}px)`;
+  }
+
+  function start(e){
+    const t = e.changedTouches ? e.changedTouches[0] : e;
+    activeId = t.identifier === undefined ? 'mouse' : t.identifier;
+    const rect = base.getBoundingClientRect();
+    originX = rect.left + rect.width/2;
+    originY = rect.top + rect.height/2;
+    move(e);
+    e.preventDefault();
+  }
+  function move(e){
+    if (activeId === null) return;
+    let t;
+    if (e.changedTouches) {
+      t = Array.from(e.changedTouches).find(tt => tt.identifier === activeId);
+      if (!t) return;
+    } else { t = e; }
+    const dx = t.clientX - originX, dy = t.clientY - originY;
+    setKnob(dx, dy);
+    applyVector(dx, dy);
+    e.preventDefault();
+  }
+  function end(e){
+    if (activeId === null) return;
+    activeId = null;
+    knob.style.transform = 'translate(0px, 0px)';
+    clearDirKeys();
+    e.preventDefault();
+  }
+
+  base.addEventListener('touchstart', start, {passive:false});
+  base.addEventListener('touchmove', move, {passive:false});
+  base.addEventListener('touchend', end, {passive:false});
+  base.addEventListener('touchcancel', end, {passive:false});
+  // Mouse fallback (handy for testing touch layout on desktop)
+  base.addEventListener('mousedown', start);
+  window.addEventListener('mousemove', e => { if (activeId !== null) move(e); });
+  window.addEventListener('mouseup', e => { if (activeId !== null) end(e); });
+})();
 
 // ─── Wall Collision ───
 function hitsWall(x, y, r) {
