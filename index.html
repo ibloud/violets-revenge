@@ -313,13 +313,33 @@ let particles = [];
 // ─── Entities ───
 let player, violet, files, traps, exitDoor;
 
+// ─── Random Floor Position ───
+// Picks an open (non-wall) tile at random. If a reference point + min
+// distance is given, keeps retrying until the spot is far enough away
+// (used so the player doesn't respawn right on top of Violet).
+function randomFloorPos(minDist, fromX, fromY) {
+  let tries = 0;
+  let best = { x: 1.5*TILE, y: 1.5*TILE };
+  while (tries++ < 60) {
+    let cx = Math.floor(Math.random() * (COLS - 2)) + 1;
+    let cy = Math.floor(Math.random() * (ROWS - 2)) + 1;
+    if (MAP[cy][cx] !== '0') continue;
+    let x = cx * TILE + TILE/2, y = cy * TILE + TILE/2;
+    best = { x, y };
+    if (!minDist) return best;
+    if (Math.hypot(x - fromX, y - fromY) >= minDist) return best;
+  }
+  return best; // fallback: last valid floor tile found, even if too close
+}
+
 function initGame() {
-  player = { x: 1.5*TILE, y: 1.5*TILE, r: 12, spd: 2.4, ang: 0, vx:0, vy:0 };
   violet = {
     x: 9.5*TILE, y: 8.5*TILE, r: 14, spd: 1.6, chaseSpd: 2.2, huntSpd: 3.0,
     state: 'patrol', tx: 10*TILE, ty: 7*TILE, lmx: 0, lmy: 0,
     boost: 0, trapCD: 0, caughtFlash: 0
   };
+  let spawn = randomFloorPos(220, violet.x, violet.y);
+  player = { x: spawn.x, y: spawn.y, r: 12, spd: 2.4, ang: 0, vx:0, vy:0 };
   files = [
     { x: 3.5*TILE, y: 7.5*TILE, got: false, pulse: 0 },
     { x: 10.5*TILE, y: 3.5*TILE, got: false, pulse: 0 },
@@ -561,7 +581,14 @@ function updateViolet() {
     for (let i = 0; i < 20; i++) {
       particles.push({ x: player.x, y: player.y, vx: (Math.random()-0.5)*6, vy: (Math.random()-0.5)*6, life: 35, color: '#e74c3c' });
     }
-    if (health <= 0) state = 'lose';
+    if (health <= 0) {
+      state = 'lose';
+    } else {
+      // Respawn somewhere fresh, away from Violet, rather than right next to her
+      let spot = randomFloorPos(220, violet.x, violet.y);
+      player.x = spot.x;
+      player.y = spot.y;
+    }
   }
   if (violet.caughtFlash > 0) violet.caughtFlash--;
 }
