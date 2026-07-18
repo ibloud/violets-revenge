@@ -30,5 +30,4 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 ## Scope note
 This license covers **assets only** — art, audio, lore, and character
 designs. Gameplay code, mechanics, and systems are licensed separately
-under the MIT License. See [LICENSE-CODE.md](LICENSE-CODE.md) (or the
-root [LICENSE](LICENSE) file).
+under the MIT License. See [LICENSE.md](LICENSE.md) at the repository root.
