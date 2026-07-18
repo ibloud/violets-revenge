@@ -6,68 +6,230 @@
 <title>Violet's Revenge: The Morgue — Prototype v0.1</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0f;color:#b8a9c9;font-family:'Courier New',monospace;
-display:flex;flex-direction:column;align-items:center;justify-content:center;
-min-height:100vh;overflow:hidden}
-h1{color:#9b59b6;margin-bottom:10px;text-shadow:0 0 15px rgba(155,89,182,0.4);font-size:22px}
-#wrap{position:relative;border:2px solid #3a2b4c;box-shadow:0 0 40px rgba(155,89,182,0.15)}
+
+:root{
+  --void:#050508;
+  --wall:#1a1520;
+  --wall-line:#2d2438;
+  --floor:#0c0a12;
+  --ink:#b8a9c9;
+  --violet:#9b59b6;
+  --violet-bright:#c77dff;
+  --gold:#f1c40f;
+  --velvet-dark:#1c060c;
+  --velvet:#4a1020;
+  --velvet-light:#7a1f34;
+  --blood:#e74c3c;
+}
+
+body{
+  background:var(--void);
+  color:var(--ink);
+  font-family:'Courier New',monospace;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:28px 16px 60px;
+  position:relative;
+}
+/* subtle ambient vignette, no external image dependency */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at center, rgba(30,15,45,0.35) 0%, rgba(5,5,8,0.9) 70%, rgba(5,5,8,0.98) 100%);
+  z-index:0;pointer-events:none;
+}
+body > *{position:relative;z-index:1}
+
+/* ── Marquee title ── */
+.marquee{
+  border:3px solid var(--gold);
+  border-radius:6px;
+  padding:14px 30px;
+  margin-bottom:22px;
+  position:relative;
+  background:linear-gradient(180deg, #150e1c, #0c0812);
+  box-shadow:0 0 30px rgba(241,196,15,0.15), inset 0 0 20px rgba(155,89,182,0.15);
+}
+.marquee::before, .marquee::after{
+  content:'';position:absolute;top:6px;bottom:6px;width:6px;
+  background-image:radial-gradient(circle, var(--gold) 2.5px, transparent 3px);
+  background-size:100% 16px;
+  opacity:0.85;
+  animation:bulbs 1.6s steps(2) infinite;
+}
+.marquee::before{left:8px}
+.marquee::after{right:8px}
+@keyframes bulbs{50%{opacity:0.35}}
+.marquee h1{
+  font-family:Georgia,'Times New Roman',serif;
+  font-style:italic;
+  font-weight:700;
+  letter-spacing:3px;
+  font-size:24px;
+  text-align:center;
+  color:var(--violet-bright);
+  text-shadow:0 0 16px rgba(199,125,255,0.55);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.marquee h1 img{height:26px;width:26px;border-radius:5px;filter:drop-shadow(0 0 6px rgba(155,89,182,.7))}
+.marquee p{
+  text-align:center;font-size:10px;letter-spacing:4px;color:#6b5a80;margin-top:4px;
+}
+
+/* ── Theatre: curtains flanking the screen ── */
+.theatre{
+  display:flex;align-items:stretch;
+  filter:drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+}
+.curtain{
+  width:46px;
+  background-image:
+    linear-gradient(-45deg, transparent 46%, rgba(0,0,0,0.35) 50%, transparent 54%),
+    linear-gradient(45deg, transparent 46%, rgba(0,0,0,0.35) 50%, transparent 54%),
+    repeating-linear-gradient(90deg,
+      var(--velvet-dark) 0px, var(--velvet) 8px, var(--velvet-light) 14px, var(--velvet) 20px, var(--velvet-dark) 28px);
+  background-size:18px 18px, 18px 18px, 100% 100%;
+  border-radius:6px;
+  box-shadow:inset 0 0 20px rgba(0,0,0,0.6);
+  transition:width .6s cubic-bezier(.4,0,.2,1), margin .6s cubic-bezier(.4,0,.2,1), opacity .6s ease;
+}
+.curtain.pulled{width:6px;opacity:0.5}
+#wrap{
+  position:relative;border:2px solid #3a2b4c;box-shadow:0 0 40px rgba(155,89,182,0.15);
+  margin:0 4px;
+}
 canvas{display:block;background:#050508}
 #ui{position:absolute;top:8px;left:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none}
 #status{position:absolute;top:8px;right:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none;text-align:right}
 #overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;
-align-items:center;justify-content:center;background:rgba(5,5,8,0.92);text-align:center;z-index:10;padding:20px}
-#overlay h2{font-size:28px;color:#9b59b6;margin-bottom:16px;text-shadow:0 0 20px rgba(155,89,182,0.5)}
-#overlay p{margin-bottom:12px;max-width:420px;line-height:1.7;font-size:14px}
-#overlay button{background:#2a1b3c;color:#d4c5e9;border:1px solid #9b59b6;padding:12px 36px;
-font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:12px;letter-spacing:2px}
-#overlay button:hover{background:#9b59b6;color:#fff;box-shadow:0 0 20px rgba(155,89,182,0.6)}
+align-items:center;justify-content:center;background:rgba(5,5,8,0.88);backdrop-filter:blur(4px);text-align:center;z-index:10;padding:20px;overflow-y:auto}
+#overlay h2{font-size:26px;color:var(--violet);margin-bottom:14px;text-shadow:0 0 20px rgba(155,89,182,0.5);font-family:Georgia,serif;font-style:italic}
+#overlay p{margin-bottom:10px;max-width:420px;line-height:1.6;font-size:14px}
+#overlay button{background:#2a1b3c;color:#d4c5e9;border:1px solid var(--violet);padding:12px 36px;
+font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:10px;letter-spacing:2px}
+#overlay button:hover{background:var(--violet);color:#fff;box-shadow:0 0 20px rgba(155,89,182,0.6)}
 .hid{display:none!important}
-#ctrls{margin-top:12px;font-size:11px;color:#5c4d6d;text-align:center;line-height:1.8}
-.warn{color:#e74c3c}
+.warn{color:var(--blood)}
 .good{color:#2ecc71}
-.pur{color:#9b59b6}
-.poster-container{max-width:340px;margin:18px auto 0;border:5px solid #2a2235;box-shadow:0 14px 30px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .3s ease,box-shadow .3s ease,filter .3s ease}
+.pur{color:var(--violet)}
+
+/* ── Ticket stub: persistent controls, styled like the poster's admission ticket ── */
+.ticket{
+  margin-top:20px;
+  width:100%;max-width:640px;
+  background:#120b18;
+  border:1px dashed #5c4d6d;
+  border-radius:4px;
+  padding:14px 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  flex-wrap:wrap;
+  font-size:11px;letter-spacing:1px;color:#8a7aa3;
+}
+.ticket .stub-label{color:var(--gold);font-weight:bold;letter-spacing:2px;white-space:nowrap}
+.ticket .stub-controls{flex:1;min-width:220px;text-align:left;line-height:1.9}
+.ticket .stub-controls b{color:var(--ink)}
+.kbs{
+  border:1px solid #444;padding:1px 6px;background:#1d1626;
+  border-radius:3px;color:var(--gold);font-weight:bold;
+  box-shadow:1px 1px 0 #000;font-size:10px;
+}
+.heart{display:inline-block;width:15px;height:15px;vertical-align:-2px;margin-right:1px;background-size:contain;background-repeat:no-repeat}
+.heart.full{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e74c3c'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
+.heart.empty{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23444'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
+
+/* controls block reused inline inside win/lose overlays */
+.overlay-controls{
+  margin-top:6px;margin-bottom:6px;
+  border:1px dashed #4a3d5c;border-radius:4px;
+  padding:10px 16px;font-size:11px;letter-spacing:1px;color:#8a7aa3;line-height:1.8;
+  max-width:380px;
+}
+.overlay-controls b{color:var(--ink)}
+
+/* ── Win-state Discord invite ── */
+.encore{
+  margin-top:14px;padding:14px 18px;border:1px solid var(--gold);border-radius:6px;
+  background:rgba(241,196,15,0.05);display:flex;align-items:center;gap:16px;max-width:380px;
+}
+.encore img{width:84px;height:84px;border-radius:4px;background:#fff;padding:4px;display:block}
+.encore .encore-text{text-align:left;font-size:12px;line-height:1.6}
+.encore .encore-text b{color:var(--gold);display:block;font-size:13px;letter-spacing:1px;margin-bottom:4px}
+.encore-link{display:inline-block;margin-top:6px;color:var(--violet-bright);text-decoration:underline}
+.encore-link:hover{color:var(--gold)}
+
+/* ── Seat silhouettes: quiet nod to the poster's audience, purely ambient ── */
+.seats{margin-top:26px;opacity:0.55;width:100%;max-width:640px}
+.seats svg{width:100%;height:auto;display:block}
+
+/* ── Landscape hero banner ── */
+.banner-hero{
+  display:block;width:100%;max-width:900px;margin:0 auto 26px;
+  border:2px solid var(--violet);border-radius:8px;overflow:hidden;
+  box-shadow:0 14px 34px rgba(0,0,0,.6);
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+.banner-hero:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(0,0,0,.7)}
+.banner-img{width:100%;height:auto;display:block}
+
+/* ── Lobby standee (poster) ── */
+.poster-container{max-width:220px;margin:26px auto 0;border:4px solid #2a2235;box-shadow:0 14px 30px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .3s ease,box-shadow .3s ease}
+.poster-container.poster-top{max-width:260px;margin:0 auto 6px}
 .poster-link{display:block;position:relative;text-decoration:none;color:inherit}
-.horror-poster{display:block;width:100%;height:auto;filter:sepia(.25) contrast(1.2) brightness(.9) saturate(.8)}
-.poster-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:18px;background:linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,.08) 55%, rgba(0,0,0,0));opacity:.92;transition:opacity .3s ease}
-.poster-overlay h3{font-size:20px;letter-spacing:3px;color:#f0d9ff;text-shadow:0 0 12px rgba(155,89,182,.65)}
-.poster-overlay p{margin:6px 0 0;font-size:12px;letter-spacing:2px;color:#c77dff}
+.horror-poster{display:block;width:100%;height:auto;filter:sepia(.2) contrast(1.15) brightness(.9) saturate(.85)}
+.poster-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:12px;background:linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.05) 55%, rgba(0,0,0,0));opacity:.9;transition:opacity .3s ease}
+.poster-overlay h3{font-size:13px;letter-spacing:2px;color:#f0d9ff;text-shadow:0 0 10px rgba(155,89,182,.6)}
+.poster-overlay p{margin:0;font-size:11px;letter-spacing:2px;color:#c77dff;font-weight:bold}
 .poster-link:hover .poster-overlay{opacity:1}
-.poster-container:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 18px 34px rgba(0,0,0,.7)}
-@media (max-width: 920px){body{overflow:auto;padding:20px 0}.poster-container{max-width:300px}}
+.poster-container:hover{transform:translateY(-2px) scale(1.02)}
+.poster-caption{text-align:center;font-size:9px;letter-spacing:2px;color:#5c4d6d;margin-top:8px;margin-bottom:22px}
+
+@media (max-width: 720px){
+  .theatre{flex-direction:column;align-items:center}
+  .curtain{display:none}
+  #wrap{margin:0}
+  canvas{max-width:100%;height:auto}
+}
 </style>
 </head>
 <body>
-<h1>🟣 VIOLET'S REVENGE: THE MORGUE</h1>
-<div id="wrap">
-<canvas id="cv" width="800" height="600"></canvas>
-<div id="ui"></div>
-<div id="status"></div>
-<div id="overlay" id="ov">
-<h2>VIOLET'S REVENGE</h2>
-<p class="pur"><strong>PROTOTYPE v0.1 — Game Jam Build</strong></p>
-<p>You are <span class="warn">THE GUILTY</span>. You wake in a morgue. 
-Collect <strong>3 Case Files</strong> and reach the <strong>Exit Door</strong>.</p>
-<p>Violet hunts you. She leaves <span class="pur">Nightingale Traps</span> 
-that sing when you pass — revealing your location.</p>
-<p class="warn">She catches you 3 times... it's the Autopsy Slab.</p>
-<button id="startBtn">BEGIN</button>
-</div>
-</div>
 
-<section class="poster-container">
-  <a href="https://github.com/ibloud/violets-revenge" class="poster-link" target="_blank" rel="noopener noreferrer">
-    <img src="IMG_0874.jpeg" alt="Violet's Revenge Retro Horror Poster" class="horror-poster">
-    <div class="poster-overlay">
-      <h3>VIOLET'S REVENGE</h3>
-      <p>VIEW ON GITHUB</p>
+<a href="https://github.com/ibloud/violets-revenge" class="banner-hero" target="_blank" rel="noopener noreferrer">
+  <img src="https://raw.githubusercontent.com/ibloud/violets-revenge/images/banner.png" alt="Violet_88: The Morgue Protocol v0.1" class="banner-img">
+</a>
+
+<div class="theatre">
+  <div class="curtain" id="curtainL"></div>
+  <div id="wrap">
+    <canvas id="cv" width="800" height="600"></canvas>
+    <div id="ui"></div>
+    <div id="status"></div>
+    <div id="overlay">
+      <h2>VIOLET'S REVENGE</h2>
+      <p class="pur"><strong>PROTOTYPE v0.1 — Game Jam Build</strong></p>
+      <p>You are <span class="warn">THE GUILTY</span>. You wake in a morgue.
+      Collect <strong>3 Case Files</strong> and reach the <strong>Exit Door</strong>.</p>
+      <p>Violet hunts you. She leaves <span class="pur">Nightingale Traps</span>
+      that sing when you pass — revealing your location.</p>
+      <p class="warn">She catches you 3 times... it's the Autopsy Slab.</p>
+      <button id="startBtn">BEGIN</button>
     </div>
-  </a>
-</section>
-
-<div id="ctrls">
-WASD / Arrow Keys — Move &nbsp;|&nbsp; Collect 3 Case Files (🟡) &nbsp;|&nbsp; Reach Exit (🚪) &nbsp;|&nbsp; Avoid Violet (🟣)
+  </div>
+  <div class="curtain" id="curtainR"></div>
 </div>
+
+<div class="ticket">
+  <span class="stub-label">🎟 ADMIT ONE</span>
+  <span class="stub-controls">
+    <span class="kbs">WASD</span> / <span class="kbs">Arrows</span> — Move &nbsp;|&nbsp; 🟡 Collect 3 Case Files &nbsp;|&nbsp; 🚪 Reach Exit &nbsp;|&nbsp; 🟣 Avoid Violet
+  </span>
+</div>
+
+<div class="seats">
+  <svg viewBox="0 0 640 60" preserveAspectRatio="none">
+    <path d="M0,60 L0,38 Q10,20 20,38 L20,60 Z M30,60 L30,34 Q42,14 54,34 L54,60 Z M64,60 L64,38 Q74,20 84,38 L84,60 Z M94,60 L94,32 Q108,10 122,32 L122,60 Z M132,60 L132,38 Q142,20 152,38 L152,60 Z M162,60 L162,34 Q174,14 186,34 L186,60 Z M196,60 L196,38 Q206,20 216,38 L216,60 Z M226,60 L226,32 Q240,10 254,32 L254,60 Z M264,60 L264,38 Q274,20 284,38 L284,60 Z M294,60 L294,34 Q306,14 318,34 L318,60 Z M328,60 L328,38 Q338,20 348,38 L348,60 Z M358,60 L358,32 Q372,10 386,32 L386,60 Z M396,60 L396,38 Q406,20 416,38 L416,60 Z M426,60 L426,34 Q438,14 450,34 L450,60 Z M460,60 L460,38 Q470,20 480,38 L480,60 Z M490,60 L490,32 Q504,10 518,32 L518,60 Z M528,60 L528,38 Q538,20 548,38 L548,60 Z M558,60 L558,34 Q570,14 582,34 L582,60 Z M592,60 L592,38 Q602,20 612,38 L612,60 Z M622,60 L622,32 Q636,10 640,32 L640,60 Z" fill="#2a1b3c"/>
+  </svg>
+</div>
+
+
 
 <script>
 // ═══════════════════════════════════════════
@@ -497,7 +659,7 @@ function render() {
 // ─── UI ───
 function updateUI() {
   let hearts = '';
-  for (let i = 0; i < 3; i++) hearts += i < health ? '❤️' : '🖤';
+  for (let i = 0; i < 3; i++) hearts += `<span class="heart ${i < health ? 'full' : 'empty'}"></span>`;
   let fileStr = '';
   for (let i = 0; i < TOTAL_FILES; i++) fileStr += i < collected ? '📁' : '▢';
   document.getElementById('ui').innerHTML =
@@ -513,10 +675,30 @@ function updateUI() {
   document.getElementById('status').innerHTML = `${st}<br>Traps: ${traps ? traps.length : 0} (${trapStr} active)`;
 }
 
+// ─── Shared controls reminder, reused on every overlay screen ───
+const CONTROLS_HTML = `
+  <div class="overlay-controls">
+    <span class="kbs">WASD</span> / <span class="kbs">Arrows</span> — Move<br>
+    🟡 Collect 3 Case Files &nbsp;|&nbsp; 🚪 Reach Exit &nbsp;|&nbsp; 🟣 Avoid Violet
+  </div>`;
+
+// Discord invite shown only after a win.
+const ENCORE_HTML = `
+  <div class="encore">
+    <a href="https://discord.gg/zemqccGdf" target="_blank" rel="noopener noreferrer">
+      <img src="https://raw.githubusercontent.com/ibloud/violets-revenge/images/discord_qr.jpeg" alt="Discord invite QR code">
+    </a>
+    <div class="encore-text">
+      <b>STAY FOR THE ENCORE</b>
+      Join the team on Discord — help shape what happens after the credits roll.<br>
+      <a href="https://discord.gg/zemqccGdf" target="_blank" rel="noopener noreferrer" class="encore-link">discord.gg/zemqccGdf →</a>
+    </div>
+  </div>`;
+
 // ─── Overlay Screens ───
-function showOverlay(title, body, btn) {
+function showOverlay(title, body, btn, extra) {
   const ov = document.getElementById('overlay');
-  ov.innerHTML = `<h2>${title}</h2>${body}<button id="restartBtn">${btn}</button>`;
+  ov.innerHTML = `<h2>${title}</h2>${body}${CONTROLS_HTML}${extra || ''}<button id="restartBtn">${btn}</button>`;
   ov.classList.remove('hid');
   document.getElementById('restartBtn').onclick = () => {
     ov.classList.add('hid');
@@ -541,7 +723,8 @@ function loop() {
         '✅ ESCAPED',
         '<p class="good">You destroyed the evidence and escaped the Morgue.</p>' +
         '<p>But Violet is still out there. Waiting.</p>',
-        'AGAIN'
+        'AGAIN',
+        ENCORE_HTML
       );
     } else if (state === 'lose') {
       showOverlay(
@@ -555,9 +738,11 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// ─── Start ───
+// ─── Start (curtains pull back) ───
 document.getElementById('startBtn').onclick = () => {
   document.getElementById('overlay').classList.add('hid');
+  document.getElementById('curtainL').classList.add('pulled');
+  document.getElementById('curtainR').classList.add('pulled');
   initGame();
   state = 'playing';
 };
