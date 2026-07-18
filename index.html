@@ -308,6 +308,24 @@ let health = 3;
 let iframes = 0;
 let shake = 0;
 let flashRed = 0;
+let flashGold = 0;
+let audioCtx = null;
+function playPanicTone() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let t = audioCtx.currentTime;
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(520, t);
+    osc.frequency.exponentialRampToValueAtTime(880, t + 0.18);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.25, t + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + 0.32);
+  } catch (e) { /* audio unavailable, visual/particle feedback still covers it */ }
+}
 let particles = [];
 
 // ─── Entities ───
@@ -339,7 +357,7 @@ function initGame() {
     boost: 0, trapCD: 0, caughtFlash: 0
   };
   let spawn = randomFloorPos(220, violet.x, violet.y);
-  player = { x: spawn.x, y: spawn.y, r: 12, spd: 2.4, ang: 0, vx:0, vy:0 };
+  player = { x: spawn.x, y: spawn.y, r: 12, spd: 2.4, ang: 0, vx:0, vy:0, panicBoost: 0, panicCD: 0 };
   files = [
     { x: 3.5*TILE, y: 7.5*TILE, got: false, pulse: 0 },
     { x: 10.5*TILE, y: 3.5*TILE, got: false, pulse: 0 },
@@ -352,6 +370,7 @@ function initGame() {
   iframes = 0;
   shake = 0;
   flashRed = 0;
+  flashGold = 0;
   particles = [];
   frame = 0;
 }
@@ -500,10 +519,14 @@ function updatePlayer() {
     dx /= len; dy /= len;
     let s = player.spd;
     if (iframes > 0) s *= 1.4; // escape burst
+    if (player.panicBoost > 0) s *= 1.35; // automatic panic burst (no extra input)
     move(player, dx * s, dy * s);
     player.ang = Math.atan2(dy, dx);
     player.vx = dx; player.vy = dy;
   } else { player.vx = 0; player.vy = 0; }
+
+  if (player.panicBoost > 0) player.panicBoost--;
+  if (player.panicCD > 0) player.panicCD--;
 
   // Collect files
   for (let f of files) {
@@ -547,6 +570,18 @@ function updateViolet() {
   } else if (violet.state === 'patrol') {
     let d = Math.hypot(violet.tx - violet.x, violet.ty - violet.y);
     if (d < 25) newPatrol();
+  }
+
+  // Automatic panic burst: Violet closing in during a chase triggers a brief
+  // player speed boost with no extra input required (accessibility constraint).
+  if (violet.state === 'chase' && dist < 55 && player.panicCD <= 0 && player.panicBoost <= 0) {
+    player.panicBoost = 90;
+    player.panicCD = 360;
+    flashGold = 25;
+    playPanicTone();
+    for (let i = 0; i < 14; i++) {
+      particles.push({ x: player.x, y: player.y, vx: (Math.random()-0.5)*5, vy: (Math.random()-0.5)*5, life: 30, color: '#f1c40f' });
+    }
   }
 
   // Speed
@@ -790,6 +825,17 @@ function render() {
     ctx.fillStyle = 'rgba(231,76,60,' + (flashRed/30 * 0.4) + ')';
     ctx.fillRect(0, 0, W, H);
     flashRed--;
+  }
+
+  // Gold edge-flash: panic burst cue (edges glow, center stays clear)
+  if (flashGold > 0) {
+    let gGrad = ctx.createRadialGradient(W/2, H/2, 180, W/2, H/2, W/2);
+    let a = (flashGold/25) * 0.55;
+    gGrad.addColorStop(0, 'rgba(241,196,15,0)');
+    gGrad.addColorStop(1, 'rgba(241,196,15,' + a + ')');
+    ctx.fillStyle = gGrad;
+    ctx.fillRect(0, 0, W, H);
+    flashGold--;
   }
 
   ctx.restore();
