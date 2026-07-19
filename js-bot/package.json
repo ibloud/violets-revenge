@@ -1,0 +1,16 @@
+{
+  "name": "violets-revenge-js-bot",
+  "version": "0.1.0",
+  "description": "Second, separate Discord bot for Violet's Revenge — handles /claim and /intake gating. Runs alongside violet_bot.py (Python) as its own bot application, not sharing its token.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
