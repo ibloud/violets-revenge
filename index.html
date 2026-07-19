@@ -151,6 +151,7 @@ font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:10p
   background:rgba(241,196,15,0.05);display:flex;align-items:center;gap:16px;max-width:380px;
 }
 .encore img{width:84px;height:84px;border-radius:4px;background:#fff;padding:4px;display:block}
+.encore-qr{width:84px;height:84px;border-radius:4px;background:#fff;padding:4px;display:block}
 .encore .encore-text{text-align:left;font-size:12px;line-height:1.6}
 .encore .encore-text b{color:var(--gold);display:block;font-size:13px;letter-spacing:1px;margin-bottom:4px}
 .encore-link{display:inline-block;margin-top:6px;color:var(--violet-bright);text-decoration:underline}
@@ -221,6 +222,7 @@ body.force-touch #touchControls{display:block}
   font-size:9px;letter-spacing:2px;color:#6b5a80;pointer-events:none;
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -867,18 +869,70 @@ const CONTROLS_HTML = `
     🟡 Collect 3 Case Files &nbsp;|&nbsp; 🚪 Reach Exit &nbsp;|&nbsp; 🟣 Avoid Violet
   </div>`;
 
-// Discord invite shown only after a win.
-const ENCORE_HTML = `
+const STATIC_INVITE_URL = 'https://discord.gg/zemqccGdf';
+const STATIC_INVITE_QR = 'discord_qr.jpeg';
+const WIN_INVITE_ENDPOINT = window.VIOLET_WIN_INVITE_ENDPOINT || '/win-invite';
+
+const STATIC_ENCORE_HTML = `
   <div class="encore">
-    <a href="https://discord.gg/zemqccGdf" target="_blank" rel="noopener noreferrer">
-      <img src="discord_qr.jpeg" alt="Discord invite QR code">
+    <a href="${STATIC_INVITE_URL}" target="_blank" rel="noopener noreferrer">
+      <img src="${STATIC_INVITE_QR}" alt="Discord invite QR code">
     </a>
     <div class="encore-text">
       <b>STAY FOR THE ENCORE</b>
       Join the team on Discord — help shape what happens after the credits roll.<br>
-      <a href="https://discord.gg/zemqccGdf" target="_blank" rel="noopener noreferrer" class="encore-link">discord.gg/zemqccGdf →</a>
+      <a href="${STATIC_INVITE_URL}" target="_blank" rel="noopener noreferrer" class="encore-link">discord.gg/zemqccGdf →</a>
     </div>
   </div>`;
+
+// Discord invite shown only after a win.
+const ENCORE_HTML = `
+  <div class="encore" id="encoreInvite">
+    <div class="encore-qr" id="encoreQr" aria-label="Discord invite QR code"></div>
+    <div class="encore-text">
+      <b>STAY FOR THE ENCORE</b>
+      <span id="encoreCopy">Minting a fresh Discord invite...</span><br>
+      <a href="${STATIC_INVITE_URL}" target="_blank" rel="noopener noreferrer" class="encore-link" id="encoreLink">Generating invite...</a>
+    </div>
+  </div>`;
+
+async function loadWinInvite() {
+  const qrNode = document.getElementById('encoreQr');
+  const linkNode = document.getElementById('encoreLink');
+  const copyNode = document.getElementById('encoreCopy');
+  const inviteNode = document.getElementById('encoreInvite');
+  if (!qrNode || !linkNode || !copyNode || !inviteNode) return;
+
+  try {
+    const resp = await fetch(WIN_INVITE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    const data = await resp.json();
+    if (!data || typeof data.invite_url !== 'string' || !data.invite_url) {
+      throw new Error('Missing invite_url');
+    }
+    if (!window.QRCode) throw new Error('QRCode library unavailable');
+
+    const inviteUrl = data.invite_url;
+    copyNode.textContent = 'Join the team on Discord — help shape what happens after the credits roll.';
+    linkNode.href = inviteUrl;
+    linkNode.textContent = inviteUrl.replace(/^https?:\/\//, '') + ' →';
+    qrNode.innerHTML = '';
+    new QRCode(qrNode, {
+      text: inviteUrl,
+      width: 76,
+      height: 76,
+      colorDark: '#000000',
+      colorLight: '#ffffff'
+    });
+  } catch (error) {
+    console.warn('[win-invite] Dynamic invite fetch failed — falling back to static invite.', error);
+    inviteNode.outerHTML = STATIC_ENCORE_HTML;
+  }
+}
 
 // ─── Overlay Screens ───
 function showOverlay(title, body, btn, extra) {
@@ -911,6 +965,7 @@ function loop() {
         'AGAIN',
         ENCORE_HTML
       );
+      loadWinInvite();
     } else if (state === 'lose') {
       showOverlay(
         '🟣 CAUGHT',
