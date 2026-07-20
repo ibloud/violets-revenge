@@ -31,6 +31,7 @@ const LOBBY_ROLE_NAME = 'Lobby';
 const LOBBY_CHANNEL_NAME = 'the-lobby';
 const RULES_CHANNEL_NAME = 'server-rules';
 const HOW_TO_PLAY_CHANNEL_NAME = 'how-to-play';
+const CONTENT_WARNING_CHANNEL_NAME = 'content-warning';
 
 if (!TOKEN || !CLIENT_ID || !GUILD_ID) {
   console.error('Missing required env vars: JS_BOT_TOKEN, JS_BOT_CLIENT_ID, GUILD_ID');
@@ -68,13 +69,15 @@ client.on('guildMemberAdd', async (member) => {
   const lobbyChannel = member.guild.channels.cache.find((c) => c.name === LOBBY_CHANNEL_NAME);
   const rulesChannel = member.guild.channels.cache.find((c) => c.name === RULES_CHANNEL_NAME);
   const howToChannel = member.guild.channels.cache.find((c) => c.name === HOW_TO_PLAY_CHANNEL_NAME);
+  const contentWarningChannel = member.guild.channels.cache.find((c) => c.name === CONTENT_WARNING_CHANNEL_NAME);
 
   if (lobbyChannel) {
     const rulesLine = rulesChannel ? `<#${rulesChannel.id}>` : '#server-rules';
     const howToLine = howToChannel ? `<#${howToChannel.id}>` : '#how-to-play';
+    const cwLine = contentWarningChannel ? `<#${contentWarningChannel.id}>` : '#content-warning';
     await lobbyChannel.send(
-      `Welcome, <@${member.id}>. You're in the lobby for now — read ${rulesLine} and ${howToLine}, ` +
-      `then use \`/claim\` with the code from your HTML game win screen to go further in.`
+      `Welcome, <@${member.id}>. You're in the lobby for now — read ${cwLine}, ${rulesLine}, and ${howToLine} ` +
+      `to get oriented, then head over and get playing.`
     ).catch(() => {});
   }
 });
