@@ -2,6 +2,9 @@
  * INTAKE FILE — screening questionnaire
  * ──────────────────────────────────────
  * /intake opens a modal for POI users and sends answers to mod review.
+ *
+ * Looks up roles/channels BY NAME (not ID). Names must match exactly
+ * (case-sensitive) what's already in the server.
  */
 
 'use strict';
@@ -17,10 +20,9 @@ const {
   ButtonStyle,
 } = require('discord.js');
 
-// ── Config — TODO: replace placeholders ──
-const REVIEW_CHANNEL_ID = 'PUT_MOD_REVIEW_CHANNEL_ID_HERE';
-const GRANTED_ROLE_ID = 'PUT_TALKER_OR_PLAYTESTER_ROLE_ID_HERE';
-const POI_ROLE_ID = 'PUT_PERSON_OF_INTEREST_ROLE_ID_HERE'; // who's allowed to run /intake
+const REVIEW_CHANNEL_NAME = 'the-intake-file';
+const GRANTED_ROLE_NAME = 'Playtester';
+const POI_ROLE_NAME = 'Person of Interest';
 
 const QUESTIONS = [
   { id: 'business', label: 'State your business in the morgue.', style: TextInputStyle.Paragraph },
@@ -36,9 +38,15 @@ const command = new SlashCommandBuilder()
 
 function registerIntake(client) {
   client.on('interactionCreate', async (interaction) => {
-    // 1) /intake → open the modal
     if (interaction.isChatInputCommand() && interaction.commandName === 'intake') {
-      if (POI_ROLE_ID && !interaction.member.roles.cache.has(POI_ROLE_ID)) {
+      const guild = interaction.guild;
+      const poiRole = guild.roles.cache.find((r) => r.name === POI_ROLE_NAME);
+
+      if (!poiRole) {
+        console.error(`intake-modal: missing role — POI found: ${!!poiRole}`);
+        return interaction.reply({ content: 'Something is misconfigured on this end — a mod has been notified.', ephemeral: true });
+      }
+      if (!interaction.member.roles.cache.has(poiRole.id)) {
         return interaction.reply({
           content: 'The file is sealed until you’ve cleared the lobby.',
           ephemeral: true,
@@ -60,7 +68,6 @@ function registerIntake(client) {
       return interaction.showModal(modal);
     }
 
-    // 2) Modal submitted → post embed to mod review channel
     if (interaction.isModalSubmit() && interaction.customId === 'intakeModal') {
       const answers = QUESTIONS.map((q) => ({
         name: q.label,
@@ -79,7 +86,11 @@ function registerIntake(client) {
         new ButtonBuilder().setCustomId(`intake_reject_${interaction.user.id}`).setLabel('Reject').setStyle(ButtonStyle.Danger)
       );
 
-      const reviewChannel = await interaction.client.channels.fetch(REVIEW_CHANNEL_ID);
+      const reviewChannel = interaction.guild.channels.cache.find((c) => c.name === REVIEW_CHANNEL_NAME);
+      if (!reviewChannel) {
+        console.error(`intake-modal: missing channel — #${REVIEW_CHANNEL_NAME} not found`);
+        return interaction.reply({ content: 'Something is misconfigured on this end — a mod has been notified.', ephemeral: true });
+      }
       await reviewChannel.send({ embeds: [embed], components: [buttons] });
 
       return interaction.reply({
@@ -88,14 +99,14 @@ function registerIntake(client) {
       });
     }
 
-    // 3) Mod clicks Approve/Reject
     if (interaction.isButton() && interaction.customId.startsWith('intake_')) {
       const [, action, applicantId] = interaction.customId.split('_');
       const guild = interaction.guild;
+      const grantedRole = guild.roles.cache.find((r) => r.name === GRANTED_ROLE_NAME);
       const applicant = await guild.members.fetch(applicantId).catch(() => null);
 
-      if (action === 'approve' && applicant) {
-        await applicant.roles.add(GRANTED_ROLE_ID).catch(() => null);
+      if (action === 'approve' && applicant && grantedRole) {
+        await applicant.roles.add(grantedRole.id).catch(() => null);
         await applicant.send('Your statement checked out. Welcome in.').catch(() => null);
       } else if (applicant) {
         await applicant.send('Your statement didn’t clear review this time.').catch(() => null);
