@@ -50,21 +50,24 @@ REQUEST_ATTEMPTS = {}
 
 
 def client_ip():
-    forwarded = request.headers.get("X-Forwarded-For", "")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
     return request.remote_addr or "unknown"
 
 
 def within_rate_limit(ip_address):
     now = int(time.time())
+    for known_ip in list(REQUEST_ATTEMPTS.keys()):
+        recent = [ts for ts in REQUEST_ATTEMPTS[known_ip] if now - ts <= RATE_LIMIT_WINDOW_SECONDS]
+        if recent:
+            REQUEST_ATTEMPTS[known_ip] = recent
+        else:
+            del REQUEST_ATTEMPTS[known_ip]
+
     timestamps = REQUEST_ATTEMPTS.get(ip_address, [])
-    valid = [ts for ts in timestamps if now - ts <= RATE_LIMIT_WINDOW_SECONDS]
-    if len(valid) >= RATE_LIMIT_MAX_REQUESTS:
-        REQUEST_ATTEMPTS[ip_address] = valid
+    if len(timestamps) >= RATE_LIMIT_MAX_REQUESTS:
+        REQUEST_ATTEMPTS[ip_address] = timestamps
         return False
-    valid.append(now)
-    REQUEST_ATTEMPTS[ip_address] = valid
+    timestamps.append(now)
+    REQUEST_ATTEMPTS[ip_address] = timestamps
     return True
 
 
