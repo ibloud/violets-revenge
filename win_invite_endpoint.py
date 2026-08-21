@@ -20,6 +20,7 @@ import os
 import hmac
 import time
 import logging
+from threading import Lock
 import requests
 from requests.exceptions import RequestException
 from flask import Flask, jsonify, request
@@ -47,6 +48,7 @@ INVITE_MAX_USES = 1  # single use — becomes invalid after one join
 RATE_LIMIT_WINDOW_SECONDS = 60 * 60
 RATE_LIMIT_MAX_REQUESTS = 5
 REQUEST_ATTEMPTS = {}
+REQUEST_ATTEMPTS_LOCK = Lock()
 
 
 def client_ip():
@@ -55,20 +57,21 @@ def client_ip():
 
 def within_rate_limit(ip_address):
     now = int(time.time())
-    for known_ip in list(REQUEST_ATTEMPTS.keys()):
-        recent = [ts for ts in REQUEST_ATTEMPTS[known_ip] if now - ts <= RATE_LIMIT_WINDOW_SECONDS]
-        if recent:
-            REQUEST_ATTEMPTS[known_ip] = recent
-        else:
-            del REQUEST_ATTEMPTS[known_ip]
+    with REQUEST_ATTEMPTS_LOCK:
+        for known_ip in list(REQUEST_ATTEMPTS.keys()):
+            recent = [ts for ts in REQUEST_ATTEMPTS[known_ip] if now - ts <= RATE_LIMIT_WINDOW_SECONDS]
+            if recent:
+                REQUEST_ATTEMPTS[known_ip] = recent
+            else:
+                del REQUEST_ATTEMPTS[known_ip]
 
-    timestamps = REQUEST_ATTEMPTS.get(ip_address, [])
-    if len(timestamps) >= RATE_LIMIT_MAX_REQUESTS:
+        timestamps = REQUEST_ATTEMPTS.get(ip_address, [])
+        if len(timestamps) >= RATE_LIMIT_MAX_REQUESTS:
+            REQUEST_ATTEMPTS[ip_address] = timestamps
+            return False
+        timestamps.append(now)
         REQUEST_ATTEMPTS[ip_address] = timestamps
-        return False
-    timestamps.append(now)
-    REQUEST_ATTEMPTS[ip_address] = timestamps
-    return True
+        return True
 
 
 def is_authorized():
