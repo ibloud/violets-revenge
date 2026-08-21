@@ -78,7 +78,9 @@ client.on('guildMemberAdd', async (member) => {
     await lobbyChannel.send(
       `Welcome, <@${member.id}>. You're in the lobby for now — read ${cwLine}, ${rulesLine}, and ${howToLine} ` +
       `to get oriented, then head over and get playing.`
-    ).catch(() => {});
+    ).catch((err) => {
+      console.error(`guildMemberAdd: failed to send lobby welcome for ${member.user.tag}:`, err);
+    });
   }
 });
 

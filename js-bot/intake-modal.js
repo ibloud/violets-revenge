@@ -18,11 +18,13 @@ const {
   EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
+  PermissionsBitField,
 } = require('discord.js');
 
 const REVIEW_CHANNEL_NAME = 'the-intake-file';
 const GRANTED_ROLE_NAME = 'Playtester';
 const POI_ROLE_NAME = 'Person of Interest';
+const MOD_ROLE_ID = process.env.MOD_ROLE_ID;
 
 const QUESTIONS = [
   { id: 'business', label: 'State your business in the morgue.', style: TextInputStyle.Paragraph },
@@ -100,20 +102,60 @@ function registerIntake(client) {
     }
 
     if (interaction.isButton() && interaction.customId.startsWith('intake_')) {
+      const hasManageRoles = interaction.memberPermissions?.has(PermissionsBitField.Flags.ManageRoles);
+      const hasModRole = !!(MOD_ROLE_ID && interaction.member?.roles?.cache?.has(MOD_ROLE_ID));
+      if (!hasManageRoles && !hasModRole) {
+        return interaction.reply({
+          content: 'You do not have permission to review intake submissions.',
+          ephemeral: true,
+        });
+      }
+
       const [, action, applicantId] = interaction.customId.split('_');
       const guild = interaction.guild;
       const grantedRole = guild.roles.cache.find((r) => r.name === GRANTED_ROLE_NAME);
-      const applicant = await guild.members.fetch(applicantId).catch(() => null);
+      let applicant = null;
+      try {
+        applicant = await guild.members.fetch(applicantId);
+      } catch (error) {
+        console.error(`intake-modal: failed to fetch applicant ${applicantId}:`, error);
+      }
 
-      if (action === 'approve' && applicant && grantedRole) {
-        await applicant.roles.add(grantedRole.id).catch(() => null);
-        await applicant.send('Your statement checked out. Welcome in.').catch(() => null);
+      let resultSummary = '';
+      if (action === 'approve') {
+        if (!applicant) {
+          resultSummary = 'Approve failed: applicant could not be found.';
+        } else if (!grantedRole) {
+          resultSummary = `Approve failed: role "${GRANTED_ROLE_NAME}" was not found.`;
+        } else {
+          try {
+            await applicant.roles.add(grantedRole.id);
+            resultSummary = 'Approved and role assigned.';
+          } catch (error) {
+            console.error(`intake-modal: failed to assign role ${grantedRole.id} to ${applicant.id}:`, error);
+            resultSummary = 'Approve failed: could not assign role.';
+          }
+
+          try {
+            await applicant.send('Your statement checked out. Welcome in.');
+          } catch (error) {
+            console.error(`intake-modal: failed to DM applicant ${applicant.id}:`, error);
+          }
+        }
       } else if (applicant) {
-        await applicant.send('Your statement didn’t clear review this time.').catch(() => null);
+        try {
+          await applicant.send('Your statement didn’t clear review this time.');
+          resultSummary = 'Rejected and applicant notified.';
+        } catch (error) {
+          console.error(`intake-modal: failed to DM rejected applicant ${applicant.id}:`, error);
+          resultSummary = 'Rejected, but failed to notify applicant by DM.';
+        }
+      } else {
+        resultSummary = 'Reject applied, but applicant could not be found.';
       }
 
       const updated = EmbedBuilder.from(interaction.message.embeds[0]).setFooter({
-        text: `${action === 'approve' ? 'Approved' : 'Rejected'} by ${interaction.user.tag}`,
+        text: `${action === 'approve' ? 'Approved' : 'Rejected'} by ${interaction.user.tag} • ${resultSummary}`,
       });
       await interaction.update({ embeds: [updated], components: [] });
     }

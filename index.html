@@ -872,6 +872,8 @@ const CONTROLS_HTML = `
 const STATIC_INVITE_URL = 'https://discord.gg/zemqccGdf';
 const STATIC_INVITE_QR = 'discord_qr.jpeg';
 const WIN_INVITE_ENDPOINT = window.VIOLET_WIN_INVITE_ENDPOINT || '/win-invite';
+const WIN_INVITE_API_TOKEN = window.VIOLET_WIN_INVITE_API_TOKEN || '';
+const ALLOWED_INVITE_HOSTS = new Set(['discord.gg', 'discord.com']);
 
 const STATIC_ENCORE_HTML = `
   <div class="encore">
@@ -904,9 +906,11 @@ async function loadWinInvite() {
   if (!qrNode || !linkNode || !copyNode || !inviteNode) return;
 
   try {
+    const headers = { 'Accept': 'application/json' };
+    if (WIN_INVITE_API_TOKEN) headers['X-API-Token'] = WIN_INVITE_API_TOKEN;
     const resp = await fetch(WIN_INVITE_ENDPOINT, {
       method: 'POST',
-      headers: { 'Accept': 'application/json' }
+      headers
     });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
@@ -916,7 +920,7 @@ async function loadWinInvite() {
     }
     if (!window.QRCode) throw new Error('QRCode library unavailable');
 
-    const inviteUrl = data.invite_url;
+    const inviteUrl = toSafeInviteUrl(data.invite_url);
     copyNode.textContent = 'Join the team on Discord — help shape what happens after the credits roll.';
     linkNode.href = inviteUrl;
     linkNode.textContent = inviteUrl.replace(/^https?:\/\//, '') + ' →';
@@ -932,6 +936,13 @@ async function loadWinInvite() {
     console.warn('[win-invite] Dynamic invite fetch failed — falling back to static invite.', error);
     inviteNode.outerHTML = STATIC_ENCORE_HTML;
   }
+}
+
+function toSafeInviteUrl(rawUrl) {
+  const parsed = new URL(rawUrl);
+  if (parsed.protocol !== 'https:') throw new Error('Invite URL must use HTTPS');
+  if (!ALLOWED_INVITE_HOSTS.has(parsed.hostname)) throw new Error(`Untrusted invite host: ${parsed.hostname}`);
+  return parsed.href;
 }
 
 // ─── Overlay Screens ───
