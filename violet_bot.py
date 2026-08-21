@@ -26,28 +26,48 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 VIOLET_EMOJI = "🟣"
 STATE_LOCK = asyncio.Lock()
 
-# --- Persistence Helpers (unchanged from original) ---
-def load_state():
-    if os.path.exists(STATE_FILE):
+# --- Persistence Helpers ---
+def load_state(filepath=None):
+    """Load game state from file with corruption tolerance.
+    
+    Args:
+        filepath: Path to state file. Defaults to STATE_FILE global.
+    
+    Returns:
+        Parsed state dict, or None if file missing/corrupted.
+    """
+    if filepath is None:
+        filepath = STATE_FILE
+    
+    if os.path.exists(filepath):
         try:
-            with open(STATE_FILE, 'r', encoding='utf-8') as f:
+            with open(filepath, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, OSError) as exc:
-            logging.error("Failed to load state from %s: %s", STATE_FILE, exc)
-            backup_file = f"{STATE_FILE}.corrupt.{int(time.time())}"
+            logging.error("Failed to load state from %s: %s", filepath, exc)
+            backup_file = f"{filepath}.corrupt.{int(time.time())}"
             try:
-                shutil.copy(STATE_FILE, backup_file)
+                shutil.copy(filepath, backup_file)
             except OSError:
                 pass
             return None
     return None
 
-def save_state(state):
-    state_dir = os.path.dirname(STATE_FILE) or "."
+def save_state(state, filepath=None):
+    """Save state atomically using tempfile + os.replace.
+    
+    Args:
+        state: Dict to serialize.
+        filepath: Path to state file. Defaults to STATE_FILE global.
+    """
+    if filepath is None:
+        filepath = STATE_FILE
+    
+    state_dir = os.path.dirname(filepath) or "."
     with tempfile.NamedTemporaryFile('w', dir=state_dir, delete=False, encoding='utf-8') as tmp:
         json.dump(state, tmp, indent=4)
         tmp_path = tmp.name
-    os.replace(tmp_path, STATE_FILE)
+    os.replace(tmp_path, filepath)
 
 def get_violet_response(action_card, target):
     responses = [
