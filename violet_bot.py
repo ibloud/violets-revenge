@@ -96,21 +96,17 @@ async def on_message(message):
     if channel_name not in AUTONOMOUS_CHANNELS:
         return
 
+    response_payload = None
     async with STATE_LOCK:
         state = load_state()
 
-    # No game running yet — Violet nudges without needing a command
-    if not state:
-        if random.random() < 0.15:  # don't spam every message
-            await message.channel.send(random.choice(IDLE_LINES))
-        return
-
-    # A game is running — if the message reads like a move, Violet reacts
-    # in character automatically instead of waiting for `!play`
-    if looks_like_a_move(message.content):
-        async with STATE_LOCK:
-            state = load_state()
-            if not state or state.get('turn') != TURN_VIOLET:
+        # No game running yet — Violet nudges without needing a command
+        if not state:
+            response_payload = "idle"
+        elif looks_like_a_move(message.content):
+            # A game is running — if the message reads like a move, Violet reacts
+            # in character automatically instead of waiting for `!play`
+            if state.get('turn') != TURN_VIOLET:
                 return
 
             violet_hand = state['board']['violet_hand']
@@ -118,30 +114,38 @@ async def on_message(message):
             violet_move = spades_diamonds[0] if spades_diamonds else (violet_hand[0] if violet_hand else None)
 
             if not violet_move:
-                no_cards = True
+                response_payload = "no_cards"
             else:
-                no_cards = False
                 state['board']['violet_hand'].remove(violet_move)
                 state['slab'] = violet_move
                 state['turn'] = TURN_OPPONENT
                 state['rp_pools']['opponent'] -= 1
                 save_state(state)
-                response = get_violet_response(violet_move, message.author.name)
-                slab = state['slab']
-                opponent_rp = state['rp_pools']['opponent']
-
-        if no_cards:
-            await message.channel.send("Violet has no cards left. The autopsy is complete.")
+                response_payload = {
+                    "response": get_violet_response(violet_move, message.author.name),
+                    "slab": state['slab'],
+                    "opponent_rp": state['rp_pools']['opponent'],
+                }
+        else:
             return
 
-        embed = discord.Embed(
-            title="**Autopsy Log Update**",
-            description=response,
-            color=0xe74c3c
-        )
-        embed.add_field(name="Current Slab", value=slab, inline=True)
-        embed.add_field(name="Opponent RP", value=opponent_rp, inline=True)
-        await message.channel.send(embed=embed)
+    if response_payload == "idle":
+        if random.random() < 0.15:  # don't spam every message
+            await message.channel.send(random.choice(IDLE_LINES))
+        return
+
+    if response_payload == "no_cards":
+        await message.channel.send("Violet has no cards left. The autopsy is complete.")
+        return
+
+    embed = discord.Embed(
+        title="**Autopsy Log Update**",
+        description=response_payload["response"],
+        color=0xe74c3c
+    )
+    embed.add_field(name="Current Slab", value=response_payload["slab"], inline=True)
+    embed.add_field(name="Opponent RP", value=response_payload["opponent_rp"], inline=True)
+    await message.channel.send(embed=embed)
 
 
 # --- Bot Commands (unchanged, still work as fallback) ---
@@ -178,31 +182,18 @@ async def play_card(ctx, card: str):
     """Allows a player to play a card. Usage: !play ♠A"""
     async with STATE_LOCK:
         state = load_state()
-    if not state:
-        await ctx.send("The slab is empty. Initialize a game first using `!start_game`.")
-        return
-
-    if state['turn'] != TURN_OPPONENT:
-        await ctx.send("It is not your turn. The examiner is preparing the slab.")
-        return
-    if card not in state['board']['opponent_hand']:
-        await ctx.send("Invalid card. You do not possess that evidence.")
-        return
-
-    async with STATE_LOCK:
-        latest_state = load_state()
-        if not latest_state:
-            result_message = "Game state was reset. Please start a new game with `!start_game`."
-        elif latest_state['turn'] != TURN_OPPONENT:
+        if not state:
+            result_message = "The slab is empty. Initialize a game first using `!start_game`."
+        elif state['turn'] != TURN_OPPONENT:
             result_message = "It is not your turn. The examiner is preparing the slab."
-        elif card not in latest_state['board']['opponent_hand']:
+        elif card not in state['board']['opponent_hand']:
             result_message = "Invalid card. You do not possess that evidence."
         else:
-            latest_state['board']['opponent_hand'].remove(card)
-            latest_state['slab'] = card
-            latest_state['turn'] = TURN_VIOLET
-            latest_state['log'] = f"Opponent played {card}."
-            save_state(latest_state)
+            state['board']['opponent_hand'].remove(card)
+            state['slab'] = card
+            state['turn'] = TURN_VIOLET
+            state['log'] = f"Opponent played {card}."
+            save_state(state)
             result_message = f"Move recorded: {card}. Awaiting Violet's response."
 
     await ctx.send(result_message)
