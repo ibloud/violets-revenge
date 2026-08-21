@@ -107,25 +107,25 @@ async def on_message(message):
             # A game is running — if the message reads like a move, Violet reacts
             # in character automatically instead of waiting for `!play`
             if state.get('turn') != TURN_VIOLET:
-                return
-
-            violet_hand = state['board']['violet_hand']
-            spades_diamonds = [c for c in violet_hand if '♠' in c or '♦' in c]
-            violet_move = spades_diamonds[0] if spades_diamonds else (violet_hand[0] if violet_hand else None)
-
-            if not violet_move:
-                response_payload = "no_cards"
+                response_payload = "ignore"
             else:
-                state['board']['violet_hand'].remove(violet_move)
-                state['slab'] = violet_move
-                state['turn'] = TURN_OPPONENT
-                state['rp_pools']['opponent'] -= 1
-                save_state(state)
-                response_payload = {
-                    "response": get_violet_response(violet_move, message.author.name),
-                    "slab": state['slab'],
-                    "opponent_rp": state['rp_pools']['opponent'],
-                }
+                violet_hand = state['board']['violet_hand']
+                spades_diamonds = [c for c in violet_hand if '♠' in c or '♦' in c]
+                violet_move = spades_diamonds[0] if spades_diamonds else (violet_hand[0] if violet_hand else None)
+
+                if not violet_move:
+                    response_payload = "no_cards"
+                else:
+                    state['board']['violet_hand'].remove(violet_move)
+                    state['slab'] = violet_move
+                    state['turn'] = TURN_OPPONENT
+                    state['rp_pools']['opponent'] -= 1
+                    save_state(state)
+                    response_payload = {
+                        "response": get_violet_response(violet_move, message.author.name),
+                        "slab": state['slab'],
+                        "opponent_rp": state['rp_pools']['opponent'],
+                    }
         else:
             return
 
@@ -136,6 +136,9 @@ async def on_message(message):
 
     if response_payload == "no_cards":
         await message.channel.send("Violet has no cards left. The autopsy is complete.")
+        return
+
+    if response_payload == "ignore":
         return
 
     embed = discord.Embed(
