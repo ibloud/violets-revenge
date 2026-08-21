@@ -65,7 +65,15 @@ function registerThreshold(client) {
     const ageOk = ageDays >= MIN_ACCOUNT_AGE_DAYS;
 
     if (codeOk && ageOk) {
-      await member.roles.add(poiRole.id).catch(() => null);
+      try {
+        await member.roles.add(poiRole.id);
+      } catch (error) {
+        console.error(`threshold-gate: failed to assign POI role to ${interaction.user.tag}:`, error);
+        return interaction.reply({
+          content: 'Your claim checked out, but role assignment failed. Please notify a moderator.',
+          ephemeral: true,
+        });
+      }
       return interaction.reply({
         content: 'The code checks out. You’re through — the intake file is open to you now.',
         ephemeral: true,

@@ -6,7 +6,7 @@ showing a permanent hardcoded link.
 
 Runs as a tiny Flask app alongside the existing Python bot (same Railway
 service, or a second small service — either works). Needs the bot's
-token and the ID of the channel it should invite people into.
+token, channel ID, and a shared API secret.
 
 Requires the bot to have "Create Instant Invite" permission on that
 channel (Server Settings → Roles → your bot's role, or per-channel
@@ -17,16 +17,96 @@ Run:     python win_invite_endpoint.py
 """
 
 import os
+import hmac
+import time
+import logging
+from threading import Lock
 import requests
-from flask import Flask, jsonify
+from requests.exceptions import RequestException
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-BOT_TOKEN = os.environ["DISCORD_TOKEN"]  # reuse the same env var the bot already uses
-LOBBY_CHANNEL_ID = os.environ["LOBBY_CHANNEL_ID"]  # TODO: set in Railway/service env
+REQUIRED_ENV_VARS = ["DISCORD_BOT_TOKEN", "LOBBY_CHANNEL_ID", "INVITE_API_SECRET"]
+
+
+def load_config():
+    missing = [var for var in REQUIRED_ENV_VARS if not os.getenv(var)]
+    if missing:
+        raise RuntimeError(f"Missing required environment variables: {', '.join(missing)}")
+    return {var: os.getenv(var) for var in REQUIRED_ENV_VARS}
+
+
+try:
+    CONFIG = load_config()
+except RuntimeError as exc:
+    app.logger.error("Configuration error: %s", exc)
+    CONFIG = {}
 
 INVITE_MAX_AGE_SECONDS = 60 * 60 * 48  # invite itself expires in 48h if unused
 INVITE_MAX_USES = 1  # single use — becomes invalid after one join
+RATE_LIMIT_WINDOW_SECONDS = 60 * 60
+RATE_LIMIT_MAX_REQUESTS = 5
+REQUEST_ATTEMPTS = {}
+REQUEST_ATTEMPTS_LOCK = Lock()
+
+
+def client_ip():
+    return request.remote_addr or "unknown"
+
+
+def within_rate_limit(ip_address):
+    now = int(time.time())
+    with REQUEST_ATTEMPTS_LOCK:
+        for known_ip in list(REQUEST_ATTEMPTS.keys()):
+            recent = [ts for ts in REQUEST_ATTEMPTS[known_ip] if now - ts <= RATE_LIMIT_WINDOW_SECONDS]
+            if recent:
+                REQUEST_ATTEMPTS[known_ip] = recent
+            else:
+                del REQUEST_ATTEMPTS[known_ip]
+
+        timestamps = REQUEST_ATTEMPTS.get(ip_address, [])
+        if len(timestamps) >= RATE_LIMIT_MAX_REQUESTS:
+            REQUEST_ATTEMPTS[ip_address] = timestamps
+            return False
+        timestamps.append(now)
+        REQUEST_ATTEMPTS[ip_address] = timestamps
+        return True
+
+
+def is_authorized():
+    provided = request.headers.get("X-API-Token", "")
+    expected = CONFIG.get("INVITE_API_SECRET", "")
+    if not provided or not expected:
+        return False
+    return hmac.compare_digest(provided, expected)
+
+
+def create_discord_invite():
+    bot_token = CONFIG["DISCORD_BOT_TOKEN"]
+    lobby_channel_id = CONFIG["LOBBY_CHANNEL_ID"]
+    url = f"https://discord.com/api/v10/channels/{lobby_channel_id}/invites"
+
+    try:
+        resp = requests.post(
+            url,
+            headers={"Authorization": f"Bot {bot_token}", "Content-Type": "application/json"},
+            json={
+                "max_age": INVITE_MAX_AGE_SECONDS,
+                "max_uses": INVITE_MAX_USES,
+                "unique": True,
+            },
+            timeout=5.0,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        code = data.get("code")
+        if not isinstance(code, str) or not code:
+            raise ValueError(f"Unexpected Discord invite response schema: {data}")
+        return f"https://discord.gg/{code}"
+    except (RequestException, ValueError) as exc:
+        logging.error("Discord invite creation failed: %s", exc)
+        return None
 
 
 @app.route("/win-invite", methods=["POST"])
@@ -37,24 +117,19 @@ def win_invite():
     client-side (e.g. with a small JS QR library — no need to ship a
     static image anymore).
     """
-    resp = requests.post(
-        f"https://discord.com/api/v10/channels/{LOBBY_CHANNEL_ID}/invites",
-        headers={"Authorization": f"Bot {BOT_TOKEN}"},
-        json={
-            "max_age": INVITE_MAX_AGE_SECONDS,
-            "max_uses": INVITE_MAX_USES,
-            "unique": True,  # forces a brand-new code instead of reusing a cached one
-        },
-        timeout=10,
-    )
+    if not CONFIG:
+        return jsonify({"error": "Service is not configured"}), 503
+    if not is_authorized():
+        return jsonify({"error": "Unauthorized"}), 401
 
-    if resp.status_code != 200:
-        # Don't leak Discord's raw error to the client; log it server-side instead
-        app.logger.error("Discord invite creation failed: %s %s", resp.status_code, resp.text)
+    ip_address = client_ip()
+    if not within_rate_limit(ip_address):
+        return jsonify({"error": "Rate limit exceeded"}), 429
+
+    invite_url = create_discord_invite()
+    if not invite_url:
         return jsonify({"error": "Could not create invite"}), 502
-
-    code = resp.json()["code"]
-    return jsonify({"invite_url": f"https://discord.gg/{code}"})
+    return jsonify({"invite_url": invite_url})
 
 
 if __name__ == "__main__":

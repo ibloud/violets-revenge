@@ -24,8 +24,9 @@ fully independent of Violet's own bot.
    - `JS_BOT_TOKEN` — the bot token from step 2
    - `JS_BOT_CLIENT_ID` — the application's client ID
    - `GUILD_ID` — Violet's Revenge server ID
-6. Fill in placeholder IDs/constants inside `threshold-gate.js` and
-   `intake-modal.js` (role IDs, channel IDs, the actual win-screen code)
+   - `WIN_CODE` — the code shown on the game win screen
+   - `MOD_ROLE_ID` (optional) — moderator role ID allowed to approve/reject intake
+6. Ensure role/channel names in code match your server naming
 7. `npm install && npm start`
 
 ## Files

@@ -1,12 +1,19 @@
 import discord
 from discord.ext import commands
+import asyncio
 import json
+import logging
 import os
 import random
+import shutil
+import tempfile
+import time
 
 # --- Configuration ---
 TOKEN = os.getenv('DISCORD_BOT_TOKEN') or 'YOUR_BOT_TOKEN_HERE'
 STATE_FILE = 'game_state.json'
+TURN_OPPONENT = 'opponent'
+TURN_VIOLET = 'violet'
 
 # Channels where Violet listens and reacts on her own, no ! command required
 AUTONOMOUS_CHANNELS = ["pennywise-vs-violet", "violets-card-table"]
@@ -17,17 +24,30 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 VIOLET_EMOJI = "🟣"
+STATE_LOCK = asyncio.Lock()
 
 # --- Persistence Helpers (unchanged from original) ---
 def load_state():
     if os.path.exists(STATE_FILE):
-        with open(STATE_FILE, 'r') as f:
-            return json.load(f)
+        try:
+            with open(STATE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as exc:
+            logging.error("Failed to load state from %s: %s", STATE_FILE, exc)
+            backup_file = f"{STATE_FILE}.corrupt.{int(time.time())}"
+            try:
+                shutil.copy(STATE_FILE, backup_file)
+            except OSError:
+                pass
+            return None
     return None
 
 def save_state(state):
-    with open(STATE_FILE, 'w') as f:
-        json.dump(state, f, indent=4)
+    state_dir = os.path.dirname(STATE_FILE) or "."
+    with tempfile.NamedTemporaryFile('w', dir=state_dir, delete=False, encoding='utf-8') as tmp:
+        json.dump(state, tmp, indent=4)
+        tmp_path = tmp.name
+    os.replace(tmp_path, STATE_FILE)
 
 def get_violet_response(action_card, target):
     responses = [
@@ -76,57 +96,79 @@ async def on_message(message):
     if channel_name not in AUTONOMOUS_CHANNELS:
         return
 
-    state = load_state()
+    response_payload = None
+    async with STATE_LOCK:
+        state = load_state()
 
-    # No game running yet — Violet nudges without needing a command
-    if not state:
+        # No game running yet — Violet nudges without needing a command
+        if not state:
+            response_payload = "idle"
+        elif looks_like_a_move(message.content):
+            # A game is running — if the message reads like a move, Violet reacts
+            # in character automatically instead of waiting for `!play`
+            if state.get('turn') != TURN_VIOLET:
+                response_payload = "ignore"
+            else:
+                violet_hand = state['board']['violet_hand']
+                spades_diamonds = [c for c in violet_hand if '♠' in c or '♦' in c]
+                violet_move = spades_diamonds[0] if spades_diamonds else (violet_hand[0] if violet_hand else None)
+
+                if not violet_move:
+                    response_payload = "no_cards"
+                else:
+                    state['board']['violet_hand'].remove(violet_move)
+                    state['slab'] = violet_move
+                    state['turn'] = TURN_OPPONENT
+                    state['rp_pools']['opponent'] -= 1
+                    save_state(state)
+                    response_payload = {
+                        "response": get_violet_response(violet_move, message.author.name),
+                        "slab": state['slab'],
+                        "opponent_rp": state['rp_pools']['opponent'],
+                    }
+        else:
+            return
+
+    if response_payload == "idle":
         if random.random() < 0.15:  # don't spam every message
             await message.channel.send(random.choice(IDLE_LINES))
         return
 
-    # A game is running — if the message reads like a move, Violet reacts
-    # in character automatically instead of waiting for `!play`
-    if looks_like_a_move(message.content) and state.get('turn') == 'opponent':
-        violet_hand = state['board']['violet_hand']
-        spades_diamonds = [c for c in violet_hand if '♠' in c or '♦' in c]
-        violet_move = spades_diamonds[0] if spades_diamonds else (violet_hand[0] if violet_hand else None)
+    if response_payload == "no_cards":
+        await message.channel.send("Violet has no cards left. The autopsy is complete.")
+        return
 
-        if violet_move:
-            state['board']['violet_hand'].remove(violet_move)
-            state['slab'] = violet_move
-            state['turn'] = 'opponent'
-            state['rp_pools']['opponent'] -= 1
-            save_state(state)
+    if response_payload == "ignore":
+        return
 
-            response = get_violet_response(violet_move, message.author.name)
-            embed = discord.Embed(
-                title="**Autopsy Log Update**",
-                description=response,
-                color=0xe74c3c
-            )
-            embed.add_field(name="Current Slab", value=state['slab'], inline=True)
-            embed.add_field(name="Opponent RP", value=state['rp_pools']['opponent'], inline=True)
-            await message.channel.send(embed=embed)
-        else:
-            await message.channel.send("Violet has no cards left. The autopsy is complete.")
+    embed = discord.Embed(
+        title="**Autopsy Log Update**",
+        description=response_payload["response"],
+        color=0xe74c3c
+    )
+    embed.add_field(name="Current Slab", value=response_payload["slab"], inline=True)
+    embed.add_field(name="Opponent RP", value=response_payload["opponent_rp"], inline=True)
+    await message.channel.send(embed=embed)
 
 
 # --- Bot Commands (unchanged, still work as fallback) ---
 @bot.command(name='start_game')
 async def start_game(ctx, opponent: str):
     """Initializes a new game of Veiled Dominion. Usage: !start_game @opponent"""
-    state = {
-        "game": "Veiled Dominion",
-        "turn": opponent,
-        "board": {
-            "violet_hand": ["♠8", "♦6", "♣10", "♥7"],
-            "opponent_hand": ["♣2", "♥9", "♠A", "♦4"]
-        },
-        "rp_pools": {"violet": 10, "opponent": 10},
-        "slab": None,
-        "log": "The morgue is cold. The nightingale is singing."
-    }
-    save_state(state)
+    async with STATE_LOCK:
+        state = {
+            "game": "Veiled Dominion",
+            "opponent": opponent,
+            "turn": TURN_OPPONENT,
+            "board": {
+                "violet_hand": ["♠8", "♦6", "♣10", "♥7"],
+                "opponent_hand": ["♣2", "♥9", "♠A", "♦4"]
+            },
+            "rp_pools": {"violet": 10, "opponent": 10},
+            "slab": None,
+            "log": "The morgue is cold. The nightingale is singing."
+        }
+        save_state(state)
 
     embed = discord.Embed(
         title="**SUBJECT: ACTIVE PURGE**",
@@ -141,23 +183,23 @@ async def start_game(ctx, opponent: str):
 @bot.command(name='play')
 async def play_card(ctx, card: str):
     """Allows a player to play a card. Usage: !play ♠A"""
-    state = load_state()
-    if not state:
-        await ctx.send("The slab is empty. Initialize a game first using `!start_game`.")
-        return
-
-    if state['turn'] == 'opponent':
-        if card in state['board']['opponent_hand']:
+    async with STATE_LOCK:
+        state = load_state()
+        if not state:
+            result_message = "The slab is empty. Initialize a game first using `!start_game`."
+        elif state['turn'] != TURN_OPPONENT:
+            result_message = "It is not your turn. The examiner is preparing the slab."
+        elif card not in state['board']['opponent_hand']:
+            result_message = "Invalid card. You do not possess that evidence."
+        else:
             state['board']['opponent_hand'].remove(card)
             state['slab'] = card
-            state['turn'] = 'violet'
+            state['turn'] = TURN_VIOLET
             state['log'] = f"Opponent played {card}."
             save_state(state)
-            await ctx.send(f"Move recorded: {card}. Awaiting Violet's response.")
-        else:
-            await ctx.send("Invalid card. You do not possess that evidence.")
-    else:
-        await ctx.send("It is not your turn. The examiner is preparing the slab.")
+            result_message = f"Move recorded: {card}. Awaiting Violet's response."
+
+    await ctx.send(result_message)
 
 
 # Run the bot
