@@ -1,0 +1,32 @@
+name: Wiki Link Checker
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+  gollum:
+
+permissions:
+  contents: read
+
+jobs:
+  check-wiki-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone wiki repository
+        run: git clone https://github.com/${{ github.repository }}.wiki.git wiki
+
+      - name: Install markdown-link-check
+        run: npm install -g markdown-link-check
+
+      - name: Check links in all markdown files
+        run: |
+          BROKEN=0
+          while read -r file; do
+            echo "Checking: $file"
+            markdown-link-check "$file" --verbose || BROKEN=1
+          done < <(find wiki -name "*.md")
+          if [ "${BROKEN}" = "1" ]; then
+            echo "::error::Broken links were found in the wiki. See output above for details."
+            exit 1
+          fi
