@@ -354,7 +354,7 @@ function randomFloorPos(minDist, fromX, fromY) {
 
 function initGame() {
   violet = {
-    x: 9.5*TILE, y: 8.5*TILE, r: 14, spd: 1.6, chaseSpd: 2.2, huntSpd: 3.0,
+    x: 9.5*TILE, y: 8.5*TILE, r: 14, spd: 1.4, chaseSpd: 1.9, huntSpd: 2.4,
     state: 'patrol', tx: 10*TILE, ty: 7*TILE, lmx: 0, lmy: 0,
     boost: 0, trapCD: 0, caughtFlash: 0
   };
@@ -576,7 +576,7 @@ function updateViolet() {
 
   // Automatic panic burst: Violet closing in during a chase triggers a brief
   // player speed boost with no extra input required (accessibility constraint).
-  if (violet.state === 'chase' && dist < 55 && player.panicCD <= 0 && player.panicBoost <= 0) {
+  if (violet.state === 'chase' && dist < 80 && player.panicCD <= 0 && player.panicBoost <= 0) {
     player.panicBoost = 90;
     player.panicCD = 360;
     flashGold = 25;
@@ -691,12 +691,21 @@ function render() {
         ctx.moveTo(x + TILE/2, y); ctx.lineTo(x + TILE/2, y + TILE/2);
         ctx.stroke();
       } else {
-        ctx.fillStyle = '#0c0a12';
+        // Morgue floor tile
+        ctx.fillStyle = c % 2 === r % 2 ? '#0e0b16' : '#0a0812';
         ctx.fillRect(x, y, TILE, TILE);
-        // Floor grid
-        ctx.strokeStyle = '#100d18';
+        ctx.strokeStyle = '#1a1425';
         ctx.lineWidth = 0.5;
         ctx.strokeRect(x, y, TILE, TILE);
+        // Subtle grout lines
+        if (c > 0 && r > 0) {
+          ctx.strokeStyle = '#110e1a';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x, y + TILE/2); ctx.lineTo(x + TILE, y + TILE/2);
+          ctx.moveTo(x + TILE/2, y); ctx.lineTo(x + TILE/2, y + TILE);
+          ctx.stroke();
+        }
       }
     }
   }
@@ -766,53 +775,89 @@ function render() {
   // Draw player (The Guilty)
   ctx.save();
   ctx.translate(player.x, player.y);
-  // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.beginPath(); ctx.ellipse(0, player.r-2, player.r, player.r/3, 0, 0, Math.PI*2); ctx.fill();
-  // Body
-  let pColor = iframes > 0 ? '#5dade2' : '#3498db';
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.ellipse(0, player.r, player.r*0.9, player.r*0.3, 0, 0, Math.PI*2); ctx.fill();
+  // Body — forensics blue coat
+  let pColor = iframes > 0 ? '#5dade2' : '#2471a3';
   ctx.fillStyle = pColor;
   ctx.beginPath(); ctx.arc(0, 0, player.r, 0, Math.PI*2); ctx.fill();
-  // Direction
-  ctx.strokeStyle = '#1a5276';
+  // Coat lapels
+  ctx.strokeStyle = iframes > 0 ? '#aed6f1' : '#1a5276';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(-4, -player.r+4); ctx.lineTo(0, -4); ctx.lineTo(4, -player.r+4);
+  ctx.stroke();
+  // Direction indicator
+  ctx.strokeStyle = '#85c1e9';
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.lineTo(Math.cos(player.ang) * player.r, Math.sin(player.ang) * player.r);
   ctx.stroke();
+  // Iframes shimmer
+  if (iframes > 0 && frame % 6 < 3) {
+    ctx.strokeStyle = 'rgba(93,173,226,0.5)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, player.r + 5, 0, Math.PI*2); ctx.stroke();
+  }
   ctx.restore();
 
   // Draw Violet
   ctx.save();
   ctx.translate(violet.x, violet.y);
+  let ang = Math.atan2(player.y - violet.y, player.x - violet.x);
   // Glow
-  let glowR = violet.state === 'chase' ? 40 : violet.state === 'hunt' ? 50 : 25;
+  let glowR = violet.state === 'chase' ? 48 : violet.state === 'hunt' ? 56 : 28;
   let grad = ctx.createRadialGradient(0, 0, 0, 0, 0, glowR);
-  grad.addColorStop(0, 'rgba(155,89,182,0.3)');
+  grad.addColorStop(0, violet.state === 'chase' ? 'rgba(231,76,60,0.25)' : 'rgba(155,89,182,0.3)');
   grad.addColorStop(1, 'rgba(155,89,182,0)');
   ctx.fillStyle = grad;
   ctx.beginPath(); ctx.arc(0, 0, glowR, 0, Math.PI*2); ctx.fill();
   // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.beginPath(); ctx.ellipse(0, violet.r-2, violet.r, violet.r/3, 0, 0, Math.PI*2); ctx.fill();
-  // Body
-  ctx.fillStyle = violet.caughtFlash > 0 ? '#e74c3c' : '#8e44ad';
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.beginPath(); ctx.ellipse(0, violet.r, violet.r*0.9, violet.r*0.3, 0, 0, Math.PI*2); ctx.fill();
+  // Varsity jacket body
+  let vBase = violet.caughtFlash > 0 ? '#e74c3c' : '#6c3483';
+  ctx.fillStyle = vBase;
   ctx.beginPath(); ctx.arc(0, 0, violet.r, 0, Math.PI*2); ctx.fill();
-  // Hockey stick
-  ctx.strokeStyle = '#d2b4de';
-  ctx.lineWidth = 3;
+  // Jacket sleeves — cream accent
+  ctx.strokeStyle = violet.caughtFlash > 0 ? '#f1948a' : '#d7bde2';
+  ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.moveTo(-violet.r, -violet.r);
-  ctx.lineTo(-violet.r - 8, -violet.r + 12);
-  ctx.lineTo(-violet.r - 14, -violet.r + 8);
+  ctx.arc(0, 0, violet.r, Math.PI*0.6, Math.PI*1.4); ctx.stroke();
+  // Jersey 88
+  ctx.fillStyle = violet.caughtFlash > 0 ? '#fff' : '#c77dff';
+  ctx.font = 'bold 7px Courier New';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('88', 0, 1);
+  // Hockey stick — rotates toward player
+  ctx.save();
+  ctx.rotate(ang);
+  ctx.strokeStyle = '#f0d9ff';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(violet.r - 2, 0);
+  ctx.lineTo(violet.r + 10, -4);
+  ctx.lineTo(violet.r + 14, 2);
   ctx.stroke();
+  // Stick tape wrap
+  ctx.strokeStyle = '#9b59b6';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(violet.r + 2, -1);
+  ctx.lineTo(violet.r + 6, -2);
+  ctx.stroke();
+  ctx.restore();
   // Eyes
   ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.arc(-4, -3, 2, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(4, -3, 2, 0, Math.PI*2); ctx.fill();
-  ctx.fillStyle = violet.state === 'chase' || violet.state === 'hunt' ? '#e74c3c' : '#000';
-  ctx.beginPath(); ctx.arc(-4, -3, 1, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(4, -3, 1, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(-4, -3, 2.5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -3, 2.5, 0, Math.PI*2); ctx.fill();
+  let pupilColor = violet.state === 'chase' ? '#e74c3c' : violet.state === 'hunt' ? '#f39c12' : '#2c3e50';
+  ctx.fillStyle = pupilColor;
+  ctx.beginPath(); ctx.arc(-4, -3, 1.2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -3, 1.2, 0, Math.PI*2); ctx.fill();
   ctx.restore();
 
   // Vignette
