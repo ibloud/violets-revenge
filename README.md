@@ -2,8 +2,8 @@
 
 **Tagline:** *A Dead by Daylight-inspired 1v4 asymmetrical horror experience. Grounded in gothic forensics. Built by emerging talent.*
 
-> **Are you a laid-off game developer looking for a structured portfolio project?** 
-> **Are you a university student needing a documented externship/practicum for graduation?** 
+> **Are you a laid-off game developer looking for a structured portfolio project?**  
+> **Are you a university student needing a documented externship/practicum for graduation?**  
 > *Join our open-source development team and help us build a meaningful horror franchise from prototype to publication.*
 
 ---
@@ -20,7 +20,7 @@ In *Violet's Revenge*, you don't play as innocent survivors escaping a random mo
 
 A 1v4 multiplayer horror game (PC first, console later).
 
-*   **The Guilty (Survivors):** Must locate case files, sanitize crime scenes, and feed evidence into incinerators to power the exit doors before Violet finds them. 
+*   **The Guilty (Survivors):** Must locate case files, sanitize crime scenes, and feed evidence into incinerators to power the exit doors before Violet finds them.  
 *   **Violet (Killer):** Uses forensic tools (Luminol to track footsteps, Nightingale audio traps, Grave Dirt to slow targets) to hunt down the Guilty and drag them to Autopsy Slabs (the "hook" equivalent).
 
 ---
@@ -33,7 +33,7 @@ We are building this franchise in iterative, achievable phases to ensure quick p
 *   **Scope:** 1v1 local multiplayer.
 *   **Map:** The Morgue (tight corridors, forensics lab).
 *   **Goal:** Prove the core loop—Violet places audio traps; the Guilty searches for keys to escape.
-*   **Tech:** Unreal Engine 5 / Unity.
+*   **Tech:** Unity (URP).
 
 ### Phase 2: The Early Access Full Game - *Target: 9 Months*
 *   **Scope:** 1v4 online multiplayer, dedicated servers.
@@ -42,6 +42,20 @@ We are building this franchise in iterative, achievable phases to ensure quick p
 
 ### Phase 3: The Franchise - *Target: Year 2+*
 *   **Scope:** Console ports, new Killer roster (The Intern, The Arsonist), transmedia lore expansion (web comics, ARG puzzles).
+
+---
+
+## 📦 Fab Asset & Tech Strategy
+
+> **Engine:** Unity | **Pipeline:** Universal Render Pipeline (URP)  
+> *Confirm pipeline compatibility before purchasing HDRP-only assets.*
+
+Assets are sourced strictly in dependency order:
+
+1. **Environment:** Sets the visual grammar and architectural tone.
+2. **Downstream Categories:** Textures, Sound, VFX, and Animations.
+
+*Do not purchase or acquire downstream assets before locking the environment.*
 
 ---
 
@@ -56,7 +70,7 @@ We are specifically recruiting **students** who need documented hours for gradua
 *   **Commercial Credit:** Your name in the game credits and on Steam.
 
 **Roles Needed:**
-*   Gameplay Programmers (C++ / C#)
+*   Gameplay Programmers (C#)
 *   3D Environment Artists (Gothic/Horror focus)
 *   Technical Artists (Lighting, VFX)
 *   UI/UX Designers
@@ -73,7 +87,7 @@ When the game generates revenue (via Steam Early Access, Kickstarter, or franchi
 
 ### Tier 1: Recoupment (The Baseline)
 *Before anyone gets paid, the game must pay back its initial operational costs.*
-*   **100% of Revenue** goes toward paying off out-of-pocket expenses (e.g., Unreal/Unity licensing fees, server hosting, Steam Dev Platform fee, marketing assets). All expenses must be pre-approved and documented in our Open Ledger.
+*   **100% of Revenue** goes toward paying off out-of-pocket expenses (e.g., Unity licensing fees, server hosting, Steam Dev Platform fee, marketing assets). All expenses must be pre-approved and documented in our Open Ledger.
 
 ### Tier 2: Operations Reserve 
 *Once expenses are recouped, 10% of all monthly revenue is held in a business savings account to fund future development (Phase 3, console porting, server scaling).*
@@ -135,11 +149,13 @@ By contributing to, forking, or distributing this project, **all parties irrevoc
 
 ---
 
-## 🚀 How to Apply
+## 🚀 How to Apply (Build in Public)
 
-1.  **Join our Discord:** *Under Construction* 
-2.  **Submit a Portfolio:** Drop a link to your GitHub, ArtStation, or Audio.com via Bluesky. Build In Public.
-3.  **Claim a Task:** Check the `#good-first-issues` board. Pick a small task, submit a PR, and let's see if we're a good fit!
+We don't do formal interviews or traditional resumes. Show us how you work, and let your contributions speak for themselves.
+
+1. **Pick an Intake Issue:** Visit our GitHub Issues board and filter by the label `good-first-issue` or `intake-task`.
+2. **Build in Public:** Share a WIP screenshot, code snippet, or audio sample on Bluesky tagging `@IBLoud.xyz` with **#VioletsRevengeDev**.
+3. **Submit Your PR:** Open a Pull Request referencing your intake task. Once merged, you will automatically receive your Discord invite and externship onboard package.
 
 *This project is built on passion, respect, and the desire to create something terrifyingly beautiful. Let's build Violet's world together.*
 
