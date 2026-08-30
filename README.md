@@ -50,7 +50,7 @@ We are building this franchise in iterative, achievable phases to ensure quick p
 > **Engine:** Unity | **Pipeline:** Universal Render Pipeline (URP)  
 > *Confirm pipeline compatibility before purchasing HDRP-only assets.*
 
-Assets are sourced strictly in dependency order:
+Assets are sourced strictly in dependency order as outlined in our [`Fab Asset Reference`](https://github.com/ibloud/violets-revenge/blob/main/Fab-Asset-Ref):
 
 1. **Environment:** Sets the visual grammar and architectural tone.
 2. **Downstream Categories:** Textures, Sound, VFX, and Animations.
