@@ -1,0 +1,129 @@
+# Fab Asset Reference — Violet's Revenge
+**Engine:** Unity | **Pipeline:** URP (confirm before purchasing HDRP-only assets)
+
+---
+
+## Strategy
+
+Assets are sourced in dependency order. The **environment sets the visual grammar** — all other categories (texture, sound, VFX, animation) are chosen to match it. Do not purchase downstream categories before locking the environment.
+
+---
+
+## 1. Environment (Anchor)
+
+### Horror Collection: Morgue [MegaPack]
+**Publisher:** Game-Ready Studios
+**URL:** https://www.fab.com/listings/860cfa65-e662-456a-8e2c-2e7506056d5d
+
+The core set. Sets the visual tone for the entire project. Includes:
+- Mortuary tables, carts, rack systems, sink systems
+- Electric systems, ceiling systems, hospital doors
+- Large surgical tools collection, morgue equipment
+- Original body bags collection
+- Human internal organs (heart, brain, lungs, liver, teeth, tongues, eyes)
+
+> Everything else in this document is chosen to match this pack's tone.
+
+---
+
+## 2. Textures (Environmental Decay Layer)
+
+### Survival Horror Pack — 150 Unique 4K Materials
+**URL:** https://www.fab.com/listings/cb128d75-eb16-4eb1-92e7-f0f96c9166b3
+
+Use to age, dirty, and decay the morgue environment props. PBR maps included: Albedo, Normal, Roughness, Height, Metallic, AO. Optimized for Unity. Built for body horror, decay, and environmental storytelling.
+
+---
+
+## 3. Props (Crime Scene / Case Population)
+
+### Dead Body Pack — Game-Ready Low Poly Corpses
+**URL:** https://www.fab.com/listings/ef2a6eb5-ed60-4575-b4d0-0ee19a30ad1f
+
+Populates the cases Violet investigates. 4 material variants: yellow plastic wrap, black plastic wrap, bloody skin, dry mummified. 48 PBR textures at 4K. UV-unwrapped, Unity-compatible.
+
+---
+
+## 4. Audio (Ambient / Room Tone)
+
+### Chamber of Shadows — Morgue Room Tones
+**URL:** https://www.fab.com/listings/66590061-2fcb-4198-b156-bff7486a1e04
+
+21 ambiences recorded in an active morgue and its freezers. Drag-and-drop, seamlessly looping. Designed for haunted hospitals, asylums, and horror/sci-fi settings. Locks the audio tone to match the Morgue MegaPack environment.
+
+---
+
+## 5. VFX — Psychic Overlay (Violet's Ability)
+
+Violet's synesthesia reads lies and past events as **spatial misalignment** — objects and spaces feel physically wrong. VFX must feel like the world subtly breaking, not supernatural magic. Layer these three together.
+
+### Layer 1 — Core Psychic Read (Point Distortion)
+**Distortion Effects**
+**URL:** https://www.fab.com/listings/d55eaa36-1180-43d9-b052-588da4ce55e8
+
+Noise and distortion shaders with circle distortion (field around a point), flow distortion, and multi-texture chaos. Works on both mesh and skinned mesh. Use to signal a lie or misalignment registering in the space around a specific object or person.
+
+### Layer 2 — POV Shift (Screen-Level Activation)
+**Retro Shaders Pro for Unity URP**
+**URL:** https://www.fab.com/listings/bc67f4f6-ea3b-4f6a-9693-aab0e7a4114f
+⚠️ **URP only** — confirm pipeline before purchasing.
+
+Chromatic aberration, scanlines, RGB subpixel rendering. Apply selectively when Violet's ability activates to make the whole screen feel slightly wrong. Fully tested Unity 2022.3 through 6.3, supports Render Graph.
+
+### Layer 3 — Environmental Wrongness (Residue Signal)
+**Gravity Swarm Distortion Effect**
+**URL:** https://www.fab.com/listings/5508a186-79ab-43de-ba4a-709aaf01d133
+
+Texture-based moving distortion + Niagara particle distortion waves + swarm-behavior particles. Use to tag specific locations where psychic residue exists — a subtle ripple/swarm indicating something happened here without spelling it out.
+
+---
+
+## 6. Animation — Violet (Player Character)
+
+### Locomotion & Stealth
+**Female Locomotion Animation Pack**
+**URL:** https://www.fab.com/listings/02a01085-878e-41af-8889-610eed0916b3
+
+75 mocap animations: walk, stealth crouch, jog, roll, duck, slide. All with left/right variants for clean blending. The stealth/crouch set covers Violet's methodical movement through crime scenes. Humanoid rig, Unity-compatible.
+
+### Confrontation
+**Silent Takedown Animation Pack**
+**URL:** https://www.fab.com/listings/a882f9ec-ee79-4acb-8fda-320edb319f67
+
+56 animations: 23 unique silent takedowns + matching reaction animations. Designed for stealth, horror, and adventure. Unity-compatible. Keeps Violet's confrontations surgical rather than combat-heavy.
+
+### Idle Personality
+**Idle Animations Pack #03**
+**URL:** https://www.fab.com/listings/e5056dfd-0206-45c3-91e4-765736123b68
+
+20 Vicon optical mocap idles: anxious fidgeting, nervous surveillance-checking, tired postures, leaning stances. Gives Violet living, observational idle behavior consistent with her hyper-aware psychic-synesthesia personality.
+
+---
+
+## 7. Animation — The Guilty (NPCs / Enemies)
+
+The Guilty are **human antagonists**, not monsters. They need believable institutional/civilian movement — the contrast with Violet's precision is itself atmospheric.
+
+### Base NPC Movement
+**MC Core Motion Animation Pack**
+**URL:** https://www.fab.com/listings/9657e6b9-a480-43a8-a0f0-55abd806ce85
+
+659 mocap animations across 30+ sets, male and female. Covers all foundational humanoid movement: walk, jog, crouch, pick up, turn, idle. Animations share matching entry/exit poses for seamless blending. Right base for the Clerk, the Undertaker, the Witness, and the Coroner as ordinary-looking people moving through ordinary spaces.
+
+---
+
+## Pipeline Note
+
+Before purchasing, confirm whether the project is running **URP or HDRP**. Several assets above — particularly in the VFX layer — are pipeline-specific. The Retro Shaders Pro (Layer 2, psychic POV) is URP-only and will need a swap if the project moves to HDRP.
+
+---
+
+## Asset Acquisition Order
+
+1. Horror Collection: Morgue MegaPack *(anchor — lock this first)*
+2. Survival Horror Pack — 150 Materials *(match textures to environment)*
+3. Dead Body Pack *(populate the cases)*
+4. Chamber of Shadows — Morgue Room Tones *(lock audio tone)*
+5. Distortion Effects + Retro Shaders Pro + Gravity Swarm *(VFX layer, after environment is confirmed)*
+6. Female Locomotion + Silent Takedown + Idle Pack #03 *(Violet animations)*
+7. MC Core Motion Pack *(Guilty NPC animations)*
