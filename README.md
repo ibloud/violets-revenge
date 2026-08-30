@@ -156,6 +156,7 @@ We don't do formal interviews or traditional resumes. Show us how you work, and 
 1. **Pick an Intake Issue:** Visit our GitHub Issues board and filter by the label `good-first-issue` or `intake-task`.
 2. **Build in Public:** Share a WIP screenshot, code snippet, or audio sample on Bluesky tagging `@IBLoud.xyz` with **#VioletsRevengeDev**.
 3. **Submit Your PR:** Open a Pull Request referencing your intake task. Once merged, you will automatically receive your Discord invite and externship onboard package.
+4. [Win the Game](https://ibloud.github.io/violets-revenge/)
 
 *This project is built on passion, respect, and the desire to create something terrifyingly beautiful. Let's build Violet's world together.*
 
