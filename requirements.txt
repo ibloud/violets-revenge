@@ -1,4 +1,6 @@
-discord.py>=2.4.0
-audioop-lts
-flask
-requests
+discord.py>=2.4.0,<3
+audioop-lts>=0.2.1
+flask>=3.0,<4
+requests>=2.32,<3
+pytest>=8.0,<9
+pytest-asyncio>=0.24,<1
