@@ -11,6 +11,7 @@
 
 'use strict';
 
+const crypto = require('node:crypto');
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const LOBBY_ROLE_NAME = 'Lobby';
@@ -22,6 +23,8 @@ const WIN_CODE = process.env.WIN_CODE; // set in Railway Variables tab
 const MAX_ATTEMPTS_BEFORE_FLAG = 5;
 
 const attempts = new Map();
+const lastAttemptAt = new Map();
+const CLAIM_COOLDOWN_MS = 30_000;
 
 const command = new SlashCommandBuilder()
   .setName('claim')
@@ -30,6 +33,13 @@ const command = new SlashCommandBuilder()
 
 function accountAgeDays(user) {
   return Math.floor((Date.now() - user.createdTimestamp) / (1000 * 60 * 60 * 24));
+}
+
+function safeCodeMatch(submitted, expected) {
+  if (!submitted || !expected) return false;
+  const submittedHash = crypto.createHash('sha256').update(submitted.trim().toLowerCase()).digest();
+  const expectedHash = crypto.createHash('sha256').update(expected.trim().toLowerCase()).digest();
+  return crypto.timingSafeEqual(submittedHash, expectedHash);
 }
 
 function registerThreshold(client) {
@@ -52,6 +62,16 @@ function registerThreshold(client) {
 
     const member = interaction.member;
     const submitted = interaction.options.getString('code').trim();
+    const now = Date.now();
+    const previousAttempt = lastAttemptAt.get(interaction.user.id) || 0;
+
+    if (now - previousAttempt < CLAIM_COOLDOWN_MS) {
+      return interaction.reply({
+        content: 'Please wait before trying another claim.',
+        ephemeral: true,
+      });
+    }
+    lastAttemptAt.set(interaction.user.id, now);
 
     if (!member.roles.cache.has(lobbyRole.id)) {
       return interaction.reply({ content: 'There’s nothing here for you to claim yet.', ephemeral: true });
@@ -61,7 +81,7 @@ function registerThreshold(client) {
     }
 
     const ageDays = accountAgeDays(interaction.user);
-    const codeOk = submitted.toLowerCase() === WIN_CODE.toLowerCase();
+    const codeOk = safeCodeMatch(submitted, WIN_CODE);
     const ageOk = ageDays >= MIN_ACCOUNT_AGE_DAYS;
 
     if (codeOk && ageOk) {
@@ -88,7 +108,7 @@ function registerThreshold(client) {
         .setTitle('Repeated failed /claim attempts')
         .setDescription(
           `<@${interaction.user.id}> (\`${interaction.user.id}\`) has failed ${count} times.\n` +
-            `Account age: ${ageDays} days. Last code tried: \`${submitted}\``
+            `Account age: ${ageDays} days. Code matched: ${codeOk ? 'yes' : 'no'}.`
         )
         .setColor(0xffa500)
         .setTimestamp();
@@ -102,4 +122,4 @@ function registerThreshold(client) {
   });
 }
 
-module.exports = { registerThreshold, command };
+module.exports = { registerThreshold, command, accountAgeDays, safeCodeMatch };
