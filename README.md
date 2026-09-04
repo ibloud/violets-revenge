@@ -1,6 +1,6 @@
 # 🟣 Violet's Revenge: Asymmetrical Horror Externship Project
 
-**Tagline:** *A Dead by Daylight-inspired 1v4 asymmetrical horror experience. Grounded in gothic forensics. Built by emerging talent.*
+**Tagline:** *An original 1v4 asymmetrical horror concept grounded in gothic forensics and built through supervised emerging-talent contributions.*
 
 > **Are you a laid-off game developer looking for a structured portfolio project?**  
 > **Are you a university student needing a documented externship/practicum for graduation?**  
@@ -25,6 +25,39 @@ A 1v4 multiplayer horror game (PC first, console later).
 
 ---
 
+## 🧰 Current Implementation and Local Setup
+
+The authoritative runnable prototype is `index.html`, supported by `assets/css/style.css`. Unity and Unreal are unselected future candidates, not current requirements.
+
+### Browser prototype
+
+```bash
+python -m http.server 8000
+```
+
+Open `http://localhost:8000`.
+
+### Python checks
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pytest -q
+```
+
+### Node bot checks
+
+```bash
+cd js-bot
+npm ci
+npm test
+```
+
+See `docs/TRAINEE-ONBOARDING.md` before claiming work. Production credentials, applicant data, Discord permissions, canon changes, and engine migrations are not trainee starter tasks.
+
+---
+
 ## 🗺️ Development Roadmap
 
 We are building this franchise in iterative, achievable phases to ensure quick portfolio results for our team.
@@ -33,7 +66,7 @@ We are building this franchise in iterative, achievable phases to ensure quick p
 *   **Scope:** 1v1 local multiplayer.
 *   **Map:** The Morgue (tight corridors, forensics lab).
 *   **Goal:** Prove the core loop—Violet places audio traps; the Guilty searches for keys to escape.
-*   **Tech:** Unity (URP).
+*   **Tech:** Current browser prototype. A production-engine decision requires an approved ADR after prototype and playtest evidence.
 
 ### Phase 2: The Early Access Full Game - *Target: 9 Months*
 *   **Scope:** 1v4 online multiplayer, dedicated servers.
@@ -47,8 +80,8 @@ We are building this franchise in iterative, achievable phases to ensure quick p
 
 ## 📦 Fab Asset & Tech Strategy
 
-> **Engine:** Unity | **Pipeline:** Universal Render Pipeline (URP)  
-> *Confirm pipeline compatibility before purchasing HDRP-only assets.*
+> **Current implementation:** Static HTML5 Canvas + vanilla JavaScript  
+> **Production engine:** Undecided pending an approved architecture decision. Do not purchase engine-specific assets yet.
 
 Assets are sourced strictly in dependency order as outlined in our [`Fab Asset Reference`](https://github.com/ibloud/violets-revenge/blob/main/Fab-Asset-Ref):
 
@@ -59,57 +92,26 @@ Assets are sourced strictly in dependency order as outlined in our [`Fab Asset R
 
 ---
 
-## 💼 The Externship Program (Why Join Us?)
+## 💼 Contributor Learning and Practicum Path
 
-We are specifically recruiting **students** who need documented hours for graduation and **laid-off industry professionals** who need a current, shipped title on their resume to re-enter the job market.
+This repository welcomes supervised contributors, including students and professionals rebuilding portfolio evidence. Participation begins with a scoped GitHub issue and review—not with an employment promise.
 
-**What We Provide:**
-*   **Documented Externship:** We will sign off on university practicum forms, provide official letters of recommendation, and verify employment dates for LinkedIn.
-*   **AGILE Workflow:** Real-world experience using GitHub Projects, Jira, version control (Git), and sprint planning.
-*   **Mentorship:** Senior laid-off devs will mentor junior students.
-*   **Commercial Credit:** Your name in the game credits and on Steam.
+What the project can provide when capacity allows:
 
-**Roles Needed:**
-*   Gameplay Programmers (C#)
-*   3D Environment Artists (Gothic/Horror focus)
-*   Technical Artists (Lighting, VFX)
-*   UI/UX Designers
-*   Sound Designers / Composers
-*   Level Designers
+- public issue and pull-request history;
+- code or design review;
+- credited contributions under an approved written agreement;
+- factual verification of accepted repository work.
 
----
+Academic credit, practicum sign-off, recommendation letters, employment verification, compensation, revenue share, and commercial credit are **not automatic**. Each requires separate written approval from the appropriate institution and an authorized project representative before work begins.
 
-## 💰 The Financial Waterfall (Revenue Share)
+Read `docs/TRAINEE-ONBOARDING.md`, `docs/EXTERNSHIP-AGREEMENT.md`, and `docs/DATA-GOVERNANCE.md`.
 
-We are a grassroots, bootstrapped team. No one is paid an hourly wage upfront. Instead, we operate on a transparent, milestone-based **Revenue Share Model**. 
+## 💰 Compensation and Revenue-Share Status
 
-When the game generates revenue (via Steam Early Access, Kickstarter, or franchise licensing), the income is distributed via the following waterfall:
+This public repository does not itself create a compensation or revenue-share agreement. Do not rely on task points, projected sales, or roadmap language as a promise of payment.
 
-### Tier 1: Recoupment (The Baseline)
-*Before anyone gets paid, the game must pay back its initial operational costs.*
-*   **100% of Revenue** goes toward paying off out-of-pocket expenses (e.g., Unity licensing fees, server hosting, Steam Dev Platform fee, marketing assets). All expenses must be pre-approved and documented in our Open Ledger.
-
-### Tier 2: Operations Reserve 
-*Once expenses are recouped, 10% of all monthly revenue is held in a business savings account to fund future development (Phase 3, console porting, server scaling).*
-
-### Tier 3: Developer Rev-Share Pool
-*The remaining 90% of monthly revenue is distributed to the team based on a **Rev-Share Point System (RSPS)**.*
-
-**How Points are Earned:**
-Every task completed (approved via Pull Request) is assigned a point value based on complexity and time.
-*   *Example:* Programming a core mechanic = 50 Points.
-*   *Example:* Creating a 3D asset = 20 Points.
-*   *Example:* Writing lore/design docs = 10 Points.
-
-**The Payout Calculation:**
-At the end of the month, the total dollar amount in the Developer Pool is divided by the total number of points earned by the whole team that month. 
-> *(Total Pool $) ÷ (Total Team Points) = Value of 1 Point.*
-
-You are paid out based on the points you earned that month. 
-
-**Vesting & Departures:**
-*   If a member leaves the team before Phase 2 launch, they retain a **static percentage** of revenue for 12 months post-launch based on their historical point contributions, after which their share rolls off.
-*   If a member stays through launch, they are considered a "Founding Developer" and retain their dynamic point share for the lifetime of the game's sales.
+Any paid work, revenue share, vesting, ownership, portfolio use, or commercial credit must be defined in a separate signed agreement. Until then, contributions are voluntary and governed by the repository licenses.
 
 ---
 
@@ -149,16 +151,17 @@ By contributing to, forking, or distributing this project, **all parties irrevoc
 
 ---
 
-## 🚀 How to Apply (Build in Public)
+## 🚀 How to Contribute
 
-We don't do formal interviews or traditional resumes. Show us how you work, and let your contributions speak for themselves.
+1. Read `CONTRIBUTING.md` and `docs/TRAINEE-ONBOARDING.md`.
+2. Choose an open issue labeled `good-first-issue` or `trainee-ready`.
+3. Comment on the issue before beginning work.
+4. Use a focused branch and submit a pull request with verification results.
+5. Wait for review before merging or treating a change as canon.
 
-1. **Pick an Intake Issue:** Visit our GitHub Issues board and filter by the label `good-first-issue` or `intake-task`.
-2. **Build in Public:** Share a WIP screenshot, code snippet, or audio sample on Bluesky tagging `@IBLoud.xyz` with **#VioletsRevengeDev**.
-3. **Submit Your PR:** Open a Pull Request referencing your intake task. Once merged, you will automatically receive your Discord invite and externship onboard package.
-4. [Win the Game](https://ibloud.github.io/violets-revenge/)
+Public social posting and Discord participation are optional unless a specific, approved role agreement says otherwise. Merging a PR does not automatically grant Discord access, academic credit, employment status, compensation, or revenue share.
 
-*This project is built on passion, respect, and the desire to create something terrifyingly beautiful. Let's build Violet's world together.*
+[Play the current browser prototype](https://ibloud.github.io/violets-revenge/)
 
 ---
 
@@ -173,3 +176,6 @@ We don't do formal interviews or traditional resumes. Show us how you work, and 
 - docs/COMMUNITY.md
 - docs/EXTERNSHIP-AGREEMENT.md
 - docs/AI-AGENT-BOUNDARY.md
+- docs/TRAINEE-ONBOARDING.md
+- docs/DATA-GOVERNANCE.md
+- docs/adr/ADR-0001-current-stack.md

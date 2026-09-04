@@ -1,3 +1,10 @@
 game_state.json
+game_state.json.corrupt.*
 __pycache__/
+.pytest_cache/
+.venv/
 .env
+*.py[cod]
+js-bot/node_modules/
+node_modules/
+.DS_Store

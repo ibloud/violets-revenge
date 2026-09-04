@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "lint": "node --check index.js && node --check threshold-gate.js && node --check intake-modal.js",
-    "test": "npm run lint"
+    "test": "npm run lint && node --test"
   },
   "dependencies": {
     "discord.js": "^14.15.3",

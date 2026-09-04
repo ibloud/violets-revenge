@@ -5,14 +5,18 @@ Thanks for considering contributing. This project runs as an open-source externs
 ## Before You Start
 
 - Read `README.md` for project scope, roadmap phase, and the revenue-share model.
+- Read `docs/TRAINEE-ONBOARDING.md` for setup, task boundaries, and verification.
+- Read `docs/DATA-GOVERNANCE.md` before touching applicant, playtester, or Discord data.
 - Read `docs/COMMUNITY.md` for how the team communicates and works together.
-- If you're here for documented externship/practicum hours, also read `docs/EXTERNSHIP-AGREEMENT.md`.
+- If you are exploring academic credit, read `docs/EXTERNSHIP-AGREEMENT.md`; obtain institutional and project approval before starting credited work.
 
 ## Finding Work
 
-1. Check the **#good-first-issues** board (Discord) or the GitHub Projects board for open tasks.
-2. **Claim a task before starting** — comment on the issue or assign yourself, so effort isn't duplicated.
-3. If you want to propose new work not yet tracked, open an issue first and get a project-lead nod before building it — this keeps effort aligned with the current phase (check the roadmap in the README for what's actually in scope right now).
+1. Use GitHub Issues and filter for `good-first-issue` or `trainee-ready`.
+2. Confirm the issue names relevant files, acceptance criteria, verification steps, and a reviewer. If it does not, ask for clarification.
+3. **Claim a task before starting** by commenting on the issue or accepting assignment.
+4. Do not rely on private Discord instructions as the sole task specification.
+5. Propose untracked work through an issue before implementation.
 
 ## Workflow
 
@@ -36,9 +40,10 @@ Thanks for considering contributing. This project runs as an open-source externs
 
 ## Getting Credit
 
-- Every merged PR is assigned a point value under the Rev-Share Point System (see README).
-- Externship students: closed issues + merged PRs are your evidence trail for practicum sign-off (`docs/EXTERNSHIP-AGREEMENT.md`).
+- Merged PRs provide public evidence of accepted work; they do not by themselves establish hours, employment, compensation, revenue share, academic credit, or recommendation eligibility.
+- Any practicum or compensated arrangement requires separate written approval before work begins.
+- Keep your own time and learning log when an institution requires hours.
 
 ## Questions
 
-Ask in the relevant Discord channel before DMing a lead directly — public questions help the next contributor too.
+Ask on the relevant GitHub issue whenever the question can be public. Use a private project channel only for credentials, applicant data, security reports, or other sensitive information.

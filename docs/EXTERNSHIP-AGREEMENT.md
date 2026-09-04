@@ -1,54 +1,80 @@
-# Externship / Practicum Agreement (Template)
+# Externship / Practicum Planning Template
 
-> **Note:** This is a working template, not a legal document. Neither the project nor this draft constitutes legal advice — have your university's practicum office and, if possible, a legal reviewer confirm this template satisfies your program's specific requirements before relying on it for credit.
+> **Status:** Planning template only. This is not an offer of employment, a contract, legal advice, a guarantee of academic credit, or a guarantee of compensation.
 
-## Purpose
+A student may use this template to discuss a possible project-based practicum with their school and Loptr Lab. Participation must not begin as a credited externship until the student's institution and an authorized project representative approve the arrangement in writing.
 
-This agreement documents an externship or practicum arrangement between a contributor ("the Student") and Violet's Revenge ("the Project") for the purpose of fulfilling academic practicum/externship hour requirements and/or documented professional experience.
+## Required approvals
 
-## Student / Program Information
+- Student
+- University/program coordinator
+- Authorized Loptr Lab representative
+- Any additional accessibility, vocational-rehabilitation, or funding counselor required by the student's program
+
+## Student and program information
 
 - Student name:
-- University / program:
-- Academic term / dates covered:
-- Required hours for this term:
-- Supervising faculty member / practicum coordinator (if applicable):
-- Project-side mentor / team lead:
+- Institution and program:
+- Academic term:
+- Proposed dates:
+- Required hours:
+- Faculty/practicum coordinator:
+- Project mentor:
+- Approved learning objectives:
 
-## Scope of Work
+## Proposed scope
 
-- Role(s) the Student will fill (e.g. Gameplay Programmer, 3D Environment Artist, UI/UX Designer — see README's "Roles Needed" section):
-- Expected weekly time commitment:
-- General nature of tasks (linked to specific GitHub issues as work is assigned):
+- Role:
+- Linked GitHub issues:
+- Expected weekly hours:
+- Supervision cadence:
+- Accessibility or accommodation plan:
+- Deliverables:
+- Work explicitly excluded:
 
-## Evidence & Documentation
+## Evidence
 
-Per the AGILE workflow described in `CONTRIBUTING.md`, hours and contributions are evidenced through:
+Possible evidence includes:
 
-- Closed GitHub Issues assigned to the Student
-- Merged Pull Requests authored by the Student
-- Sprint participation records (GitHub Projects / Jira board history)
+- assigned and closed GitHub issues;
+- reviewed pull requests;
+- approved design or art deliverables;
+- mentor meeting notes;
+- a student-maintained time log;
+- a final reflective summary.
 
-The Student is responsible for ensuring their work is properly tracked (claimed issues, linked PRs) so hours can be verified at term's end.
+Repository activity alone does not prove hours worked and does not guarantee academic credit.
 
-## Sign-Off Process
+## Compensation and intellectual property
 
-1. At the agreed term's end, the Student compiles a summary of closed issues and merged PRs.
-2. The project-side mentor/team lead reviews this summary against the Student's logged hours.
-3. Upon agreement, the team lead signs off on university practicum forms and/or provides a letter of recommendation / LinkedIn employment verification, per the commitments in the README's Externship Program section.
+Compensation, revenue sharing, ownership, licensing, credit, confidentiality, and portfolio use require separate written terms approved before work begins. The README's project concepts are not a compensation agreement.
 
-## Compensation
+Unless a signed agreement states otherwise:
 
-Per the README's Financial Waterfall, this is an unpaid, milestone-based revenue-share arrangement — no hourly wage is provided. Any revenue share earned follows the Rev-Share Point System and vesting terms described in the README.
+- no payment or revenue share is promised;
+- no employment relationship or employment verification is promised;
+- no recommendation letter is guaranteed;
+- no university credit is guaranteed;
+- repository licenses continue to govern submitted material.
 
-## Term & Exit
+## Data and conduct
 
-- This agreement covers the academic term specified above and may be renewed by mutual agreement.
-- Either party may end the arrangement early; per the README, historical point contributions are still honored per the standard vesting terms.
+The student and project must follow:
+
+- `CODE_OF_CONDUCT.md`
+- `docs/SENSITIVE-CONTENT-GUIDE.md`
+- `docs/DATA-GOVERNANCE.md`
+- applicable institutional policies
+
+## End-of-term review
+
+1. Student submits the agreed evidence.
+2. Mentor verifies deliverables and documented participation.
+3. Institution determines whether academic requirements were met.
+4. Any sign-off is limited to facts the authorized signer can verify.
 
 ## Acknowledgment
 
-By signing below (or by written acknowledgment via GitHub/Discord if a physical signature isn't required by your institution), both parties agree to the terms above.
-
-- Student signature / date:
-- Project lead signature / date:off
+- Student / date:
+- University coordinator / date:
+- Loptr Lab representative / date:

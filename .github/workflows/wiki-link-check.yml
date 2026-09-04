@@ -13,20 +13,33 @@ jobs:
   check-wiki-links:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone wiki repository
-        run: git clone https://github.com/${{ github.repository }}.wiki.git wiki
+      - name: Detect and clone wiki
+        id: wiki
+        shell: bash
+        run: |
+          WIKI_URL="https://github.com/${{ github.repository }}.wiki.git"
+          if git ls-remote "$WIKI_URL" HEAD >/dev/null 2>&1; then
+            git clone --depth 1 "$WIKI_URL" wiki
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::No initialized wiki repository; link check skipped."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install markdown-link-check
+        if: steps.wiki.outputs.available == 'true'
         run: npm install -g markdown-link-check
 
-      - name: Check links in all markdown files
+      - name: Check links in all wiki Markdown files
+        if: steps.wiki.outputs.available == 'true'
+        shell: bash
         run: |
           BROKEN=0
-          while read -r file; do
+          while IFS= read -r file; do
             echo "Checking: $file"
-            markdown-link-check "$file" --verbose || BROKEN=1
-          done < <(find wiki -name "*.md")
-          if [ "${BROKEN}" = "1" ]; then
-            echo "::error::Broken links were found in the wiki. See output above for details."
+            markdown-link-check "$file" --quiet || BROKEN=1
+          done < <(find wiki -name "*.md" -type f)
+          if [ "$BROKEN" = "1" ]; then
+            echo "::error::Broken links were found in the wiki."
             exit 1
           fi
