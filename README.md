@@ -14,6 +14,14 @@ Play as Violet—a brilliant forensics examiner in London whose life is shattere
 
 In *Violet's Revenge*, you don't play as innocent survivors escaping a random monster. **You play as the Guilty.** Masked culprits are dragged into a purgatory dimension where they must process crime scenes and confront the evidence of what they did, while Violet hunts them through blood-soaked halls and moonlit ruins.
 
+### The inherited story
+
+The present game is connected to an earlier original story about Lady Violet and
+Sebastian. That development lineage is documented without automatically making
+every ancestral detail current game canon. Start with
+[`docs/LADY_VIOLET_LINEAGE.md`](docs/LADY_VIOLET_LINEAGE.md) and
+[`docs/ROLE_IN_ECOSYSTEM.md`](docs/ROLE_IN_ECOSYSTEM.md).
+
 ---
 
 ## 🎮 The Gameplay Concept
@@ -170,6 +178,10 @@ Public social posting and Discord participation are optional unless a specific, 
 - CODE_OF_CONDUCT.md
 - docs/STORY-BIBLE.md
 - docs/CHARACTER-BIBLE.md
+- [docs/LADY_VIOLET_LINEAGE.md](docs/LADY_VIOLET_LINEAGE.md)
+- [docs/SEBASTIAN_AND_THE_POLITICAL_CONFLICT.md](docs/SEBASTIAN_AND_THE_POLITICAL_CONFLICT.md)
+- [docs/RELATIONSHIP_TO_THE_RIM.md](docs/RELATIONSHIP_TO_THE_RIM.md)
+- [docs/ROLE_IN_ECOSYSTEM.md](docs/ROLE_IN_ECOSYSTEM.md)
 - docs/SENSITIVE-CONTENT-GUIDE.md
 - docs/TECH_STACK.md
 - docs/ARCHITECTURE.md
@@ -180,3 +192,11 @@ Public social posting and Discord participation are optional unless a specific, 
 - docs/DATA-GOVERNANCE.md
 - [docs/MUSIC-LICENSING.md](docs/MUSIC-LICENSING.md) — development references, clearance workflow, and rights-status register
 - docs/adr/ADR-0001-current-stack.md
+
+## Wider ecosystem
+
+View the canonical development map at
+[ibloud.github.io/ecosystem](https://ibloud.github.io/ecosystem/) and the
+[collaboration pathways](https://ibloud.github.io/collaborate/). A public issue,
+pull request, or conversation does not grant story authority, compensation, or
+ownership; use the written participation process above.
