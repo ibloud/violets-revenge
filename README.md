@@ -133,8 +133,8 @@ Ren Gill (independent musician) is the creator of **"Violet's Tale"**, a separat
 
 By contributing to, forking, or distributing this project, **all parties irrevocably agree** to the following:
 
-1. **No Intersection.** No elements of Ren Gill's "Violet's Tale" — including but not limited to lyrics, narrative themes, character traits, visual designs, musical compositions, or promotional materials — may be used, referenced, adapted, sampled, or remixed in any form.
-2. **Explicit Separation.** The "Violet" of this project is a forensics examiner turned supernatural executioner. Her backstory, visual design, personality, and narrative arc are original. Any coincidence in naming is incidental.
+1. **No Uncleared Use.** No lyrics, recordings, compositions, artwork, video, performance, name, likeness, or protected story expression from Ren Gill's work may be copied, adapted, sampled, remixed, embedded, or used in project media without the required written permissions.
+2. **Explicit Separation.** The "Violet" of this project is an original forensics examiner turned supernatural executioner. Development documents may identify third-party songs as non-canonical tonal references or prospective licensing targets, but that analysis does not place those works in canon, establish influence, or imply permission, participation, affiliation, or endorsement.
 3. **Contributor Obligation.** Any contributor who proposes lore, dialogue, visual assets, or mechanics that could be construed as derivative of Ren Gill's work must disclose this to the team lead **before** inclusion.
 4. **No Affiliation.** *Violet's Revenge* is not affiliated with, endorsed by, or connected to Ren Gill or his estate/publishers in any capacity.
 5. **Character Bible.** All approved character details for "Violet" and future roster characters are maintained in `docs/CHARACTER-BIBLE.md`. If it is not in the Bible, it is not canon. Do not expand the character in-game or in promotional material unless the change is documented there first.
@@ -178,4 +178,5 @@ Public social posting and Discord participation are optional unless a specific, 
 - docs/AI-AGENT-BOUNDARY.md
 - docs/TRAINEE-ONBOARDING.md
 - docs/DATA-GOVERNANCE.md
+- [docs/MUSIC-LICENSING.md](docs/MUSIC-LICENSING.md) — development references, clearance workflow, and rights-status register
 - docs/adr/ADR-0001-current-stack.md
