@@ -131,7 +131,7 @@ The character "Violet" in *Violet's Revenge* is an **original creation** develop
 
 Ren Gill (independent musician) is the creator of **"Violet's Tale"**, a separate and wholly distinct creative work. 
 
-By contributing to, forking, or distributing this project, **all parties irrevocably agree** to the following:
+This section is a **project boundary**, not a new contract imposed on contributors. The repository records the following rules for project use:
 
 1. **No Uncleared Use.** No lyrics, recordings, compositions, artwork, video, performance, name, likeness, or protected story expression from Ren Gill's work may be copied, adapted, sampled, remixed, embedded, or used in project media without the required written permissions.
 2. **Explicit Separation.** The "Violet" of this project is an original forensics examiner turned supernatural executioner. Development documents may identify third-party songs as non-canonical tonal references or prospective licensing targets, but that analysis does not place those works in canon, establish influence, or imply permission, participation, affiliation, or endorsement.
@@ -179,4 +179,5 @@ Public social posting and Discord participation are optional unless a specific, 
 - docs/TRAINEE-ONBOARDING.md
 - docs/DATA-GOVERNANCE.md
 - [docs/MUSIC-LICENSING.md](docs/MUSIC-LICENSING.md) — development references, clearance workflow, and rights-status register
+- [docs/REN-COLLABORATION-RECORD.md](docs/REN-COLLABORATION-RECORD.md) — provenance, participation, exit, and rights boundary
 - docs/adr/ADR-0001-current-stack.md
