@@ -16,10 +16,14 @@ This policy separates bounded in-server automation from autonomous public charac
 
 Allowed automation must:
 
+- identify itself as automated and distinguish generated guidance from a human decision;
 - remain limited to named channels and documented triggers;
 - provide rate limits or anti-spam controls;
 - avoid exposing secrets or submitted access codes;
 - avoid making employment, payment, eligibility, or safety decisions;
+- never state or imply that a named human is watching, reviewing, supervising, or available unless that human has accepted the role and current check-in obligation;
+- never assign a mentor, adviser, partner, monitor, or care role based only on a response, follow, reaction, invite, or repository visit;
+- avoid unsolicited private messages and provide a visible stop or opt-out path;
 - provide a human escalation path;
 - follow `docs/DATA-GOVERNANCE.md`.
 
@@ -35,6 +39,7 @@ Allowed automation must:
 - Unsupervised autonomous public social posting.
 - Impersonation of real people.
 - Publishing private intake information.
+- Training or fine-tuning on private messages, applications, voice, likeness, unpublished work, or accommodation information without separate informed permission and lawful authority.
 - Automated applicant rejection based on protected, sensitive, or inferred traits.
 - Treating generated character text as canon without documented human approval.
 
