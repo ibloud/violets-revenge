@@ -190,6 +190,7 @@ Public social posting and Discord participation are optional unless a specific, 
 - docs/AI-AGENT-BOUNDARY.md
 - docs/TRAINEE-ONBOARDING.md
 - docs/DATA-GOVERNANCE.md
+- [docs/DISCORD-GOVERNANCE-AND-AGILE-CASE.md](docs/DISCORD-GOVERNANCE-AND-AGILE-CASE.md) — Discord safeguards, relationship boundaries, and proposed Agile teaching case
 - [docs/MUSIC-LICENSING.md](docs/MUSIC-LICENSING.md) — development references, clearance workflow, and rights-status register
 - [docs/REN-COLLABORATION-RECORD.md](docs/REN-COLLABORATION-RECORD.md) — provenance, participation, exit, and rights boundary
 - docs/adr/ADR-0001-current-stack.md
