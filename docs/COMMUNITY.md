@@ -10,10 +10,10 @@ Violet's Revenge is built by a distributed team of externship students, laid-off
 
 ## Who We Are
 
-This is a grassroots, bootstrapped team operating on a revenue-share model (see the README's Financial Waterfall section) rather than upfront pay. Because of that, we lean heavily on:
+This is a grassroots, bootstrapped project. Repository participation does not itself promise payment, revenue share, employment, academic credit, or future work. Any such arrangement requires a separate written agreement before work begins. Because capacity is limited, we lean heavily on:
 
-- **Documented process** — practicum hours, externship sign-off, and rev-share points all depend on work being visible and attributable. Do your work in the open: PRs, commits, and issue comments, not side-channel DMs.
-- **Mentorship over gatekeeping** — senior contributors are here to mentor junior/student contributors, not just review their work. If you're senior, take the time. If you're junior, ask questions early.
+- **Documented process** — accepted work should be visible and attributable through issues, commits, pull requests, and review. Those records evidence work performed; they do not automatically establish hours, payment, academic credit, or revenue share.
+- **Support without assumed mentorship** — experienced contributors should make review constructive and accessible. An ongoing mentor, supervisor, or adviser role exists only when both people accept its purpose, limits, and check-in expectations.
 - **Mutual respect across experience levels** — everyone here is rebuilding something, whether that's a resume, a portfolio, or a graduation requirement. Treat that with the seriousness it deserves.
 
 ## Communication Norms
@@ -34,11 +34,13 @@ This is a grassroots, bootstrapped team operating on a revenue-share model (see 
 
 - Most disagreements (creative direction, code approach, scope) should get resolved in the relevant PR or issue thread.
 - Anything involving conduct, harassment, or a violation of `CODE_OF_CONDUCT.md` goes to a team lead directly, not a public channel.
-- Disputes over rev-share point valuation or vesting are handled per the process in `docs/EXTERNSHIP-AGREEMENT.md`.
+- Disputes involving compensation, academic credit, or another signed participation arrangement follow that agreement's stated process. Without an executed agreement, do not represent projected points or roadmap language as money owed.
 
 ## Leaving the Team
 
-Contributors are free to step away at any point. Per the README's vesting terms, your historical point contributions are honored for 12 months post-launch if you leave before Phase 2, or for the life of the game if you stay through launch as a Founding Developer. Let a team lead know so your transition (and any handoff of in-progress work) is documented.
+Contributors are free to step away at any point without retaliation. Accepted repository history and accurate credit remain part of the record. Compensation, revenue share, vesting, portfolio permissions, or continuing duties are governed only by an applicable written agreement. Let a team lead know when practical so unfinished work, access, and credits can be documented accurately.
+
+See [`DISCORD-GOVERNANCE-AND-AGILE-CASE.md`](DISCORD-GOVERNANCE-AND-AGILE-CASE.md) for the proposed Discord operating model, relationship labels, age gate, AI safeguards, and Agile teaching-case pathway.
 
 ---
 
