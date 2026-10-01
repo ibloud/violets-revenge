@@ -1,10 +1,16 @@
 # Contributing to Violet's Revenge
 
+## Mission and participation terms
+
+Current open review and contribution opportunities are voluntary and unpaid. Before work begins, agree in writing on scope, time, what will be public, credit preferences, and an exit path. You can stop at any point. Participation does not promise employment, ownership, revenue share, academic credit, or future pay. Any paid commission or other formal arrangement requires a separate signed agreement before work begins. External assistance or benefits belong to the participant and are not compensation from Loptr Lab.
+
+[People over profit, accessibility first, and our funding boundary](https://github.com/ibloud/ibloud.github.io/blob/main/MISSION.md).
+
 Thanks for considering contributing. This project runs as an open-source externship — real AGILE workflow, real code review, real credit. Here's how to get started.
 
 ## Before You Start
 
-- Read `README.md` for project scope, roadmap phase, and the revenue-share model.
+- Read `README.md` for project scope, roadmap phase, and compensation status (the public repository creates no payment or revenue-share agreement).
 - Read `docs/TRAINEE-ONBOARDING.md` for setup, task boundaries, and verification.
 - Read `docs/DATA-GOVERNANCE.md` before touching applicant, playtester, or Discord data.
 - Read `docs/COMMUNITY.md` for how the team communicates and works together.
@@ -21,7 +27,7 @@ Thanks for considering contributing. This project runs as an open-source externs
 ## Workflow
 
 1. **Fork or branch** — branch naming: `feature/short-description`, `fix/short-description`, `docs/short-description`.
-2. **Keep PRs small.** Easier to review, easier to credit accurately under the Rev-Share Point System, easier to merge without conflicts.
+2. **Keep PRs small.** Easier to review, attribute accepted work accurately, and merge without conflicts. Task points do not establish payment or revenue share.
 3. **Write a clear PR description** — what changed, why, and how it was tested (if applicable).
 4. **Link the issue** your PR resolves.
 5. **Request review** from a project lead or senior contributor.
