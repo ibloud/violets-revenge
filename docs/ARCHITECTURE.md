@@ -9,13 +9,17 @@
 - No framework or build pipeline is required.
 - Gameplay changes should remain small, testable, and accessible.
 
-### Python Discord bot
+### Roomy coordination
+
+Roomy hosts community discussion and links to browser playtests. GitHub records scope, decisions, issues, and accepted work. No Discord bridge is planned. See [ROOMY-TRANSITION.md](ROOMY-TRANSITION.md).
+
+### Retained Python Discord bot (retired deployment path)
 
 - `violet_bot.py` manages the existing card-game/community interaction.
 - `win_invite_endpoint.py` supports the win/invite flow.
 - `test_violet_bot.py` covers state and concurrency behavior.
 
-### Node Discord bot
+### Retained Node Discord bot (retired deployment path)
 
 - `js-bot/index.js` registers bounded server commands and event handlers.
 - `js-bot/threshold-gate.js` handles claim gating.
@@ -37,4 +41,4 @@ The production engine is undecided. Unity/URP and Unreal Engine 5 are historical
 
 ## Contribution rule
 
-Do not introduce a new framework, engine, hosted database, or deployment dependency without an issue and approved ADR. Trainee work should default to the current browser prototype, tests, documentation, or isolated bot improvements.
+Do not introduce a new framework, engine, hosted database, or deployment dependency without an issue and approved ADR. Trainee work should default to the current browser prototype, tests, documentation, or isolated browser adapters. Discord bot source is reference material; Discord deployment work is discontinued.
