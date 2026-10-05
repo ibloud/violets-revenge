@@ -11,20 +11,20 @@
 
 ### Roomy coordination
 
-Roomy hosts community discussion and links to browser playtests. GitHub records scope, decisions, issues, and accepted work. No Discord bridge is planned. See [ROOMY-TRANSITION.md](ROOMY-TRANSITION.md).
+Roomy hosts community discussion and links to browser playtests. GitHub records scope, decisions, issues, and accepted work. The game reveals its Roomy invitation only after a win; losing offers retry. Dominique may separately invite approved guests or collaborators. No Discord bridge is planned. See [ROOMY-TRANSITION.md](ROOMY-TRANSITION.md).
 
 ### Retained Python Discord bot (retired deployment path)
 
-- `violet_bot.py` manages the existing card-game/community interaction.
-- `win_invite_endpoint.py` supports the win/invite flow.
+- `violet_bot.py` retains historical card-game/state helpers; its entry point no longer opens a Discord connection.
+- `win_invite_endpoint.py` is retired and returns HTTP 410 without an invitation or Discord request.
 - `test_violet_bot.py` covers state and concurrency behavior.
 
 ### Retained Node Discord bot (retired deployment path)
 
-- `js-bot/index.js` registers bounded server commands and event handlers.
+- `js-bot/index.js` exits before credential loading, command registration, or Discord connection.
 - `js-bot/threshold-gate.js` handles claim gating.
 - `js-bot/intake-modal.js` handles moderated intake.
-- This process uses a separate Discord application and token from the Python bot.
+- This legacy implementation used a separate Discord application and token from the Python bot. Both identified hosted Discord services are stopped (zero running replicas).
 
 ## Boundaries
 

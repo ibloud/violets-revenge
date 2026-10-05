@@ -6,7 +6,7 @@ Violet's Revenge is built by students earning practicum credit, professionals re
 
 ## Expected Behavior
 
-- Treat all contributors with respect, on GitHub, Discord, and anywhere else the team communicates.
+- Treat all contributors with respect, on GitHub, Roomy, and anywhere else the team communicates.
 - Give and receive feedback constructively — critique the work, not the person.
 - Support newer contributors and students; mentorship is part of what this project exists to provide.
 - Credit others' work accurately and don't take credit for contributions that aren't yours.
@@ -22,13 +22,13 @@ Violet's Revenge is built by students earning practicum credit, professionals re
 
 ## Scope
 
-This applies to all project spaces: GitHub (issues, PRs, discussions), Discord, and any other official team communication channel, as well as any externship/practicum interactions conducted on behalf of the project.
+This applies to all project spaces: GitHub (issues, PRs, discussions), Roomy, and any other official team communication channel, as well as any externship/practicum interactions conducted on behalf of the project.
 
 ## Reporting
 
 If you experience or witness behavior that violates this code:
 
-1. Report it to a project lead directly (Discord DM or email, not a public channel).
+1. Report it to a project lead directly (use an agreed private email or other verified private route; do not post reports in public Roomy channels).
 2. Include what happened, when, and any relevant context (screenshots, links).
 3. Reports are handled confidentially, with information shared only as needed to address the issue.
 

@@ -1,5 +1,7 @@
 # Win-invite update — pre-alpha, unverified (2026-07-19)
 
+**Superseded October 4, 2026.** Historical record only; the checklist below is not active work. Discord and its invite service are retired. The current game reveals a Roomy invitation only after a win, with separate invitations approved by Dominique. See [ROOMY-TRANSITION.md](../ROOMY-TRANSITION.md).
+
 ## Summary
 The game's win screen previously showed a permanent static Discord invite (`discord.gg/zemqccGdf`) as both plain link and static QR image. This has now been switched to a **dynamic per-win invite flow**:
 

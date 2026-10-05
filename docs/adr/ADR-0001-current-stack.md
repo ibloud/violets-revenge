@@ -13,11 +13,11 @@ The static browser prototype in `index.html` is the authoritative current implem
 
 No production engine is selected. Unity and Unreal remain candidates only. Selecting an engine requires a later ADR supported by prototype and playtest evidence.
 
-Discord bots are supporting services and do not determine the production game engine.
+**October 4, 2026 amendment:** Roomy replaces Discord for coordination. Discord deployment and bridging are discontinued; retained bot modules are reference/offline-test material and do not determine the production game engine. See [Roomy transition](../ROOMY-TRANSITION.md).
 
 ## Consequences
 
-- Trainee tasks may target the browser prototype, documentation, tests, or isolated bot improvements.
+- Trainee tasks may target the browser prototype, documentation, tests, or isolated browser adapters.
 - No contributor should begin an engine migration or acquire engine-specific assets without approval.
 - Roadmaps must describe Unity/Unreal as undecided until a later ADR supersedes this one.
 - CI must verify the currently committed Python and Node components.

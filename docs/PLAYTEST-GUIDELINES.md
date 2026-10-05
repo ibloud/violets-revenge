@@ -11,6 +11,10 @@ Roomy is the coordination center; Discord development and bridging are discontin
 5. Keep real people out of in-universe character material. Bibles remain canon authority.
 6. Participation is voluntary. No membership, payment, or game win promises employment, compensation, ownership, academic credit, or a human oversight relationship.
 
+## Community access
+
+The game reveals the Roomy invitation only after winning; losing offers retry without an invitation. Dominique may separately invite approved guests or collaborators. The static invite is reusable and is not server-verified proof of a win. Community membership does not replace approval for a scheduled playtest.
+
 ## Before a session
 
 Post in games-and-playtesting: the actual build/version, tested mode, schedule, capacity, accessibility options, content warning, and consent choices. The current prototype is a browser proof-of-loop; 1v4 online play is a future goal, not a working Roomy feature. Obtain human approval for participation; joining Roomy does not replace that step.

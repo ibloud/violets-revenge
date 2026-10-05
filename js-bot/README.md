@@ -1,6 +1,6 @@
 # js-bot — retained legacy gating bot
 
-**Retired deployment path — October 4, 2026.** Discord development and bridging are discontinued. Do not follow the historical setup below for new deployments. Preserve source and offline tests for browser intake reuse. See [Roomy transition](../docs/ROOMY-TRANSITION.md). Hosted shutdown is unverified.
+**Retired deployment path — October 4, 2026.** Discord development and bridging are discontinued. Do not follow the historical setup below for new deployments. Preserve source and offline tests for browser intake reuse. See [Roomy transition](../docs/ROOMY-TRANSITION.md). Both identified Railway Discord services have zero running replicas; see the transition record for evidence and remaining cleanup.
 
 A **separate Discord bot application** from `violet_bot.py`. Handles the
 playtester "labyrinth" gating: `/claim` (win-code + account-age check,
@@ -15,7 +15,7 @@ its own bot application with its own token — avoids two processes
 fighting over the same gateway session, and keeps this gating logic
 fully independent of Violet's own bot.
 
-## Setup
+## Historical setup — do not deploy
 1. Create a new application at https://discord.com/developers/applications
 2. Add a Bot user to it, copy its token
 3. Under OAuth2 → URL Generator, select `bot` + `applications.commands`
@@ -32,9 +32,9 @@ fully independent of Violet's own bot.
 7. `npm install && npm start`
 
 ## Files
-- `index.js` — entry point, logs in, registers both slash commands
+- `index.js` — retired entry point; exits before loading credentials or registering commands
 - `threshold-gate.js` — `/claim` command
 - `intake-modal.js` — `/intake` command + modal + approve/reject buttons
 
 See `/docs/archive/2026-07-19-win-invite-devlog.md` at the repo root for
-the related win-invite backend work and current unverified status.
+the historical win-invite backend work. That flow is superseded; the endpoint now returns HTTP 410 without an invite.
