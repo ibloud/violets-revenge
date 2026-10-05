@@ -22,7 +22,7 @@ Violet's Revenge is built by students earning practicum credit, professionals re
 
 ## Scope
 
-This applies to all project spaces: GitHub (issues, PRs, discussions), Discord, and any other official team communication channel, as well as any externship/practicum interactions conducted on behalf of the project.
+This applies to all project spaces: GitHub (issues, PRs, discussions), Roomy, and any other official team communication channel, as well as any externship/practicum interactions conducted on behalf of the project.
 
 ## Reporting
 
