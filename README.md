@@ -21,9 +21,9 @@ Financial support is optional and sustains infrastructure, maintenance, accessib
 
 ## Community coordination — Roomy
 
-Loptr Lab uses [Roomy](https://roomy.space/did:plc:f62tthd7cmjpfvtlet2crpsq) for coordination. [Join the community](https://roomy.space/join?space=did%3Aplc%3Af62tthd7cmjpfvtlet2crpsq&invite=631116db109c5a7f4c38f03edd57269d). Discord development and bridging are discontinued by project-lead decision on October 4, 2026. GitHub remains the durable record for issues, code, review, and decisions. Community membership does not grant playtester approval or contributor authority.
+Loptr Lab uses [Roomy](https://roomy.space/did:plc:f62tthd7cmjpfvtlet2crpsq) for coordination. Earn the game invitation by winning [the browser prototype](https://ibloud.github.io/violets-revenge/). Dominique may also invite approved collaborators or guests directly. Discord development and bridging are discontinued by project-lead decision on October 4, 2026. GitHub remains the durable record for issues, code, review, and decisions. Community membership does not grant playtester approval or contributor authority.
 
-See [the transition and bot reuse plan](docs/ROOMY-TRANSITION.md). Legacy Discord source is retained for reference; deployed-service shutdown remains unverified.
+See [the transition and bot reuse plan](docs/ROOMY-TRANSITION.md). Legacy Discord source is retained for reference; both identified Railway Discord services have zero running replicas.
 
 ## 📖 The Lore
 
