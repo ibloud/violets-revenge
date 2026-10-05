@@ -19,7 +19,7 @@ Start only from an open GitHub issue labeled `good-first-issue` or `trainee-read
 - content or privacy boundaries;
 - a reviewer or escalation path.
 
-Do not use private Discord instructions as the sole specification.
+Do not use private chat instructions as the sole specification.
 
 ## Local setup
 
@@ -45,7 +45,7 @@ python -m pytest -q
 
 On Windows PowerShell, activate with `.venv\\Scripts\\Activate.ps1`.
 
-### Node bot checks
+### Retained Node bot checks (offline only)
 
 ```bash
 cd js-bot
@@ -53,7 +53,7 @@ npm ci
 npm test
 ```
 
-Running a Discord bot requires separate test credentials. Never place tokens in source, screenshots, issues, logs, or pull requests.
+Discord deployment and bridging are discontinued. These checks preserve legacy behavior without login. Do not request Discord credentials for new work. Never place tokens in source, screenshots, issues, logs, or pull requests. See `docs/ROOMY-TRANSITION.md`.
 
 ## Pull requests
 
@@ -61,7 +61,7 @@ Running a Discord bot requires separate test credentials. Never place tokens in 
 - Link the issue.
 - Explain what changed and why.
 - Include exact verification commands and results.
-- Add screenshots only when they contain no private Discord or applicant data.
+- Add screenshots only when they contain no private community or applicant data.
 - Request review; do not merge your own trainee PR unless instructed.
 
 ## Stop and ask
@@ -70,7 +70,7 @@ Pause when a task involves:
 
 - production credentials or deployment;
 - applicant or playtester data;
-- Discord role/permission changes;
+- community role/permission changes;
 - payment, revenue share, employment, or academic-credit claims;
 - new canon or sensitive narrative content;
 - a new framework or production engine.
