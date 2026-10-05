@@ -12,7 +12,7 @@ Thanks for considering contributing. This project runs as an open-source externs
 
 - Read `README.md` for project scope, roadmap phase, and compensation status (the public repository creates no payment or revenue-share agreement).
 - Read `docs/TRAINEE-ONBOARDING.md` for setup, task boundaries, and verification.
-- Read `docs/DATA-GOVERNANCE.md` before touching applicant, playtester, or Discord data.
+- Read `docs/DATA-GOVERNANCE.md` before touching applicant, playtester, or community data.
 - Read `docs/COMMUNITY.md` for how the team communicates and works together.
 - If you are exploring academic credit, read `docs/EXTERNSHIP-AGREEMENT.md`; obtain institutional and project approval before starting credited work.
 
@@ -21,7 +21,7 @@ Thanks for considering contributing. This project runs as an open-source externs
 1. Use GitHub Issues and filter for `good-first-issue` or `trainee-ready`.
 2. Confirm the issue names relevant files, acceptance criteria, verification steps, and a reviewer. If it does not, ask for clarification.
 3. **Claim a task before starting** by commenting on the issue or accepting assignment.
-4. Do not rely on private Discord instructions as the sole task specification.
+4. Do not rely on private Roomy or other chat instructions as the sole task specification.
 5. Propose untracked work through an issue before implementation.
 
 ## Workflow
