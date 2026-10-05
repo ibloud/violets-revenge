@@ -43,7 +43,9 @@ No Roomy bot integration, browser adapter, or migrated game-session history is c
 
 Discord source and offline tests remain for provenance. The Python bot no longer starts a Discord connection, the Node entry point exits before loading credentials or registering commands, and the legacy `/win-invite` route returns HTTP 410 with the Roomy invite without calling Discord. Do not deploy, expand, or request Discord credentials for new work. The game end screen links directly to Roomy without a Discord invite API or browser-side API secret.
 
-Live server deletion, hosted bot shutdown, credential revocation, billing cleanup, and old-invite revocation are **unverified**. When deployment access becomes available: identify each service, stop Discord-only processes and invite endpoints, disable auto-redeploy, revoke obsolete credentials/invites, check billing, and record evidence without exposing secrets. Preserve game source, attribution, and necessary records. Do not delete the server or historical data as part of this documentation change.
+Hosted shutdown is verified for the two identified Railway Discord services: `violets-revenge` and `sewers-and-shadows-bot`. Both report **zero running replicas**, no pending deployment work, and restart policy NEVER after applying retirement start commands. Services and variables are preserved; ordinary GitHub pushes are excluded by the retirement watch pattern. The separate Sewers & Shadows repository source remains unchanged.
+
+Discord server deletion, credential revocation, old-invite revocation, and account-wide billing cleanup remain **unverified**. No server or historical data was deleted. Permanent Railway service deletion was rejected by automatic review; a reversible shutdown was completed instead.
 
 ## Completion evidence
 
@@ -51,4 +53,4 @@ All six channels in the map are created, with orientation messages published. `w
 
 The live GitHub Pages HTML was fetched and verified to contain the actual Roomy invitation and no legacy dynamic Discord invite loader. Local end-state checks passed for both win and lose screens, including restart and safe external-link attributes. The retired endpoint returns 410 with and without legacy credentials and makes no Discord request.
 
-Railway retirement commands and restart policy NEVER were configured for both `violets-revenge` and `sewers-and-shadows-bot`. A watch pattern matching no project files prevents ordinary source changes from triggering deployment. Services and variables are preserved. Running replica shutdown must be verified separately; token revocation and account-wide billing cleanup remain unverified.
+Railway retirement commands and restart policy NEVER were configured for both `violets-revenge` and `sewers-and-shadows-bot`. A watch pattern matching no project files prevents ordinary source changes from triggering deployment. Services and variables are preserved. Shutdown verification: Violet deployment `1f6678bc-c8b5-49f5-bcac-306de134411a` and Sewers & Shadows deployment `aa9bc831-7905-47cb-bc93-00978758e62b` each report zero running replicas with no pending work. Sewers & Shadows logs show the retirement notice. Token revocation and account-wide billing cleanup remain unverified.
