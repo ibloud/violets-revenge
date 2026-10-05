@@ -41,10 +41,14 @@ No Roomy bot integration, browser adapter, or migrated game-session history is c
 
 ## Retirement verification
 
-Discord source and offline tests remain for provenance. Do not deploy, expand, or request Discord credentials for new work. The game end screen links directly to Roomy without a Discord invite API or browser-side API secret.
+Discord source and offline tests remain for provenance. The Python bot no longer starts a Discord connection, the Node entry point exits before loading credentials or registering commands, and the legacy `/win-invite` route returns HTTP 410 with the Roomy invite without calling Discord. Do not deploy, expand, or request Discord credentials for new work. The game end screen links directly to Roomy without a Discord invite API or browser-side API secret.
 
 Live server deletion, hosted bot shutdown, credential revocation, billing cleanup, and old-invite revocation are **unverified**. When deployment access becomes available: identify each service, stop Discord-only processes and invite endpoints, disable auto-redeploy, revoke obsolete credentials/invites, check billing, and record evidence without exposing secrets. Preserve game source, attribution, and necessary records. Do not delete the server or historical data as part of this documentation change.
 
 ## Completion evidence
 
-Record created Roomy channels and invite validation separately from repository implementation and live deployment status. GitHub Pages publication and an actual Roomy join should be verified before claiming an end-to-end onboarding test.
+All six channels in the map are created, with orientation messages published. `welcome-and-rules` is read-only for members; the other discussion channels allow member participation. The generated invitation resolves to Loptr Lab for the existing owner; fresh-account onboarding has not been tested.
+
+The live GitHub Pages HTML was fetched and verified to contain the actual Roomy invitation and no legacy dynamic Discord invite loader. Local end-state checks passed for both win and lose screens, including restart and safe external-link attributes. The retired endpoint returns 410 with and without legacy credentials and makes no Discord request.
+
+Railway retirement commands and restart policy NEVER were configured for both `violets-revenge` and `sewers-and-shadows-bot`. A watch pattern matching no project files prevents ordinary source changes from triggering deployment. Services and variables are preserved. Running replica shutdown must be verified separately; token revocation and account-wide billing cleanup remain unverified.

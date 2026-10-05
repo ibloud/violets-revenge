@@ -222,8 +222,7 @@ async def play_card(ctx, card: str):
     await ctx.send(result_message)
 
 
-# Run the bot
-if TOKEN == 'YOUR_BOT_TOKEN_HERE':
-    print("Please set your DISCORD_BOT_TOKEN environment variable on Railway.")
-else:
-    bot.run(TOKEN)
+# Retired October 4, 2026: preserve state helpers for offline reuse.
+# Never connect to Discord from this retained module, even with an old token.
+if __name__ == "__main__":
+    print("Discord deployment is retired. Coordinate through Loptr Lab on Roomy.")

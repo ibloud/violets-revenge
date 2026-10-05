@@ -1,22 +1,13 @@
-/**
- * ENTRY POINT — Violet's Revenge JS bot
- * ───────────────────────────────────────
- * This is a SEPARATE Discord bot application from violet_bot.py.
- * Do not point this at the same DISCORD_TOKEN as the Python bot —
- * two processes sharing one bot token can both receive the same
- * gateway interaction events and double-respond. Create a new bot
- * application in the Discord Developer Portal, invite it to the
- * server (with "applications.commands" + "bot" scopes, and the
- * Manage Roles permissions it needs below), and use *that* token here.
- *
- * Env vars needed (Railway → this service's own Variables tab):
- *   JS_BOT_TOKEN        — the new bot application's token
- *   JS_BOT_CLIENT_ID    — that application's client ID (for command registration)
- *   GUILD_ID            — the Violet's Revenge server ID
- *   WIN_CODE            — the code shown on the HTML game's win screen
+/** Retired Discord entry point. Legacy implementation below is unreachable.
+ * Preserve modules for offline reuse; coordinate through Loptr Lab on Roomy.
  */
 
 'use strict';
+
+// Retired October 4, 2026. Exit before loading credentials, registering
+// commands, or opening a Discord connection. Modules remain for offline reuse.
+console.log('Discord deployment is retired. Coordinate through Loptr Lab on Roomy.');
+process.exit(0);
 
 require('dotenv').config();
 const { Client, GatewayIntentBits, REST, Routes } = require('discord.js');
