@@ -1,6 +1,6 @@
 """Retired Discord invite endpoint.
 
-Returns HTTP 410 with the Loptr Lab Roomy invitation to old game clients.
+Returns HTTP 410 without an invitation to old game clients.
 Legacy helpers are retained for reference; the route never calls Discord.
 """
 
@@ -102,7 +102,6 @@ def win_invite():
     """Retired endpoint: never mint Discord invitations."""
     return jsonify({
         "error": "Discord invitations are discontinued",
-        "community_url": "https://roomy.space/join?space=did%3Aplc%3Af62tthd7cmjpfvtlet2crpsq&invite=631116db109c5a7f4c38f03edd57269d",
     }), 410
 
 
