@@ -1,4 +1,6 @@
-# js-bot — Violet's Revenge gating bot
+# js-bot — retained legacy gating bot
+
+**Retired deployment path — October 4, 2026.** Discord development and bridging are discontinued. Do not follow the historical setup below for new deployments. Preserve source and offline tests for browser intake reuse. See [Roomy transition](../docs/ROOMY-TRANSITION.md). Hosted shutdown is unverified.
 
 A **separate Discord bot application** from `violet_bot.py`. Handles the
 playtester "labyrinth" gating: `/claim` (win-code + account-age check,
