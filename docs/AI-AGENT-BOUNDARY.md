@@ -1,17 +1,17 @@
 # AI and Automation Boundary Policy
 
 **Status:** Active  
-**Last updated:** 2026-09-04
+**Last updated:** 2026-10-04
 
 ## Purpose
 
-This policy separates bounded in-server automation from autonomous public character publishing.
+This policy separates bounded opt-in application automation from autonomous public character publishing.
 
 ## Allowed with documented controls
 
-- Deterministic command responses inside the project Discord.
+- Deterministic responses inside explicitly approved browser tools. Roomy automation requires a separately reviewed integration; none is currently implemented.
 - Low-frequency, bounded in-character messages in explicitly configured project channels.
-- Moderated intake routing and role assignment.
+- Moderated intake routing after privacy and human review controls are implemented; community joining alone does not confer eligibility.
 - Test or development output that cannot reach public accounts.
 
 Allowed automation must:
@@ -45,6 +45,6 @@ Allowed automation must:
 
 ## Current implementation note
 
-`violet_bot.py` contains bounded autonomous Discord responses in named project channels. That behavior is permitted only under the controls above and is not authorization for external social posting.
+Discord development and bridging are discontinued. `violet_bot.py` and `js-bot/` remain legacy source for reference and offline tests. Their handlers are not Roomy integrations. Browser reuse must preserve explicit opt-in, automation disclosure, stop controls, privacy, and human decisions. Live Discord service shutdown remains unverified.
 
 Historical proposals remain archived under `docs/archive/`.

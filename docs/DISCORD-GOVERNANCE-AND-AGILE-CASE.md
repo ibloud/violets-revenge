@@ -1,6 +1,8 @@
 # Discord governance and Agile teaching-case proposal
 
-**Status:** proposed operating design and external-event concept
+**Status:** historical Discord operating proposal; external-event concept remains proposed
+
+**Superseded October 4, 2026:** Discord development and bridging are discontinued. Use [ROOMY-TRANSITION.md](ROOMY-TRANSITION.md) for current community operations. This document is retained for provenance; external-context claims below reflect their recorded review date.
 
 **Project:** *Violet's Revenge*
 

@@ -19,6 +19,12 @@ Financial support is optional and sustains infrastructure, maintenance, accessib
 
 ---
 
+## Community coordination — Roomy
+
+Loptr Lab uses [Roomy](https://roomy.space/did:plc:f62tthd7cmjpfvtlet2crpsq) for coordination. [Join the community](https://roomy.space/join?space=did%3Aplc%3Af62tthd7cmjpfvtlet2crpsq&invite=631116db109c5a7f4c38f03edd57269d). Discord development and bridging are discontinued by project-lead decision on October 4, 2026. GitHub remains the durable record for issues, code, review, and decisions. Community membership does not grant playtester approval or contributor authority.
+
+See [the transition and bot reuse plan](docs/ROOMY-TRANSITION.md). Legacy Discord source is retained for reference; deployed-service shutdown remains unverified.
+
 ## 📖 The Lore
 
 Play as Violet—a brilliant forensics examiner in London whose life is shattered by a brutal attack that costs her everything, including her unborn child. Driven by a dark ritual on Hallows Eve, Violet returns as an unstoppable supernatural force, wielding forensic science as her weapon.
@@ -65,7 +71,7 @@ python -m pip install -r requirements.txt
 python -m pytest -q
 ```
 
-### Node bot checks
+### Legacy Node bot checks (offline only)
 
 ```bash
 cd js-bot
@@ -178,7 +184,7 @@ This section is a **project boundary**, not a new contract imposed on contributo
 4. Use a focused branch and submit a pull request with verification results.
 5. Wait for review before merging or treating a change as canon.
 
-Public social posting and Discord participation are optional unless a specific, approved role agreement says otherwise. Merging a PR does not automatically grant Discord access, academic credit, employment status, compensation, or revenue share.
+Public social posting and Roomy participation are optional unless a specific, approved role agreement says otherwise. Merging a PR does not automatically grant community access, academic credit, employment status, compensation, or revenue share.
 
 [Play the current browser prototype](https://ibloud.github.io/violets-revenge/)
 
@@ -201,7 +207,7 @@ Public social posting and Discord participation are optional unless a specific, 
 - docs/AI-AGENT-BOUNDARY.md
 - docs/TRAINEE-ONBOARDING.md
 - docs/DATA-GOVERNANCE.md
-- [docs/DISCORD-GOVERNANCE-AND-AGILE-CASE.md](docs/DISCORD-GOVERNANCE-AND-AGILE-CASE.md) — Discord safeguards, relationship boundaries, and proposed Agile teaching case
+- [docs/DISCORD-GOVERNANCE-AND-AGILE-CASE.md](docs/DISCORD-GOVERNANCE-AND-AGILE-CASE.md) — historical Discord design; superseded for community operations by docs/ROOMY-TRANSITION.md
 - [docs/MUSIC-LICENSING.md](docs/MUSIC-LICENSING.md) — development references, clearance workflow, and rights-status register
 - [docs/REN-COLLABORATION-RECORD.md](docs/REN-COLLABORATION-RECORD.md) — provenance, participation, exit, and rights boundary
 - docs/adr/ADR-0001-current-stack.md

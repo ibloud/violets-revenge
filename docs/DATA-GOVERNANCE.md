@@ -1,22 +1,22 @@
 # Applicant and Playtester Data Governance
 
 **Status:** Required operating policy  
-**Last updated:** 2026-09-04
+**Last updated:** 2026-10-04
 
 ## Scope
 
-Applies to Discord claim attempts, intake forms, moderation records, practicum inquiries, contact details, and any information used to approve access or document participation.
+Applies to Roomy coordination, proposed browser intake, retained historical Discord claim attempts, intake forms, moderation records, practicum inquiries, contact details, and any information used to approve access or document participation.
 
 ## Data minimization
 
-Collect only information required for the stated purpose. Do not request medical history, diagnosis, protected traits, government identifiers, financial credentials, passwords, or unnecessary personal history through Discord intake.
+Collect only information required for the stated purpose. Do not request medical history, diagnosis, protected traits, government identifiers, financial credentials, passwords, or unnecessary personal history through community intake.
 
 ## Access
 
 - Intake responses may be viewed only by designated reviewers.
 - Bot tokens and invite secrets belong in deployment secrets, never repository content or logs.
 - Trainees must use synthetic data for development and screenshots.
-- Private Discord content must not be copied into public issues or PRs.
+- Private community content must not be copied into public issues or PRs.
 
 ## Retention
 

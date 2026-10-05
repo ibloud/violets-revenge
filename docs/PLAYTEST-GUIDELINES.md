@@ -1,48 +1,35 @@
-# Violet's Revenge — Discord Server Rules & Playtest Guidelines
+# Violet's Revenge — Roomy Community and Playtest Guidelines
 
-## 🩸 Server Rules
+Roomy is the coordination center; Discord development and bridging are discontinued. See [ROOMY-TRANSITION.md](ROOMY-TRANSITION.md) for the space, invite, and retirement limits.
 
-1. **Respect the team and each other.** No harassment, hate speech, or personal attacks. This is a professional externship environment — treat it like one.
-2. **Spoiler tag lore and story content.** Story Bible details, unreleased character reveals, or unannounced plot beats go behind spoiler tags (`||like this||`) outside of designated lore channels.
-3. **No unauthorized sharing.** This is unreleased IP. Don't stream, clip, or publicly share builds, screenshots, or footage without a team lead's sign-off.
-4. **Bug reports go in #bug-reports, not general chat.** Use the template below so reports are actionable.
-5. **Content warnings are not optional.** Violet's Revenge deals with trauma-informed themes (assault, loss, grief). If you're posting fan content, discussion, or lore expansion involving these themes, tag it accordingly.
-6. **No real-person content.** Per the project's Character Development Guidelines, no real people — living or dead — are referenced in-universe or in derivative fan content.
-7. **Follow the Character Bible.** If a character detail isn't documented in `docs/CHARACTER-BIBLE.md`, it isn't canon. Don't promote personal headcanon as official lore in public channels.
-8. **Externship conduct applies here too.** Anyone here for documented practicum hours or portfolio credit is still bound by `CODE_OF_CONDUCT.md` — Discord conduct counts toward that record.
+## Community rules
 
-## 🔬 Playtest Participation Guidelines
+1. Respect participants; no harassment, hate speech, or personal attacks. Follow CODE_OF_CONDUCT.md.
+2. Label spoilers and sensitive story themes before the text. Do not assume Discord spoiler markup works in Roomy.
+3. Do not share uncleared builds, private screenshots, recordings, or unreleased material without approval.
+4. Report bugs through GitHub Issues; development chat can coordinate triage.
+5. Keep real people out of in-universe character material. Bibles remain canon authority.
+6. Participation is voluntary. No membership, payment, or game win promises employment, compensation, ownership, academic credit, or a human oversight relationship.
 
-**Before you join a session:**
-- Read the content warning below and confirm you're comfortable with the themes involved.
-- Sign up for a time slot in #playtest-signups — full 1v4 lobbies need coordination, so last-minute drop-ins may get bumped.
-- Make sure your build is up to date (check #announcements for the current version tag).
+## Before a session
 
-**Content Warning (post this before every playtest call for signup):**
-> Violet's Revenge involves fictional depictions of violence, assault-adjacent themes, and loss, handled through a horror-forensics lens. The "Guilty" are anonymized archetypes, never given identifying real-world traits. If these themes aren't for you, no judgment — sit this one out.
+Post in games-and-playtesting: the actual build/version, tested mode, schedule, capacity, accessibility options, content warning, and consent choices. The current prototype is a browser proof-of-loop; 1v4 online play is a future goal, not a working Roomy feature. Obtain human approval for participation; joining Roomy does not replace that step.
 
-**During the session:**
-- Recording requires opt-in from every participant before anyone hits record.
-- Stay in the assigned voice channel for your role (Violet / Guilty / Spectator).
-- If something breaks, don't try to "push through it" — flag it in #bug-reports immediately with a timestamp so we can pull logs.
+**Content warning:** Violet's Revenge includes fictional violence, assault-adjacent themes, grief, and loss through a horror-forensics lens. You may decline, pause, or leave without explanation.
 
-**After the session:**
-- Fill out the feedback form (linked in #playtest-feedback) — please answer core-loop clarity, pacing/tension, UI legibility, and bugs as separate sections rather than one blob.
-- Bugs get filed as GitHub Issues by the triage lead within 48 hours.
+## During and after
 
-## 🐛 Bug Report Template (pin this in #bug-reports)
+- Offer text-first and asynchronous participation. Camera use is optional.
+- Do not promise native voice support. Use an agreed, verified tool if live voice is needed.
+- Obtain every participant's advance opt-in before recording. Publish retention and reuse terms first.
+- Stop when requested; report failures rather than pushing through them.
+- Feedback should cover core-loop clarity, pacing, legibility, input/accessibility barriers, and bugs separately.
+- Triage reproducible bugs to GitHub with build, expected/observed behavior, reproduction steps, and consent-safe evidence. Never copy private discussion into public issues.
 
-```
-**Build version:**
-**What happened:**
-**What you expected:**
-**Steps to reproduce:**
-**Timestamp (if playtest session):**
-**Screenshot/clip (optional):**
-```
+## Bug report template
 
-## 📌 Notes for AiGuild / Server Admins
+Build/version:\nObserved behavior:\nExpected behavior:\nSteps to reproduce:\nDevice/input/accessibility context (optional; no diagnosis required):\nSession timestamp (if relevant):\nCleared screenshot/clip (optional):
 
-- Channels referenced above assume: #announcements, #playtest-signups, #playtest-feedback, #bug-reports, #good-first-issues, plus role-gated voice channels for Violet / Guilty / Spectator.
-- The content warning should be a **required acknowledgment** (reaction-role or form gate) before someone can access playtest-signup, not just a pinned message people can scroll past.
-- No NDA is enforced here yet — if external (non-team) testers start joining, that's worth revisiting before opening signups further.
+## Moderator prerequisites
+
+Keep working/private/voice participation adult-only until an under-18 safeguarding plan exists. Verify member/admin access and a private human reporting route before collecting intake or incident data. Real intake is disabled until DATA-GOVERNANCE.md retention and access prerequisites are met. No Discord reaction-role, /claim, or /intake flow is required or claimed in Roomy.
