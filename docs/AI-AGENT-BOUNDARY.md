@@ -45,6 +45,6 @@ Allowed automation must:
 
 ## Current implementation note
 
-Discord development and bridging are discontinued. `violet_bot.py` and `js-bot/` remain legacy source for reference and offline tests. Their handlers are not Roomy integrations. Browser reuse must preserve explicit opt-in, automation disclosure, stop controls, privacy, and human decisions. Live Discord service shutdown remains unverified.
+Discord development and bridging are discontinued. `violet_bot.py` and `js-bot/` remain legacy source for reference and offline tests. Their handlers are not Roomy integrations. Browser reuse must preserve explicit opt-in, automation disclosure, stop controls, privacy, and human decisions. Both identified Railway Discord services have zero running replicas; remaining credential and billing cleanup is documented in `docs/ROOMY-TRANSITION.md`.
 
 Historical proposals remain archived under `docs/archive/`.
