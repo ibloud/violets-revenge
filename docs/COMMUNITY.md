@@ -5,7 +5,7 @@ Violet's Revenge is built by a distributed team of externship students, laid-off
 ## Where We Work
 
 - **GitHub** — source of truth for code, issues, and pull requests. If it's not tracked here, it's not officially part of the project.
-- **Roomy** — day-to-day coordination in [Loptr Lab](https://roomy.space/did:plc:f62tthd7cmjpfvtlet2crpsq). [Join](https://roomy.space/join?space=did%3Aplc%3Af62tthd7cmjpfvtlet2crpsq&invite=631116db109c5a7f4c38f03edd57269d). See [ROOMY-TRANSITION.md](ROOMY-TRANSITION.md) and [PLAYTEST-GUIDELINES.md](PLAYTEST-GUIDELINES.md). No Discord account or bridge is required.
+- **Roomy** — day-to-day coordination in [Loptr Lab](https://roomy.space/did:plc:f62tthd7cmjpfvtlet2crpsq). Game invitations appear only after a win. Dominique may separately invite approved collaborators or guests. See [ROOMY-TRANSITION.md](ROOMY-TRANSITION.md) and [PLAYTEST-GUIDELINES.md](PLAYTEST-GUIDELINES.md). No Discord account or bridge is required.
 - **Jira / GitHub Projects** — sprint planning and task tracking for the AGILE workflow referenced in `CONTRIBUTING.md`.
 
 ## Who We Are

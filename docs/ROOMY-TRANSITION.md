@@ -7,9 +7,10 @@
 Roomy is the community coordination center. Discord development and the Discord bridge are discontinued. No Discord login is required for the browser prototype, contributions, or community onboarding.
 
 - Space: https://roomy.space/did:plc:f62tthd7cmjpfvtlet2crpsq
-- Community invite: https://roomy.space/join?space=did%3Aplc%3Af62tthd7cmjpfvtlet2crpsq&invite=631116db109c5a7f4c38f03edd57269d
+- Game access: the Roomy invitation appears only on the win screen. Losing offers retry without an invitation.
+- Separate access: Dominique may directly invite approved collaborators or guests.
 - GitHub is authoritative for scope, decisions, accepted work, rules, and bug reports.
-- The space was created invite-only with admin-controlled invitation creation. The end-screen invite is intentionally shareable; invite-only is not a confidentiality guarantee.
+- The space was created invite-only with admin-controlled invitation creation. The win-screen invitation is a reusable link in a static browser game; it can be shared or extracted from source. This is a gameplay reward, not server-verified proof of a win. Strict enforcement would require a separate verified-win access service.
 
 ## Channel map
 
@@ -41,7 +42,7 @@ No Roomy bot integration, browser adapter, or migrated game-session history is c
 
 ## Retirement verification
 
-Discord source and offline tests remain for provenance. The Python bot no longer starts a Discord connection, the Node entry point exits before loading credentials or registering commands, and the legacy `/win-invite` route returns HTTP 410 with the Roomy invite without calling Discord. Do not deploy, expand, or request Discord credentials for new work. The game end screen links directly to Roomy without a Discord invite API or browser-side API secret.
+Discord source and offline tests remain for provenance. The Python bot no longer starts a Discord connection, the Node entry point exits before loading credentials or registering commands, and the legacy `/win-invite` route returns HTTP 410 without an invitation without calling Discord. Do not deploy, expand, or request Discord credentials for new work. The game win screen links directly to Roomy without a Discord invite API or browser-side API secret.
 
 Hosted shutdown is verified for the two identified Railway Discord services: `violets-revenge` and `sewers-and-shadows-bot`. Both report **zero running replicas**, no pending deployment work, and restart policy NEVER after applying retirement start commands. Services and variables are preserved; ordinary GitHub pushes are excluded by the retirement watch pattern. The separate Sewers & Shadows repository source remains unchanged.
 
@@ -51,6 +52,6 @@ Discord server deletion, credential revocation, old-invite revocation, and accou
 
 All six channels in the map are created, with orientation messages published. `welcome-and-rules` is read-only for members; the other discussion channels allow member participation. The generated invitation resolves to Loptr Lab for the existing owner; fresh-account onboarding has not been tested.
 
-The live GitHub Pages HTML was fetched and verified to contain the actual Roomy invitation and no legacy dynamic Discord invite loader. Local end-state checks passed for both win and lose screens, including restart and safe external-link attributes. The retired endpoint returns 410 with and without legacy credentials and makes no Discord request.
+The live GitHub Pages HTML was fetched and verified to contain the actual Roomy invitation and no legacy dynamic Discord invite loader. End-state checks verify the win screen includes the Roomy invitation, the lose screen has no invitation, and restart and safe external-link attributes are preserved. The retired endpoint returns 410 with and without legacy credentials and makes no Discord request.
 
 Railway retirement commands and restart policy NEVER were configured for both `violets-revenge` and `sewers-and-shadows-bot`. A watch pattern matching no project files prevents ordinary source changes from triggering deployment. Services and variables are preserved. Shutdown verification: Violet deployment `1f6678bc-c8b5-49f5-bcac-306de134411a` and Sewers & Shadows deployment `aa9bc831-7905-47cb-bc93-00978758e62b` each report zero running replicas with no pending work. Sewers & Shadows logs show the retirement notice. Token revocation and account-wide billing cleanup remain unverified.
