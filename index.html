@@ -156,7 +156,7 @@ font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:10p
 }
 .overlay-controls b{color:var(--ink)}
 
-/* ── Win-state Discord invite ── */
+/* ── End-state Roomy invitation ── */
 .encore{
   margin-top:14px;padding:14px 18px;border:1px solid var(--gold);border-radius:6px;
   background:rgba(241,196,15,0.05);display:flex;align-items:center;gap:16px;max-width:380px;
@@ -233,7 +233,6 @@ body.force-touch #touchControls{display:block}
   font-size:9px;letter-spacing:2px;color:#6b5a80;pointer-events:none;
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -925,81 +924,17 @@ const CONTROLS_HTML = `
     🟡 Collect 3 Case Files &nbsp;|&nbsp; 🚪 Reach Exit &nbsp;|&nbsp; 🟣 Avoid Violet
   </div>`;
 
-const STATIC_INVITE_URL = 'https://discord.gg/zemqccGdf';
-const STATIC_INVITE_QR = 'discord_qr.jpeg';
-const WIN_INVITE_ENDPOINT = window.VIOLET_WIN_INVITE_ENDPOINT || '/win-invite';
-const WIN_INVITE_API_TOKEN = window.VIOLET_WIN_INVITE_API_TOKEN || '';
-const ALLOWED_INVITE_HOSTS = new Set(['discord.gg', 'discord.com']);
-
-const STATIC_ENCORE_HTML = `
-  <div class="encore">
-    <a href="${STATIC_INVITE_URL}" target="_blank" rel="noopener noreferrer">
-      <img src="${STATIC_INVITE_QR}" alt="Discord invite QR code">
-    </a>
-    <div class="encore-text">
-      <b>STAY FOR THE ENCORE</b>
-      Join the team on Discord — help shape what happens after the credits roll.<br>
-      <a href="${STATIC_INVITE_URL}" target="_blank" rel="noopener noreferrer" class="encore-link">discord.gg/zemqccGdf →</a>
-    </div>
-  </div>`;
-
-// Discord invite shown only after a win.
+// Roomy coordination replaces the retired Discord invite service.
+const ROOMY_INVITE_URL = 'https://roomy.space/join?space=did%3Aplc%3Af62tthd7cmjpfvtlet2crpsq&invite=631116db109c5a7f4c38f03edd57269d';
 const ENCORE_HTML = `
   <div class="encore" id="encoreInvite">
-    <div class="encore-qr" id="encoreQr" aria-label="Discord invite QR code"></div>
     <div class="encore-text">
       <b>STAY FOR THE ENCORE</b>
-      <span id="encoreCopy">Minting a fresh Discord invite...</span><br>
-      <a href="${STATIC_INVITE_URL}" target="_blank" rel="noopener noreferrer" class="encore-link" id="encoreLink">Generating invite...</a>
+      Continue with Loptr Lab on Roomy — discuss the story, share feedback, and find future playtests.<br>
+      <a href="${ROOMY_INVITE_URL}" target="_blank" rel="noopener noreferrer" class="encore-link" id="encoreLink">Join Loptr Lab on Roomy →</a>
+      <p>Joining is optional and does not automatically grant playtester access.</p>
     </div>
   </div>`;
-
-async function loadWinInvite() {
-  const qrNode = document.getElementById('encoreQr');
-  const linkNode = document.getElementById('encoreLink');
-  const copyNode = document.getElementById('encoreCopy');
-  const inviteNode = document.getElementById('encoreInvite');
-  if (!qrNode || !linkNode || !copyNode || !inviteNode) return;
-
-  try {
-    const headers = { 'Accept': 'application/json' };
-    if (WIN_INVITE_API_TOKEN) headers['X-API-Token'] = WIN_INVITE_API_TOKEN;
-    const resp = await fetch(WIN_INVITE_ENDPOINT, {
-      method: 'POST',
-      headers
-    });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-
-    const data = await resp.json();
-    if (!data || typeof data.invite_url !== 'string' || !data.invite_url) {
-      throw new Error('Missing invite_url');
-    }
-    if (!window.QRCode) throw new Error('QRCode library unavailable');
-
-    const inviteUrl = toSafeInviteUrl(data.invite_url);
-    copyNode.textContent = 'Join the team on Discord — help shape what happens after the credits roll.';
-    linkNode.href = inviteUrl;
-    linkNode.textContent = inviteUrl.replace(/^https?:\/\//, '') + ' →';
-    qrNode.innerHTML = '';
-    new QRCode(qrNode, {
-      text: inviteUrl,
-      width: 76,
-      height: 76,
-      colorDark: '#000000',
-      colorLight: '#ffffff'
-    });
-  } catch (error) {
-    console.warn('[win-invite] Dynamic invite fetch failed — falling back to static invite.', error);
-    inviteNode.outerHTML = STATIC_ENCORE_HTML;
-  }
-}
-
-function toSafeInviteUrl(rawUrl) {
-  const parsed = new URL(rawUrl);
-  if (parsed.protocol !== 'https:') throw new Error('Invite URL must use HTTPS');
-  if (!ALLOWED_INVITE_HOSTS.has(parsed.hostname)) throw new Error(`Untrusted invite host: ${parsed.hostname}`);
-  return parsed.href;
-}
 
 // ─── Overlay Screens ───
 function showOverlay(title, body, btn, extra) {
@@ -1032,13 +967,13 @@ function loop() {
         'AGAIN',
         ENCORE_HTML
       );
-      loadWinInvite();
     } else if (state === 'lose') {
       showOverlay(
         '🟣 CAUGHT',
         '<p class="warn">Violet drags you to the Autopsy Slab.</p>' +
         '<p>The last thing you hear is the Nightingale singing.</p>',
-        'RETRY'
+        'RETRY',
+        ENCORE_HTML
       );
     }
   }
