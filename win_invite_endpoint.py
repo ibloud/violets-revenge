@@ -1,19 +1,7 @@
-"""
-WIN-INVITE ENDPOINT
-────────────────────
-Mints a fresh, single-use Discord invite on demand, instead of the game
-showing a permanent hardcoded link.
+"""Retired Discord invite endpoint.
 
-Runs as a tiny Flask app alongside the existing Python bot (same Railway
-service, or a second small service — either works). Needs the bot's
-token, channel ID, and a shared API secret.
-
-Requires the bot to have "Create Instant Invite" permission on that
-channel (Server Settings → Roles → your bot's role, or per-channel
-overrides).
-
-Install: pip install flask requests
-Run:     python win_invite_endpoint.py
+Returns HTTP 410 with the Loptr Lab Roomy invitation to old game clients.
+Legacy helpers are retained for reference; the route never calls Discord.
 """
 
 import os
@@ -111,25 +99,11 @@ def create_discord_invite():
 
 @app.route("/win-invite", methods=["POST"])
 def win_invite():
-    """
-    Called by the game's client-side JS the moment the win state fires.
-    Returns {"invite_url": "..."} for the game to turn into a QR code
-    client-side (e.g. with a small JS QR library — no need to ship a
-    static image anymore).
-    """
-    if not CONFIG:
-        return jsonify({"error": "Service is not configured"}), 503
-    if not is_authorized():
-        return jsonify({"error": "Unauthorized"}), 401
-
-    ip_address = client_ip()
-    if not within_rate_limit(ip_address):
-        return jsonify({"error": "Rate limit exceeded"}), 429
-
-    invite_url = create_discord_invite()
-    if not invite_url:
-        return jsonify({"error": "Could not create invite"}), 502
-    return jsonify({"invite_url": invite_url})
+    """Retired endpoint: never mint Discord invitations."""
+    return jsonify({
+        "error": "Discord invitations are discontinued",
+        "community_url": "https://roomy.space/join?space=did%3Aplc%3Af62tthd7cmjpfvtlet2crpsq&invite=631116db109c5a7f4c38f03edd57269d",
+    }), 410
 
 
 if __name__ == "__main__":
