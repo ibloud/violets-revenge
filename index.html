@@ -167,6 +167,11 @@ font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:10p
 .encore .encore-text b{color:var(--gold);display:block;font-size:13px;letter-spacing:1px;margin-bottom:4px}
 .encore-link{display:inline-block;margin-top:6px;color:var(--violet-bright);text-decoration:underline}
 .encore-link:hover{color:var(--gold)}
+.event-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+  margin-top:14px;padding:10px 16px;color:var(--gold);text-decoration:underline;
+  border:1px solid var(--gold);border-radius:4px}
+.event-link:hover{background:rgba(241,196,15,0.1)}
+.event-link:focus-visible{outline:3px solid var(--violet-bright);outline-offset:3px}
 
 /* ── Seat silhouettes: quiet nod to the poster's audience, purely ambient ── */
 .seats{margin-top:26px;opacity:0.55;width:100%;max-width:640px}
@@ -951,6 +956,10 @@ const ENCORE_HTML = `
   </div>`;
 
 // ─── Overlay Screens ───
+// The Halloween invitation is available after either outcome.
+const HALLOWEEN_EVENT_HTML = `
+  <a href="https://ibloud.github.io/inpatient-corridors-review/event/" class="event-link">Halloween event details →</a>`;
+
 function showOverlay(title, body, btn, extra) {
   const ov = document.getElementById('overlay');
   ov.innerHTML = `<h2>${title}</h2>${body}${CONTROLS_HTML}${extra || ''}<button id="restartBtn">${btn}</button>`;
@@ -979,14 +988,15 @@ function loop() {
         '<p class="good">You destroyed the evidence and escaped the Morgue.</p>' +
         '<p>But Violet is still out there. Waiting.</p>',
         'AGAIN',
-        ENCORE_HTML
+        ENCORE_HTML + HALLOWEEN_EVENT_HTML
       );
     } else if (state === 'lose') {
       showOverlay(
         '🟣 CAUGHT',
         '<p class="warn">Violet drags you to the Autopsy Slab.</p>' +
         '<p>The last thing you hear is the Nightingale singing.</p>',
-        'RETRY'
+        'RETRY',
+        HALLOWEEN_EVENT_HTML
       );
     }
   }
