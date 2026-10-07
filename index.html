@@ -201,6 +201,8 @@ canvas{width:100%;height:auto}
   font-size:14px;line-height:1.7;
 }
 .info-panels .stub-controls{flex:0 1 auto;min-width:0;width:100%;line-height:1.9}
+.info-panels .stub-controls{list-style:none;padding:0;margin:0;display:grid;gap:16px}
+.info-panels .stub-controls li{margin:0}
 .info-panels .kbs{font-size:12px}
 @media (max-width:600px){
   .info-panels{grid-template-columns:minmax(0,1fr);gap:16px}
@@ -315,9 +317,12 @@ body.force-touch #touchControls{display:block}
 <div class="info-panels">
 <div class="ticket">
   <span class="stub-label">🎟 ADMIT ONE</span>
-  <span class="stub-controls">
-    <span class="kbs">WASD</span> / <span class="kbs">Arrows</span> — Move &nbsp;|&nbsp; 🟡 Collect 3 Case Files &nbsp;|&nbsp; 🚪 Reach Exit &nbsp;|&nbsp; 🟣 Avoid Violet
-  </span>
+  <ul class="stub-controls" role="list">
+    <li><span class="kbs">WASD</span> / <span class="kbs">Arrows</span> — Move</li>
+    <li>🟡 Collect 3 Case Files</li>
+    <li>🚪 Reach Exit</li>
+    <li>🟣 Avoid Violet</li>
+  </ul>
 </div>
 
 <section class="event-info" aria-labelledby="event-heading">
