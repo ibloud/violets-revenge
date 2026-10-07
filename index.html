@@ -181,6 +181,31 @@ font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:10p
 .event-info h2{font-family:Georgia,serif;color:var(--violet-bright);font-size:22px;margin-bottom:8px}
 .event-info p + p{margin-top:10px}
 
+/* Keep the game and cards within both tablet orientations. */
+.theatre{width:100%;max-width:900px}
+.curtain{flex-shrink:0}
+#wrap{flex:1;min-width:0}
+canvas{width:100%;height:auto}
+@media (max-width:720px){#wrap{width:100%}}
+/* Side-by-side cards below the game; stack only on narrow screens. */
+.info-panels{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;
+  width:100%;max-width:900px;margin-top:20px;align-items:stretch;
+}
+.info-panels > .ticket,.info-panels > .event-info{
+  width:auto;max-width:none;min-width:0;margin:0;padding:22px;
+  border-radius:6px;overflow-wrap:anywhere;
+}
+.info-panels > .ticket{
+  flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:18px;
+  font-size:14px;line-height:1.7;
+}
+.info-panels .stub-controls{flex:0 1 auto;min-width:0;width:100%;line-height:1.9}
+.info-panels .kbs{font-size:12px}
+@media (max-width:600px){
+  .info-panels{grid-template-columns:minmax(0,1fr);gap:16px}
+  .info-panels > .ticket,.info-panels > .event-info{padding:18px}
+}
 /* ── Seat silhouettes: quiet nod to the poster's audience, purely ambient ── */
 .seats{margin-top:26px;opacity:0.55;width:100%;max-width:640px}
 .seats svg{width:100%;height:auto;display:block}
@@ -287,6 +312,7 @@ body.force-touch #touchControls{display:block}
   <div class="curtain" id="curtainR"></div>
 </div>
 
+<div class="info-panels">
 <div class="ticket">
   <span class="stub-label">🎟 ADMIT ONE</span>
   <span class="stub-controls">
@@ -301,6 +327,7 @@ body.force-touch #touchControls{display:block}
   <p><strong>Win the game to unlock your Roomy invitation:</strong> select BEGIN, collect all <strong>3 Case Files</strong>, and reach the <strong>Exit Door</strong> before Violet catches you three times. On the <strong>ESCAPED</strong> screen, select <strong>Join Loptr Lab on Roomy</strong> to enter the community coordination space.</p>
   <p>If you are caught, select RETRY and try again. Joining Roomy is optional; the public event details can be read without winning.</p>
 </section>
+</div>
 
 <div class="seats">
   <svg viewBox="0 0 640 60" preserveAspectRatio="none">
