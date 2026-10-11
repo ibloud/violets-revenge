@@ -278,6 +278,78 @@ body.force-touch #touchControls{display:block}
   position:absolute;left:26px;bottom:8px;width:130px;text-align:center;
   font-size:9px;letter-spacing:2px;color:#6b5a80;pointer-events:none;
 }
+/* ── DESIGN OPTION: Neon Creep / Yami Kawaii ──
+   Visual-only treatment for review. Original game logic and copy remain intact. */
+:root{
+  --void:#10091b;--wall:#241532;--wall-line:#503267;--floor:#100b1a;
+  --ink:#f7eefa;--violet:#d69cff;--violet-bright:#f0b8ff;
+  --gold:#ffafd5;--velvet-dark:#24132e;--velvet:#54265f;--velvet-light:#88418d;--blood:#ff729f;
+}
+body{
+  background:
+    radial-gradient(ellipse at 10% 4%,rgba(137,65,195,.27),transparent 36%),
+    radial-gradient(ellipse at 95% 12%,rgba(255,112,190,.16),transparent 30%),
+    var(--void);
+  color:var(--ink);
+  font-family:"Avenir Next",Avenir,"Trebuchet MS",system-ui,sans-serif;
+  letter-spacing:normal;
+}
+body::before{
+  background:
+    radial-gradient(circle at 12% 24%,rgba(180,125,255,.08) 0 1px,transparent 2px),
+    radial-gradient(circle at 84% 42%,rgba(255,175,213,.08) 0 1px,transparent 2px),
+    radial-gradient(ellipse at center,rgba(64,28,91,.22),rgba(16,9,27,.82) 78%);
+  background-size:37px 37px,53px 53px,auto;
+}
+.marquee{border:1px solid #f5a8ff;border-radius:18px;background:linear-gradient(145deg,#29143e,#150d24);box-shadow:0 0 28px #bb62ff33,inset 0 0 24px #ed9cff0c}
+.marquee::before,.marquee::after{background-image:radial-gradient(circle,var(--gold) 2px,transparent 3px);opacity:.9}
+.marquee h1{font-family:"Trebuchet MS",system-ui,sans-serif;font-style:normal;font-weight:900;letter-spacing:.015em;color:#f4c9ff;text-shadow:0 0 18px #c77dff88}
+.marquee p{font-family:inherit;font-size:11px;letter-spacing:.18em;color:#d8b7eb}
+.theatre{filter:drop-shadow(0 18px 40px #0008)}
+.curtain{background-image:linear-gradient(-45deg,transparent 46%,#10091b55 50%,transparent 54%),linear-gradient(45deg,transparent 46%,#10091b55 50%,transparent 54%),repeating-linear-gradient(90deg,#251331 0,#54265f 8px,#88418d 14px,#54265f 20px,#251331 28px);border-radius:14px}
+#wrap{border:2px solid #bb7be8;border-radius:12px;overflow:hidden;box-shadow:0 0 32px #bc70ff2c,0 0 0 5px #1a1025}
+#overlay{background:rgba(19,10,31,.91);backdrop-filter:blur(8px)}
+#overlay h2{font-family:"Trebuchet MS",system-ui,sans-serif;font-style:normal;font-weight:900;color:#f2b9ff;text-shadow:0 0 20px #d275ff88}
+#overlay p{font-size:15px;line-height:1.65}
+#overlay button{font-family:inherit;font-weight:850;letter-spacing:.09em;color:#fff1ff;background:linear-gradient(135deg,#8c42b8,#5d318f);border:1px solid #f2b9ff;border-radius:999px;box-shadow:0 0 20px #b65bff38;transition:transform .18s ease,box-shadow .18s ease}
+#overlay button:hover{background:linear-gradient(135deg,#c06ce5,#7948bc);box-shadow:0 0 26px #d68aff77;transform:translateY(-1px)}
+.warn{color:#ff83b8}.good{color:#a6f6d7}.pur{color:#e2a5ff}
+.ticket,.event-info{background:linear-gradient(145deg,#21132f,#160e21);border:1px solid #664080;border-radius:18px;box-shadow:0 10px 28px #0002}
+.ticket{color:#e0cde9;font-size:13px;letter-spacing:normal}
+.ticket .stub-label{color:#ffafd5;letter-spacing:.08em}
+.kbs{background:#30203f;border:1px solid #a76fc7;border-radius:7px;color:#ffd2e6;box-shadow:none;font:inherit;font-size:.85em;padding:2px 7px}
+.overlay-controls{border:1px solid #65427a;border-radius:14px;color:#e0cde9;letter-spacing:normal;font-size:12px}
+.encore{border:1px solid #f3acd5;border-radius:16px;background:#ffafd50c}
+.encore .encore-text b{color:#ffafd5;letter-spacing:.04em}
+.encore-link{color:#e7b6ff}
+.encore-link:hover{color:#b6ffe8}
+.event-link{border:1px solid #ffafd5;border-radius:999px;color:#ffd0e6;text-decoration:none;font-weight:800}
+.event-link:hover{background:#ffafd51c}
+.event-info h2{font-family:"Trebuchet MS",system-ui,sans-serif;font-size:clamp(1.25rem,2.5vw,1.55rem);color:#f2b9ff;font-weight:900}
+.info-panels > .ticket,.info-panels > .event-info{border-radius:18px}
+.info-panels .roomy-instructions{border-top:1px solid #65427a;color:#f0e4f6}
+.seats{opacity:.8}
+.banner-hero{border:2px solid #bd83e7;border-radius:18px;box-shadow:0 0 24px #bd83e722,0 14px 34px #0006}
+.poster-container{border:2px solid #8153a0;border-radius:14px;box-shadow:0 0 22px #bc70ff22,0 14px 30px #0006}
+.poster-overlay h3{font-family:"Trebuchet MS",system-ui,sans-serif;letter-spacing:.04em;color:#ffd2e6}
+.poster-overlay p{letter-spacing:.06em}
+.trail-links li{border:1px solid #65427a;border-radius:12px;background:#10091b88}
+.trail-links a{color:#f0b8ff;font-size:15px;letter-spacing:normal}
+#joyBase{background:#c77dff18;border-color:#e0a6ff77;box-shadow:inset 0 0 20px #0004,0 0 18px #bc70ff1c}
+#joyKnob{background:radial-gradient(circle at 35% 30%,#ffd1ee,#c77dff 70%);box-shadow:0 0 18px #d58cff99}
+#joyLabel{font-family:inherit;letter-spacing:.08em;color:#e0b9f2}
+a:focus-visible,button:focus-visible{outline:3px solid #a9ffe6;outline-offset:4px}
+@media(max-width:600px){
+  body{padding:18px 10px 60px}
+  .marquee{padding:12px 20px}
+  .marquee h1{font-size:clamp(19px,5vw,24px);letter-spacing:0}
+  .marquee p{font-size:10px;letter-spacing:.12em}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+
+
 </style>
 
 <link rel="canonical" href="https://ibloud.github.io/violets-revenge/">
@@ -338,6 +410,7 @@ body.force-touch #touchControls{display:block}
   <h2 id="event-heading">Violet's Revenge: The Forensics Trail</h2>
   <p>Explore the proposed Halloween event and its Minneapolis clue trail. Event planning is still in process.</p>
   <a href="https://ibloud.github.io/inpatient-corridors-review/event/" class="event-link">Violet's Revenge event details →</a>
+  <p><a class="encore-link" href="story/">Read the Ink Experience →</a></p>
   <p>If you are caught, select RETRY and try again. Joining Roomy is optional; the public event details can be read without winning.</p>
 </section>
 </div>
