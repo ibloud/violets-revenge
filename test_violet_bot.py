@@ -4,7 +4,7 @@ import tempfile
 import asyncio
 import pytest
 from unittest.mock import patch, AsyncMock
-from violet_bot import (
+from violet_game_state import (
     load_state,
     save_state,
     TURN_OPPONENT,
@@ -111,12 +111,12 @@ class TestAtomicSave:
         test_data = {"test": "data"}
 
         # Patch tempfile.NamedTemporaryFile to verify it's called
-        with patch('violet_bot.tempfile.NamedTemporaryFile') as mock_tmp:
+        with patch('violet_game_state.tempfile.NamedTemporaryFile') as mock_tmp:
             mock_tmp.return_value.__enter__.return_value.name = temp_state_file + ".tmp"
             mock_tmp.return_value.__enter__.return_value.write = lambda x: None
 
             # Patch os.replace to avoid actual filesystem
-            with patch('violet_bot.os.replace'):
+            with patch('violet_game_state.os.replace'):
                 try:
                     save_state(test_data, temp_state_file)
                 except (AttributeError, TypeError):
@@ -255,8 +255,8 @@ class TestEdgeCases:
     def test_load_state_with_default_filepath(self, temp_state_file, monkeypatch):
         """Verifies that load_state uses STATE_FILE when filepath not provided."""
         # Mock STATE_FILE to point to our temp file
-        import violet_bot
-        monkeypatch.setattr(violet_bot, "STATE_FILE", temp_state_file)
+        import violet_game_state
+        monkeypatch.setattr(violet_game_state, "STATE_FILE", temp_state_file)
 
         test_data = {"test": "default_path"}
         save_state(test_data, temp_state_file)
@@ -267,8 +267,8 @@ class TestEdgeCases:
 
     def test_save_state_with_default_filepath(self, temp_state_file, monkeypatch):
         """Verifies that save_state uses STATE_FILE when filepath not provided."""
-        import violet_bot
-        monkeypatch.setattr(violet_bot, "STATE_FILE", temp_state_file)
+        import violet_game_state
+        monkeypatch.setattr(violet_game_state, "STATE_FILE", temp_state_file)
 
         test_data = {"test": "default_save"}
         # Call without filepath argument

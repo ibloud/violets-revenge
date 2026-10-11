@@ -1,3 +1,9 @@
+# Retired October 4, 2026: stop before importing any Discord dependency.
+# State helpers for offline reuse live in violet_game_state.py.
+if __name__ == "__main__":
+    print("Discord deployment is retired. Coordinate through Loptr Lab on Roomy.")
+    raise SystemExit(0)
+
 import discord
 from discord.ext import commands
 import asyncio
