@@ -22,7 +22,7 @@ Two separate Discord integrations exist:
 - `violet_bot.py`: Python 3.11 with discord.py
 - `js-bot/`: Node.js 20 with discord.js
 
-They used separate bot applications and credentials. Retain source and offline tests for provenance and reuse; do not deploy or expand these Discord services. Both identified Railway Discord services have zero running replicas; see the transition record for evidence and remaining cleanup. Browser/Creator OS adapters are proposed, not implemented.
+They used separate bot applications and credentials. Retain source for provenance; do not deploy or expand these Discord services. The Python Discord runtime dependency has been removed from `requirements.txt`; the remaining Python dependencies support the retired HTTP 410 endpoint and offline tests. `violet_game_state.py` is the transport-independent state helper. Both identified Railway Discord services have zero running replicas; see the transition record for evidence and remaining cleanup. Browser/Creator OS adapters are proposed, not implemented.
 
 ## Production engine
 
