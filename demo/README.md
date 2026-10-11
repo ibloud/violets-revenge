@@ -22,6 +22,10 @@ The interface is touch-first and uses tap-to-select, tap-to-confirm. The root `/
 - `engine/rules.js`: authoritative action/turn rules, cards, hidden-information view, file loop, and terminal outcomes.
 - `test/rules.test.js`: deterministic rule and card-effect checks.
 - `test/sim.test.js`: 2,000 seeded bot-versus-bot games.
+- `engine/cases.js` + `data/cases.json`: one placeholder Casebook tutorial, evidence gate, once-per-case Empathy Lens, and Verdict Ledger.
+- `engine/series.js` + `data/episodes.json`: `REVEAL_LEVEL = 0` filter and a single public placeholder episode.
+- `test/cases.test.js`: confirmation gate, empathy use, audit output, and spoiler-filter tests.
+- The `/demo/` page has Board Game and Casebook Tutorial views plus an Open for Review panel listing proposal defaults and unresolved decisions.
 
 ## Balance tuning record
 
@@ -41,6 +45,6 @@ The simulation bots use seeded rolls and a simple deterministic strategy. Violet
 
 - The graph, card wording, action costs, and tuning remain proposals.
 - The simulation bot does not represent human behavior.
-- Pass 1 does not include the Casebook, episode spoiler filter, `REVEAL_LEVEL`, CI wiring, arcade mode, or canon-document changes.
-- Browser/manual accessibility QA was not completed. Automated Node tests are the recorded checks.
+- Arcade mode, CI wiring, and canon-document changes are not included. The Casebook and level-zero episode shell are present but remain Proposal, not canon.
+- Local validation of the prototype logic reported 22 passing rule, Casebook, and spoiler-gate tests, plus the 2,000-game simulation. The committed branch files were read back for verification; CI and browser/manual accessibility QA were not completed.
 - No audio is emitted; events are represented in the interface and text log.
