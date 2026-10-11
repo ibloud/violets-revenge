@@ -16,7 +16,7 @@
 <p class="small">All evidence and text below are placeholders. No origin, attack, or character scene is depicted. Review the evidence status before attempting a verdict.</p>
 <div class="metrics" id="caseMetrics" aria-live="polite"></div>
 <div id="caseEvidence" class="review-list"></div>
-<div class="row" style="margin-top:12px"><button id="closeContradiction">Close selected contradiction</button><button id="empathyLens">Use Empathy Lens</button><button id="attemptVerdict" class="primary">Attempt verdict</button><button id="showLedger">Build Verdict Ledger</button></div>
+<div class="row" style="margin-top:12px"><label><input id="decisionEmpathic" type="checkbox"> This decision leaned on an empathic inference (Proposal)</label><button id="closeContradiction">Close selected contradiction</button><button id="empathyLens">Use Empathy Lens</button><button id="attemptVerdict" class="primary">Attempt verdict</button><button id="showLedger">Build Verdict Ledger</button></div>
 <p id="caseMessage" class="small" aria-live="polite"></p>
 <div id="ledgerView"></div>
 <h2 style="margin-top:18px">Public episode bundle <span class="status">REVEAL_LEVEL=0</span></h2><div id="episodeBundle" class="small"></div>
@@ -75,7 +75,7 @@ $('showBoard').addEventListener('click',()=>{$('boardView').hidden=false;$('case
 $('showCasebook').addEventListener('click',()=>{$('boardView').hidden=true;$('casebookView').hidden=false;renderCasebook();});
 $('closeContradiction').addEventListener('click',()=>{const r=closeContradiction(casebook,selectedEvidence);$('caseMessage').textContent=r.ok?'Contradiction marked closed for this Proposal tutorial. This does not change canon.':r.reason;casebook.ledger=null;renderCasebook();});
 $('empathyLens').addEventListener('click',()=>{const r=useEmpathyLens(casebook);$('caseMessage').textContent=r.ok?'Empathy Lens added an empathic inference. It does not count as an observed fact.':r.reason;renderCasebook();});
-$('attemptVerdict').addEventListener('click',()=>{const r=attemptVerdict(casebook);$('caseMessage').textContent=r.ok?'Verdict accepted by the Proposal gate. Check the ledger for the empathic-inference audit.':'Verdict rejected: '+r.reason+'. The reason is logged.';renderCasebook();});
+$('attemptVerdict').addEventListener('click',()=>{const r=attemptVerdict(casebook,undefined,{usedEmpathicInference:$('decisionEmpathic').checked});$('caseMessage').textContent=r.ok?'Verdict accepted by the Proposal gate. Check the ledger for the empathic-inference audit.':'Verdict rejected: '+r.reason+'. The reason is logged.';renderCasebook();});
 $('showLedger').addEventListener('click',()=>{buildVerdictLedger(casebook);renderCasebook();});
 render();
 </script></body></html>
