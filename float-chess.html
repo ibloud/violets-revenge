@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Float Chess Demo</title>
+<style>
+:root{color-scheme:dark;--bg:#100b16;--panel:#21172b;--line:#59436a;--ink:#f2e9f7;--muted:#c2b2ce;--accent:#ffd166;--brand:#df5d6a;--light:#e8d8c5;--dark:#72506f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}main{max-width:1000px;width:calc(100% - 24px);margin:auto;padding:24px 0}header{border-bottom:1px solid var(--line);padding-bottom:16px}h1{color:var(--brand);font:italic bold clamp(2rem,5vw,3.3rem) Georgia,serif;margin:.3rem 0}.muted{color:var(--muted)}.layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(250px,.8fr);gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px;margin-top:16px}.board{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1;border:3px solid #3a2846}.sq{display:flex;align-items:center;justify-content:center;border:0;padding:0;min-width:0;aspect-ratio:1;cursor:pointer}.light{background:var(--light);color:#211429}.dark{background:var(--dark);color:#211429}.sq.selected{outline:4px solid var(--accent);outline-offset:-4px}.sq.target{box-shadow:inset 0 0 0 5px #b4e3a6}.piece{font-size:clamp(1.3rem,5vw,3rem);line-height:1}.white{color:#fffaf1;text-shadow:0 1px 2px #222,-1px 0 #222,1px 0 #222}.black{color:#211429}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button.action,select{font:inherit;padding:9px 12px;border:1px solid var(--brand);border-radius:5px;background:#33213e;color:var(--ink)}button.action{cursor:pointer}button:disabled{opacity:.45}.log{max-height:230px;overflow:auto;padding-left:20px;color:var(--muted);font-size:.85rem}.disclosure{font-size:.8rem;color:var(--muted);border-left:3px solid var(--accent);padding:10px;background:#140e1a}@media(max-width:760px){.layout{grid-template-columns:1fr}}
+</style></head><body><main>
+<header><div class="muted">INTERACTIVE VARIANT TEST</div><h1>Float Chess</h1><p class="muted">A browser demo for simultaneous-move chess. Select a white piece, choose a destination, and commit; the black opponent submits a move from the same pre-turn position.</p></header>
+<div class="layout"><section class="panel"><div id="board" class="board" aria-label="Chess board"></div><div class="actions"><button class="action" id="commit" disabled>Commit move</button><button class="action" id="restart">New game</button></div><p id="status" aria-live="polite" class="muted">Select a white piece to start.</p></section>
+<aside><section class="panel"><h2>Variant actions</h2><p class="muted">Select a special move to test its rule. The move must still be legal for the selected piece.</p><select id="special"><option value="">Standard move</option><option value="floatJump">Knight — Float Jump</option><option value="mirrorShift">Bishop — Mirror Shift</option><option value="sewerSlide">Rook — Sewer Slide</option><option value="redBalloon">Pawn — Red Balloon</option><option value="castleK">King — Castle kingside</option><option value="castleQ">King — Castle queenside</option></select><h2 style="margin-top:18px">Resolution log</h2><ol class="log" id="log"><li>Ready.</li></ol></section>
+<section class="panel"><h2>IP disclosure</h2><div class="disclosure"><strong>Unofficial inspiration prototype.</strong> The opponent persona is inspired by the Pennywise character identified in the originating project. This demo is not affiliated with or endorsed by any rights holder. Character names and related elements may be protected. No official artwork, logos, or script excerpts are included. Permission and rights review are required before public or monetized release; attribution is not permission.</div><p class="muted" style="font-size:.8rem">For other franchise variants, replace this with project-specific ownership, source attribution, permission/license status, and distribution scope. This is not legal advice or rights clearance.</p></section>
+<section class="panel"><h2>Prototype notes</h2><p class="muted" style="font-size:.85rem">This demo loads the existing Float Chess engine from the source repository. The rules engine is the source of truth; the browser layer handles selection and display. Engine-design ambiguities should be reviewed before production.</p></section></aside></div></main>
+<script>
+window.module={exports:{}};window.exports=window.module.exports;
+</script>
+<script src="https://cdn.jsdelivr.net/gh/ibloud/sewers-and-shadows-bot@main/bot/float-chess-engine.js"></script>
+<script>
+(function(){
+const Engine=window.module&&window.module.exports&&window.module.exports.FloatChessGame?window.module.exports:null;
+const $=id=>document.getElementById(id), files='abcdefgh';
+const glyph={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙'};
+let game,selected=null,target=null,special='',log=[];
+function start(){if(!Engine){$('status').textContent='The existing engine could not load. Check network access to the source repository.';return;}game=new Engine();selected=null;target=null;special='';log=['New match started.'];$('special').value='';render();}
+function coord(square){return {r:Number(square[1])-1,c:files.indexOf(square[0])};}
+function alg(r,c){return files[c]+(r+1);}
+function at(square){const q=coord(square);return game.board[q.r][q.c];}
+function validate(color,from,to,sp){const m={from,to};if(sp)m.special=sp;return game._validateMove(color,m).legal;}
+function destinations(from){const out=[];const sp=$('special').value;for(let r=0;r<8;r++)for(let c=0;c<8;c++){const to=alg(r,c);if(validate('w',from,to,sp))out.push(to);}return out;}
+function render(){const node=$('board');node.replaceChildren();if(!game)return;const snapshot=game.toJSON();for(let r=7;r>=0;r--)for(let c=0;c<8;c++){const sq=alg(r,c),p=snapshot.squares[sq],b=document.createElement('button');b.className='sq '+((r+c)%2?'dark':'light');b.setAttribute('aria-label',sq+(p?' '+p.color+' '+p.type:''));if(sq===selected)b.classList.add('selected');if(target===sq)b.classList.add('target');if(p){const span=document.createElement('span');span.className='piece '+(p.color==='w'?'white':'black');span.textContent=glyph[p.type];b.appendChild(span);}b.addEventListener('click',()=>click(sq));node.appendChild(b);}
+$('commit').disabled=!(selected&&target&&game.status==='active');$('status').textContent=game.status==='active'?(selected?'Selected '+selected+(target?' → '+target:'')+'. Choose destination and commit.':'Turn '+game.turn+'. Select a white piece.'):'Game status: '+game.status;
+const l=$('log');l.replaceChildren();log.slice(-20).reverse().forEach(x=>{const li=document.createElement('li');li.textContent=x;l.appendChild(li);});}
+function click(sq){if(!game||game.status!=='active')return;const p=at(sq);if(!selected){if(p&&p.color==='w'){selected=sq;target=null;}else $('status').textContent='Select a white piece.';}else if(sq===selected){selected=null;target=null;}else if(destinations(selected).includes(sq)){target=sq;}else if(p&&p.color==='w'){selected=sq;target=null;}else $('status').textContent='That destination is not legal for this move type.';render();}
+function commit(){if(!selected||!target||game.status!=='active')return;const move={from:selected,to:target};if($('special').value)move.special=$('special').value;const legal=game._validateMove('w',move);if(!legal.legal){log.push('Move rejected: '+legal.reason);selected=null;target=null;render();return;}
+const blackMoves=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++){const p=game.board[r][c];if(!p||p.color!=='b')continue;for(let tr=0;tr<8;tr++)for(let tc=0;tc<8;tc++){const to=alg(tr,tc);if(validate('b',alg(r,c),to,''))blackMoves.push({from:alg(r,c),to});}}
+if(!blackMoves.length){log.push('Opponent has no standard legal move.');render();return;}
+const bm=blackMoves[Math.floor(Math.random()*blackMoves.length)];
+game.submitMove('w',move);game.submitMove('b',bm);
+log.push('White '+move.from+'–'+move.to+(move.special?' ('+move.special+')':'')+'; Black '+bm.from+'–'+bm.to+'.');
+(game.lastEvents||[]).forEach(e=>log.push('Engine event: '+e.type+(e.color?' ('+e.color+')':'')));
+selected=null;target=null;render();}
+$('commit').addEventListener('click',commit);$('restart').addEventListener('click',start);$('special').addEventListener('change',()=>{target=null;render();});start();
+})();
+</script></body></html>
