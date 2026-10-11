@@ -1,0 +1,20 @@
+{
+  "status":"Proposal",
+  "source":"ChatGPT Prototype Handoff dated 2026-10-11; tutorial evidence is placeholder, not canon",
+  "cases":[{
+    "id":"CASE-TUTORIAL-01",
+    "title":"[PLACEHOLDER — not canon] Tutorial case",
+    "status":"Proposal",
+    "source":"Handoff: one tutorial case; no sourced narrative lines supplied",
+    "evidence":[
+      {"id":"E-01","label":"[PLACEHOLDER — not canon] Physical record A","status":"observed_fact","source_id":"SRC-A","source_label":"[PLACEHOLDER — not canon] Record A","provenance":"clean","residue":false,"open":false,"status_label":"Proposal"},
+      {"id":"E-02","label":"[PLACEHOLDER — not canon] Physical record B","status":"observed_fact","source_id":"SRC-A","source_label":"[PLACEHOLDER — not canon] Record A","provenance":"clean","residue":false,"open":false,"status_label":"Proposal"},
+      {"id":"E-03","label":"[PLACEHOLDER — not canon] Independent register entry","status":"observed_fact","source_id":"SRC-B","source_label":"[PLACEHOLDER — not canon] Register B","provenance":"clean","residue":false,"open":false,"status_label":"Proposal"},
+      {"id":"E-04","label":"[PLACEHOLDER — not canon] Witness statement","status":"witness_claim","source_id":"SRC-C","source_label":"[PLACEHOLDER — not canon] Witness C","provenance":"clean","residue":false,"open":false,"status_label":"Proposal"},
+      {"id":"E-05","label":"[PLACEHOLDER — not canon] Empathic impression","status":"inference","source_id":"VIOLET","source_label":"[PLACEHOLDER — not canon] Violet's reading","tag":"empathic","provenance":"clean","residue":false,"open":false,"status_label":"Proposal"},
+      {"id":"E-06","label":"[PLACEHOLDER — not canon] Unmatched time entry","status":"contradiction","source_id":"SRC-B","source_label":"[PLACEHOLDER — not canon] Register B","provenance":"clean","residue":false,"open":true,"status_label":"Proposal"},
+      {"id":"E-07","label":"[PLACEHOLDER — not canon] Unverified room impression","status":"unresolved","source_id":"VIOLET","source_label":"[PLACEHOLDER — not canon] Violet's reading","provenance":"clean","residue":true,"open":false,"status_label":"Proposal"}
+    ],
+    "decisions":[]
+  }]
+}
