@@ -36,3 +36,5 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
         timeout-minutes: 3
       - run: npm test
+      - run: node --test tests/veiled-dominion-cards.test.cjs
+        working-directory: .
