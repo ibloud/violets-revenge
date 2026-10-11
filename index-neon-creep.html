@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Violet's Revenge — Neon Creep Theme Option</title>
+
+
+
+
+
+
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="Violet's Revenge: The Morgue project artwork">
+
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --void:#050508;
+  --wall:#1a1520;
+  --wall-line:#2d2438;
+  --floor:#0c0a12;
+  --ink:#b8a9c9;
+  --violet:#9b59b6;
+  --violet-bright:#c77dff;
+  --gold:#f1c40f;
+  --velvet-dark:#1c060c;
+  --velvet:#4a1020;
+  --velvet-light:#7a1f34;
+  --blood:#e74c3c;
+}
+
+body{
+  background:var(--void);
+  color:var(--ink);
+  font-family:'Courier New',monospace;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:28px 16px 60px;
+  position:relative;
+}
+/* subtle ambient vignette, no external image dependency */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at center, rgba(30,15,45,0.35) 0%, rgba(5,5,8,0.9) 70%, rgba(5,5,8,0.98) 100%);
+  z-index:0;pointer-events:none;
+}
+body > *{position:relative;z-index:1}
+
+/* ── Marquee title ── */
+.marquee{
+  border:3px solid var(--gold);
+  border-radius:6px;
+  padding:14px 30px;
+  margin-bottom:22px;
+  position:relative;
+  background:linear-gradient(180deg, #150e1c, #0c0812);
+  box-shadow:0 0 30px rgba(241,196,15,0.15), inset 0 0 20px rgba(155,89,182,0.15);
+}
+.marquee::before, .marquee::after{
+  content:'';position:absolute;top:6px;bottom:6px;width:6px;
+  background-image:radial-gradient(circle, var(--gold) 2.5px, transparent 3px);
+  background-size:100% 16px;
+  opacity:0.85;
+  animation:bulbs 1.6s steps(2) infinite;
+}
+.marquee::before{left:8px}
+.marquee::after{right:8px}
+@keyframes bulbs{50%{opacity:0.35}}
+.marquee h1{
+  font-family:Georgia,'Times New Roman',serif;
+  font-style:italic;
+  font-weight:700;
+  letter-spacing:3px;
+  font-size:24px;
+  text-align:center;
+  color:var(--violet-bright);
+  text-shadow:0 0 16px rgba(199,125,255,0.55);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.marquee h1 img{height:26px;width:26px;border-radius:5px;filter:drop-shadow(0 0 6px rgba(155,89,182,.7))}
+.marquee p{
+  text-align:center;font-size:10px;letter-spacing:4px;color:#6b5a80;margin-top:4px;
+}
+
+/* ── Theatre: curtains flanking the screen ── */
+.theatre{
+  display:flex;align-items:stretch;
+  filter:drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+}
+.curtain{
+  width:46px;
+  background-image:
+    linear-gradient(-45deg, transparent 46%, rgba(0,0,0,0.35) 50%, transparent 54%),
+    linear-gradient(45deg, transparent 46%, rgba(0,0,0,0.35) 50%, transparent 54%),
+    repeating-linear-gradient(90deg,
+      var(--velvet-dark) 0px, var(--velvet) 8px, var(--velvet-light) 14px, var(--velvet) 20px, var(--velvet-dark) 28px);
+  background-size:18px 18px, 18px 18px, 100% 100%;
+  border-radius:6px;
+  box-shadow:inset 0 0 20px rgba(0,0,0,0.6);
+  transition:width .6s cubic-bezier(.4,0,.2,1), margin .6s cubic-bezier(.4,0,.2,1), opacity .6s ease;
+}
+.curtain.pulled{width:6px;opacity:0.5}
+#wrap{
+  position:relative;border:2px solid #3a2b4c;box-shadow:0 0 40px rgba(155,89,182,0.15);
+  margin:0 4px;
+}
+canvas{display:block;background:#050508}
+#ui{position:absolute;top:8px;left:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none}
+#status{position:absolute;top:8px;right:10px;font-size:13px;text-shadow:1px 1px 2px #000;pointer-events:none;text-align:right}
+#overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;
+align-items:center;justify-content:center;background:rgba(5,5,8,0.88);backdrop-filter:blur(4px);text-align:center;z-index:10;padding:20px;overflow-y:auto}
+#overlay h2{font-size:26px;color:var(--violet);margin-bottom:14px;text-shadow:0 0 20px rgba(155,89,182,0.5);font-family:Georgia,serif;font-style:italic}
+#overlay p{margin-bottom:10px;max-width:420px;line-height:1.6;font-size:14px}
+#overlay button{background:#2a1b3c;color:#d4c5e9;border:1px solid var(--violet);padding:12px 36px;
+font-family:'Courier New',monospace;font-size:15px;cursor:pointer;margin-top:10px;letter-spacing:2px}
+#overlay button:hover{background:var(--violet);color:#fff;box-shadow:0 0 20px rgba(155,89,182,0.6)}
+.hid{display:none!important}
+.warn{color:var(--blood)}
+.good{color:#2ecc71}
+.pur{color:var(--violet)}
+
+/* ── Ticket stub: persistent controls, styled like the poster's admission ticket ── */
+.ticket{
+  margin-top:20px;
+  width:100%;max-width:640px;
+  background:#120b18;
+  border:1px dashed #5c4d6d;
+  border-radius:4px;
+  padding:14px 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  flex-wrap:wrap;
+  font-size:11px;letter-spacing:1px;color:#8a7aa3;
+}
+.ticket .stub-label{color:var(--gold);font-weight:bold;letter-spacing:2px;white-space:nowrap}
+.ticket .stub-controls{flex:1;min-width:220px;text-align:left;line-height:1.9}
+.ticket .stub-controls b{color:var(--ink)}
+.kbs{
+  border:1px solid #444;padding:1px 6px;background:#1d1626;
+  border-radius:3px;color:var(--gold);font-weight:bold;
+  box-shadow:1px 1px 0 #000;font-size:10px;
+}
+.heart{display:inline-block;width:15px;height:15px;vertical-align:-2px;margin-right:1px;background-size:contain;background-repeat:no-repeat}
+.heart.full{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e74c3c'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
+.heart.empty{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23444'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
+
+/* controls block reused inline inside win/lose overlays */
+.overlay-controls{
+  margin-top:6px;margin-bottom:6px;
+  border:1px dashed #4a3d5c;border-radius:4px;
+  padding:10px 16px;font-size:11px;letter-spacing:1px;color:#8a7aa3;line-height:1.8;
+  max-width:380px;
+}
+.overlay-controls b{color:var(--ink)}
+
+/* ── End-state Roomy invitation ── */
+.encore{
+  margin-top:14px;padding:14px 18px;border:1px solid var(--gold);border-radius:6px;
+  background:rgba(241,196,15,0.05);display:flex;align-items:center;gap:16px;max-width:380px;
+}
+.encore img{width:84px;height:84px;border-radius:4px;background:#fff;padding:4px;display:block}
+.encore-qr{width:84px;height:84px;border-radius:4px;background:#fff;padding:4px;display:block}
+.encore .encore-text{text-align:left;font-size:12px;line-height:1.6}
+.encore .encore-text b{color:var(--gold);display:block;font-size:13px;letter-spacing:1px;margin-bottom:4px}
+.encore-link{display:inline-block;margin-top:6px;color:var(--violet-bright);text-decoration:underline}
+.encore-link:hover{color:var(--gold)}
+.event-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+  margin-top:14px;padding:10px 16px;color:var(--gold);text-decoration:underline;
+  border:1px solid var(--gold);border-radius:4px}
+.event-link:hover{background:rgba(241,196,15,0.1)}
+.event-link:focus-visible{outline:3px solid var(--violet-bright);outline-offset:3px}
+
+.event-info{
+  width:100%;max-width:800px;margin:0 0 24px;padding:18px 22px;
+  border:1px solid var(--violet);border-radius:6px;background:#120b18;
+  font-size:14px;line-height:1.7;
+}
+.event-info h2{font-family:Georgia,serif;color:var(--violet-bright);font-size:22px;margin-bottom:8px}
+.event-info p + p{margin-top:10px}
+
+/* Keep the game and cards within both tablet orientations. */
+.theatre{width:100%;max-width:900px}
+.curtain{flex-shrink:0}
+#wrap{flex:1;min-width:0}
+canvas{width:100%;height:auto}
+@media (max-width:720px){#wrap{width:100%}}
+/* Side-by-side cards below the game; stack only on narrow screens. */
+.info-panels{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;
+  width:100%;max-width:900px;margin-top:20px;align-items:stretch;
+}
+.info-panels > .ticket,.info-panels > .event-info{
+  width:auto;max-width:none;min-width:0;margin:0;padding:22px;
+  border-radius:6px;overflow-wrap:anywhere;
+}
+.info-panels > .ticket{
+  flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:18px;
+  font-size:14px;line-height:1.7;
+}
+.info-panels .stub-controls{flex:0 1 auto;min-width:0;width:100%;line-height:1.9}
+.info-panels .stub-controls{list-style:none;padding:0;margin:0;display:grid;gap:16px}
+.info-panels .stub-controls li{margin:0}
+.info-panels .kbs{font-size:12px}
+.info-panels .roomy-instructions{
+  width:100%;padding-top:16px;border-top:1px dashed #5c4d6d;
+  color:var(--ink);font-size:14px;line-height:1.7;letter-spacing:normal;
+}
+.info-panels .roomy-instructions p + p{margin-top:12px}
+.event-info .event-link + p{margin-top:16px}
+@media (max-width:600px){
+  .info-panels{grid-template-columns:minmax(0,1fr);gap:16px}
+  .info-panels > .ticket,.info-panels > .event-info{padding:18px}
+}
+/* ── Seat silhouettes: quiet nod to the poster's audience, purely ambient ── */
+.seats{margin-top:26px;opacity:0.55;width:100%;max-width:640px}
+.seats svg{width:100%;height:auto;display:block}
+
+/* ── Landscape hero banner ── */
+.banner-hero{
+  display:block;width:100%;max-width:900px;margin:0 auto 26px;
+  border:2px solid var(--violet);border-radius:8px;overflow:hidden;
+  box-shadow:0 14px 34px rgba(0,0,0,.6);
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+.banner-hero:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(0,0,0,.7)}
+.banner-img{width:100%;height:auto;display:block}
+
+/* ── Lobby standee (poster) ── */
+.poster-container{max-width:220px;margin:26px auto 0;border:4px solid #2a2235;box-shadow:0 14px 30px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .3s ease,box-shadow .3s ease}
+.poster-container.poster-top{max-width:260px;margin:0 auto 6px}
+.poster-link{display:block;position:relative;text-decoration:none;color:inherit}
+.horror-poster{display:block;width:100%;height:auto;filter:sepia(.2) contrast(1.15) brightness(.9) saturate(.85)}
+.poster-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:12px;background:linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.05) 55%, rgba(0,0,0,0));opacity:.9;transition:opacity .3s ease}
+.poster-overlay h3{font-size:13px;letter-spacing:2px;color:#f0d9ff;text-shadow:0 0 10px rgba(155,89,182,.6)}
+.poster-overlay p{margin:0;font-size:11px;letter-spacing:2px;color:#c77dff;font-weight:bold}
+.poster-link:hover .poster-overlay{opacity:1}
+.poster-container:hover{transform:translateY(-2px) scale(1.02)}
+.poster-caption{text-align:center;font-size:9px;letter-spacing:2px;color:#5c4d6d;margin-top:8px;margin-bottom:22px}
+
+@media (max-width: 720px){
+  .theatre{flex-direction:column;align-items:center}
+  .curtain{display:none}
+  #wrap{margin:0}
+  canvas{max-width:100%;height:auto}
+}
+
+/* ── Touch controls: virtual joystick, shown on touch devices ── */
+#touchControls{display:none}
+@media (pointer:coarse){
+  #touchControls{display:block}
+  body{touch-action:pan-y}
+}
+body.force-touch #touchControls{display:block}
+#touchControls{
+  position:fixed;left:0;right:0;bottom:0;height:170px;
+  z-index:20;pointer-events:none;
+}
+#joyBase{
+  position:absolute;left:26px;bottom:26px;
+  width:130px;height:130px;border-radius:50%;
+  background:rgba(155,89,182,0.10);
+  border:2px solid rgba(199,125,255,0.35);
+  box-shadow:inset 0 0 20px rgba(0,0,0,0.4);
+  pointer-events:auto;touch-action:none;
+}
+#joyKnob{
+  position:absolute;left:50%;top:50%;width:56px;height:56px;
+  margin-left:-28px;margin-top:-28px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--violet-bright), var(--violet) 70%);
+  box-shadow:0 0 16px rgba(155,89,182,0.7);
+  transition:transform .05s linear;
+  pointer-events:none;
+}
+#joyLabel{
+  position:absolute;left:26px;bottom:8px;width:130px;text-align:center;
+  font-size:9px;letter-spacing:2px;color:#6b5a80;pointer-events:none;
+}
+
+/* Explore links in the Forensics Trail panel */
+.trail-links{list-style:none;display:grid;gap:14px;margin:10px 0 18px;padding:0}
+.trail-links li{display:grid;gap:4px;padding:12px;border:1px dashed #5c4d6d;background:rgba(5,5,8,.28)}
+.trail-links a{color:var(--violet-bright);font-size:14px;font-weight:bold;letter-spacing:.3px}
+.trail-links span{font-size:12px;color:#8a7aa3;line-height:1.6}
+
+
+/* ── OPTION: Neon Creep / Yami Kawaii ──
+   Self-contained alternate skin. Original index.html remains untouched. */
+:root{
+  --void:#10091d;--wall:#241331;--wall-line:#49305b;--floor:#140d22;
+  --ink:#f4e9ff;--violet:#c45cff;--violet-bright:#e8a7ff;--gold:#aef7e8;
+  --velvet-dark:#210d2c;--velvet:#57265f;--velvet-light:#8d4b91;--blood:#ff8bbd;
+}
+body{
+  background:radial-gradient(ellipse at 12% 8%,rgba(196,92,255,.18),transparent 34%),radial-gradient(ellipse at 88% 25%,rgba(255,139,189,.12),transparent 28%),linear-gradient(160deg,#10091d 0%,#180e29 55%,#0e1727 100%);
+  color:var(--ink);font-family:"Trebuchet MS","Avenir Next",system-ui,sans-serif;letter-spacing:.01em;
+}
+body::before{
+  background:radial-gradient(circle at 12% 22%,rgba(174,247,232,.08) 0 1px,transparent 2px),radial-gradient(circle at 80% 12%,rgba(232,167,255,.10) 0 1px,transparent 2px),radial-gradient(ellipse at center,rgba(42,19,64,.16) 0%,rgba(10,6,20,.72) 78%);
+  background-size:42px 42px,58px 58px,auto;
+}
+.marquee{border:2px solid #e8a7ff;border-radius:18px 18px 28px 28px;background:linear-gradient(145deg,rgba(48,23,69,.96),rgba(19,13,37,.98));box-shadow:0 0 28px rgba(196,92,255,.22),0 0 58px rgba(255,139,189,.08),inset 0 0 26px rgba(174,247,232,.06)}
+.marquee::before,.marquee::after{width:10px;background-image:radial-gradient(circle,#aef7e8 2px,transparent 3px);background-size:100% 18px}
+.marquee h1{font-family:"Trebuchet MS","Avenir Next",system-ui,sans-serif;font-style:normal;font-weight:900;letter-spacing:.04em;font-size:clamp(21px,4vw,32px);color:#f4d7ff;text-shadow:0 0 8px rgba(232,167,255,.9),0 0 22px rgba(196,92,255,.55)}
+.marquee p{color:#aef7e8;font-size:11px;letter-spacing:.18em;font-weight:800}
+#wrap{border:2px solid #d38aff;border-radius:12px;overflow:hidden;box-shadow:0 0 0 4px rgba(196,92,255,.08),0 0 42px rgba(196,92,255,.2)}
+.curtain{border:1px solid rgba(232,167,255,.22);background-image:radial-gradient(circle at 20% 20%,rgba(255,139,189,.24) 0 2px,transparent 3px),repeating-linear-gradient(90deg,#210d2c 0,#57265f 8px,#8d4b91 14px,#57265f 20px,#210d2c 28px)}
+.ticket,.event-info{color:#e9d8f7;background:rgba(28,16,44,.92);border:1px solid rgba(232,167,255,.5);border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.22),inset 0 0 24px rgba(196,92,255,.05)}
+.ticket{border-style:solid}.ticket .stub-label,.event-link{color:#aef7e8}.ticket .stub-label{font-weight:900}
+.ticket .stub-controls b,.overlay-controls b{color:#fff1ff}
+.kbs{border:1px solid #aef7e8;background:#201633;color:#aef7e8;border-radius:7px;box-shadow:0 2px 0 #08050d;font-family:inherit}
+.event-info h2{font-family:"Trebuchet MS","Avenir Next",system-ui,sans-serif;font-style:normal;font-weight:900;color:#f4d7ff;text-shadow:0 0 14px rgba(196,92,255,.35)}
+.event-link{border:1px solid #aef7e8;border-radius:999px;text-decoration:none;font-weight:800;background:rgba(174,247,232,.06)}
+.event-link:hover{background:rgba(174,247,232,.16);color:#fff}
+.encore{border:1px solid #ff8bbd;border-radius:18px;background:rgba(255,139,189,.08)}
+.encore .encore-text b{color:#ffb7d6}.encore-link{color:#e8a7ff}.encore-link:hover{color:#aef7e8}
+.poster-container{border:3px solid #c45cff;border-radius:12px;box-shadow:0 0 26px rgba(196,92,255,.22)}
+.horror-poster{filter:contrast(1.05) saturate(1.05)}
+.poster-overlay h3{color:#fff0ff;text-shadow:0 0 12px #c45cff}.poster-overlay p,.poster-caption{color:#aef7e8}
+#overlay{background:rgba(16,9,29,.9);border-radius:10px}
+#overlay h2{color:#e8a7ff;text-shadow:0 0 18px rgba(196,92,255,.6);font-family:"Trebuchet MS","Avenir Next",system-ui,sans-serif;font-style:normal;font-weight:900}
+#overlay button{border:1px solid #aef7e8;border-radius:999px;background:linear-gradient(120deg,#5c2c85,#34204f);color:#fff0ff;font-family:inherit;font-weight:900;letter-spacing:.08em}
+#overlay button:hover{background:#c45cff;box-shadow:0 0 24px rgba(196,92,255,.55)}
+#joyBase{background:rgba(196,92,255,.16);border-color:rgba(232,167,255,.65)}
+#joyKnob{background:radial-gradient(circle at 35% 30%,#aef7e8,#c45cff 75%);box-shadow:0 0 18px rgba(196,92,255,.65)}
+:focus-visible{outline:3px solid #aef7e8;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+</style>
+
+<link rel="canonical" href="https://ibloud.github.io/violets-revenge/">
+<meta name="description" content="An open-source asymmetric horror-game prototype exploring Violet&#x27;s story, power, and choice.">
+<meta property="og:title" content="Violet&#x27;s Revenge: The Morgue — Prototype v0.1">
+<meta property="og:description" content="An open-source asymmetric horror-game prototype exploring Violet&#x27;s story, power, and choice.">
+<meta property="og:url" content="https://ibloud.github.io/violets-revenge/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Violet’s Revenge">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Violet&#x27;s Revenge: The Morgue — Prototype v0.1">
+<meta name="twitter:description" content="An open-source asymmetric horror-game prototype exploring Violet&#x27;s story, power, and choice.">
+<meta property="og:image" content="https://ibloud.github.io/violets-revenge/assets/social-preview.png">
+<meta name="twitter:image" content="https://ibloud.github.io/violets-revenge/assets/social-preview.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Violet's Revenge: The Morgue — Prototype v0.1", "url": "https://ibloud.github.io/violets-revenge/", "description": "An open-source asymmetric horror-game prototype exploring Violet's story, power, and choice."}</script>
+</head>
+<body>
+
+<a href="https://github.com/ibloud/violets-revenge" class="banner-hero" target="_blank" rel="noopener noreferrer">
+  <img src="banner.png" alt="Violet_88: The Morgue Protocol v0.1" class="banner-img">
+</a>
+
+<div class="theatre">
+  <div class="curtain" id="curtainL"></div>
+  <div id="wrap">
+    <canvas id="cv" width="800" height="600"></canvas>
+    <div id="ui"></div>
+    <div id="status"></div>
+    <div id="overlay">
+      <h2>VIOLET'S REVENGE</h2>
+      <p class="pur"><strong>PROTOTYPE v0.1 — Game Jam Build</strong></p>
+      <p>You are <span class="warn">THE GUILTY</span>. You wake in a morgue.
+      Collect <strong>3 Case Files</strong>, destroy the evidence at the <strong>Incinerator</strong> with <span class="kbs">E</span>, then reach the <strong>Exit Door</strong>.</p>
+      <p>Violet hunts you. She paints <span class="pur">Nightingale sigils</span> on the precinct walls. Run past one and it sings, revealing your location.</p>
+      <p class="warn">She catches you 3 times... it's the Autopsy Slab.</p>
+      <button id="startBtn">BEGIN</button>
+    </div>
+  </div>
+  <div class="curtain" id="curtainR"></div>
+</div>
+
+<div class="info-panels">
+<div class="ticket">
+  <span class="stub-label">🎟 ADMIT ONE</span>
+  <ul class="stub-controls" role="list">
+    <li><span class="kbs">WASD</span> / <span class="kbs">Arrows</span> — Move</li>
+    <li>🟡 Find 3 Case Files in desks, lockers, and storage</li>
+    <li><span class="kbs">E</span> — Destroy evidence at the incinerator</li>
+    <li>🚪 Reach the unlocked exit</li>
+    <li>🟣 Avoid Violet and wall-painted Nightingale sigils</li>
+  </ul>
+  <div class="roomy-instructions">
+  <p><strong>Win the game to unlock your Roomy invitation:</strong> select BEGIN, collect all <strong>3 Case Files</strong>, press <strong>E</strong> at the incinerator to destroy the evidence and unlock the exit, then escape before Violet catches you three times. On the <strong>ESCAPED</strong> screen, select <strong>Join Loptr Lab on Roomy</strong> to enter the community coordination space.</p>
+  </div>
+</div>
+
+<section class="event-info" aria-labelledby="event-heading">
+  <h2 id="event-heading">Violet's Revenge: The Forensics Trail</h2>
+  <p><strong>Explore</strong></p>
+  <ul class="trail-links">
+    <li><a href="demo/">Board + Card Review Build</a></li>
+    <li><a href="story/">Ink Experience</a></li>
+  </ul>
+  <p>Explore the proposed Halloween event and its Minneapolis clue trail. Event planning is still in process.</p>
+  <a href="https://ibloud.github.io/inpatient-corridors-review/event/" class="event-link">Violet's Revenge event details →</a>
+  <p>If you are caught, select RETRY and try again. Joining Roomy is optional; the public event details can be read without winning.</p>
+</section>
+</div>
+
+<div class="seats">
+  <svg viewBox="0 0 640 60" preserveAspectRatio="none">
+    <path d="M0,60 L0,38 Q10,20 20,38 L20,60 Z M30,60 L30,34 Q42,14 54,34 L54,60 Z M64,60 L64,38 Q74,20 84,38 L84,60 Z M94,60 L94,32 Q108,10 122,32 L122,60 Z M132,60 L132,38 Q142,20 152,38 L152,60 Z M162,60 L162,34 Q174,14 186,34 L186,60 Z M196,60 L196,38 Q206,20 216,38 L216,60 Z M226,60 L226,32 Q240,10 254,32 L254,60 Z M264,60 L264,38 Q274,20 284,38 L284,60 Z M294,60 L294,34 Q306,14 318,34 L318,60 Z M328,60 L328,38 Q338,20 348,38 L348,60 Z M358,60 L358,32 Q372,10 386,32 L386,60 Z M396,60 L396,38 Q406,20 416,38 L416,60 Z M426,60 L426,34 Q438,14 450,34 L450,60 Z M460,60 L460,38 Q470,20 480,38 L480,60 Z M490,60 L490,32 Q504,10 518,32 L518,60 Z M528,60 L528,38 Q538,20 548,38 L548,60 Z M558,60 L558,34 Q570,14 582,34 L582,60 Z M592,60 L592,38 Q602,20 612,38 L612,60 Z M622,60 L622,32 Q636,10 640,32 L640,60 Z" fill="#2a1b3c"/>
+  </svg>
+</div>
+
+<div id="touchControls">
+  <div id="joyBase">
+    <div id="joyKnob"></div>
+  </div>
+  <div id="joyLabel">DRAG TO MOVE</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// VIOLET'S REVENGE — PROTOTYPE v0.1
+// Single-file 1v1 asymmetrical horror prototype
+// ═══════════════════════════════════════════
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const W = 800, H = 600;
+const TILE = 40;
+const COLS = 20, ROWS = 15;
+
+// ─── Map: 1=wall, 0=floor ───
+const MAP = [
+  '11111111111111111111',
+  '10000001000001000001',
+  '10000000000001000001',
+  '10000001000000000001',
+  '10000001000001000001',
+  '11110111110111101111',
+  '10000001000001000001',
+  '10000000000000000001',
+  '10000001000001000001',
+  '10000001000001000001',
+  '11110111110111101111',
+  '10000001000001000001',
+  '10000000000000000001',
+  '10000001000001000001',
+  '11111111111111111111'
+];
+
+// ─── Game State ───
+let state = 'menu';
+let frame = 0;
+let collected = 0;
+const TOTAL_FILES = 3;
+let health = 3;
+let iframes = 0;
+let shake = 0;
+let flashRed = 0;
+let flashGold = 0;
+let audioCtx = null;
+function playPanicTone() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let t = audioCtx.currentTime;
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(520, t);
+    osc.frequency.exponentialRampToValueAtTime(880, t + 0.18);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.25, t + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + 0.32);
+  } catch (e) { /* audio unavailable, visual/particle feedback still covers it */ }
+}
+
+function playNightingaleSong() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const t = audioCtx.currentTime;
+    [880, 1174.66].forEach((hz, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const start = t + i * 0.09;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(hz, start);
+      osc.frequency.exponentialRampToValueAtTime(hz * 1.18, start + 0.16);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.11, start + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.22);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(start); osc.stop(start + 0.24);
+    });
+  } catch (e) { /* visual cue remains if browser audio is blocked */ }
+}
+let particles = [];
+
+// ─── Entities ───
+let player, violet, files, traps, exitDoor;
+
+// ─── Random Floor Position ───
+// Picks an open (non-wall) tile at random. If a reference point + min
+// distance is given, keeps retrying until the spot is far enough away
+// (used so the player doesn't respawn right on top of Violet).
+function randomFloorPos(minDist, fromX, fromY) {
+  let tries = 0;
+  let best = { x: 1.5*TILE, y: 1.5*TILE };
+  while (tries++ < 60) {
+    let cx = Math.floor(Math.random() * (COLS - 2)) + 1;
+    let cy = Math.floor(Math.random() * (ROWS - 2)) + 1;
+    if (MAP[cy][cx] !== '0') continue;
+    let x = cx * TILE + TILE/2, y = cy * TILE + TILE/2;
+    best = { x, y };
+    if (!minDist) return best;
+    if (Math.hypot(x - fromX, y - fromY) >= minDist) return best;
+  }
+  return best; // fallback: last valid floor tile found, even if too close
+}
+
+function initGame() {
+  // Story-led setup: the Guilty wake in the morgue; Violet begins near the autopsy room.
+  violet = {
+    x: 15.5*TILE, y: 7.5*TILE, r: 14, spd: 1.25, chaseSpd: 1.75, huntSpd: 2.15,
+    state: 'patrol', tx: 10.5*TILE, ty: 7.5*TILE, lmx: 0, lmy: 0,
+    boost: 0, trapCD: 0, caughtFlash: 0
+  };
+  player = { x: 3.5*TILE, y: 8*TILE, r: 12, spd: 2.4, ang: 0, vx:0, vy:0, panicBoost: 0, panicCD: 0 };
+  files = [
+    { x: 3.5*TILE, y: 2.5*TILE, got: false, pulse: 0, home: 'Forensics Office' },
+    { x: 10.5*TILE, y: 2.5*TILE, got: false, pulse: 0, home: 'Records & Lockers' },
+    { x: 10.5*TILE, y: 12*TILE, got: false, pulse: 0, home: 'Evidence Storage' }
+  ];
+  traps = [];
+  exitDoor = { x: 17*TILE+4, y: 12*TILE+4, w: TILE-8, h: TILE-8, unlocked: false };
+  collected = 0;
+  health = 3;
+  iframes = 0;
+  shake = 0;
+  flashRed = 0;
+  flashGold = 0;
+  particles = [];
+  frame = 0;
+}
+
+// ─── Input ───
+const keys = {};
+window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+// ─── Virtual Joystick (touch controls) ───
+// Maps drag direction onto the same wasd keys the keyboard uses,
+// so updatePlayer() doesn't need to know the input source.
+(function initJoystick(){
+  const base = document.getElementById('joyBase');
+  const knob = document.getElementById('joyKnob');
+  if (!base || !knob) return;
+
+  const MAX_R = 46;      // how far the knob can travel from center, px
+  const DEADZONE = 0.18; // fraction of MAX_R before a direction registers
+  let activeId = null;
+  let originX = 0, originY = 0;
+
+  function clearDirKeys(){
+    keys['w'] = keys['a'] = keys['s'] = keys['d'] = false;
+  }
+
+  function applyVector(dx, dy){
+    clearDirKeys();
+    const dist = Math.hypot(dx, dy);
+    if (dist < MAX_R * DEADZONE) return;
+    const nx = dx / dist, ny = dy / dist; // normalized, screen space
+    const T = 0.35; // threshold so diagonals trigger two keys at once
+    if (ny < -T) keys['w'] = true;
+    if (ny > T)  keys['s'] = true;
+    if (nx < -T) keys['a'] = true;
+    if (nx > T)  keys['d'] = true;
+  }
+
+  function setKnob(dx, dy){
+    const dist = Math.min(Math.hypot(dx, dy), MAX_R);
+    const ang = Math.atan2(dy, dx);
+    const kx = Math.cos(ang) * dist, ky = Math.sin(ang) * dist;
+    knob.style.transform = `translate(${kx}px, ${ky}px)`;
+  }
+
+  function start(e){
+    const t = e.changedTouches ? e.changedTouches[0] : e;
+    activeId = t.identifier === undefined ? 'mouse' : t.identifier;
+    const rect = base.getBoundingClientRect();
+    originX = rect.left + rect.width/2;
+    originY = rect.top + rect.height/2;
+    move(e);
+    e.preventDefault();
+  }
+  function move(e){
+    if (activeId === null) return;
+    let t;
+    if (e.changedTouches) {
+      t = Array.from(e.changedTouches).find(tt => tt.identifier === activeId);
+      if (!t) return;
+    } else { t = e; }
+    const dx = t.clientX - originX, dy = t.clientY - originY;
+    setKnob(dx, dy);
+    applyVector(dx, dy);
+    e.preventDefault();
+  }
+  function end(e){
+    if (activeId === null) return;
+    activeId = null;
+    knob.style.transform = 'translate(0px, 0px)';
+    clearDirKeys();
+    e.preventDefault();
+  }
+
+  base.addEventListener('touchstart', start, {passive:false});
+  base.addEventListener('touchmove', move, {passive:false});
+  base.addEventListener('touchend', end, {passive:false});
+  base.addEventListener('touchcancel', end, {passive:false});
+  // Mouse fallback (handy for testing touch layout on desktop)
+  base.addEventListener('mousedown', start);
+  window.addEventListener('mousemove', e => { if (activeId !== null) move(e); });
+  window.addEventListener('mouseup', e => { if (activeId !== null) end(e); });
+})();
+
+// ─── Wall Collision ───
+function hitsWall(x, y, r) {
+  const c1 = Math.floor((x - r) / TILE);
+  const c2 = Math.floor((x + r) / TILE);
+  const r1 = Math.floor((y - r) / TILE);
+  const r2 = Math.floor((y + r) / TILE);
+  for (let row = r1; row <= r2; row++) {
+    for (let col = c1; col <= c2; col++) {
+      if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return true;
+      if (MAP[row][col] === '1') return true;
+    }
+  }
+  return false;
+}
+
+// ─── Move with Wall Slide ───
+function move(e, dx, dy) {
+  if (!hitsWall(e.x + dx, e.y, e.r)) e.x += dx;
+  if (!hitsWall(e.x, e.y + dy, e.r)) e.y += dy;
+}
+
+// ─── Line of Sight (Bresenham) ───
+function hasLOS(x0, y0, x1, y1) {
+  let x0t = Math.floor(x0 / TILE), y0t = Math.floor(y0 / TILE);
+  let x1t = Math.floor(x1 / TILE), y1t = Math.floor(y1 / TILE);
+  let dx = Math.abs(x1t - x0t), dy = Math.abs(y1t - y0t);
+  let sx = x0t < x1t ? 1 : -1, sy = y0t < y1t ? 1 : -1;
+  let err = dx - dy;
+  while (true) {
+    if (MAP[y0t] && MAP[y0t][x0t] === '1') return false;
+    if (x0t === x1t && y0t === y1t) break;
+    let e2 = 2 * err;
+    if (e2 > -dy) { err -= dy; x0t += sx; }
+    if (e2 < dx) { err += dx; y0t += sy; }
+  }
+  return true;
+}
+
+// Choose an open tile beside a wall so the Nightingale is painted on a surface,
+// while its trigger zone sits in the adjacent passage.
+function chooseNightingaleSite() {
+  const options = [];
+  for (let row = 1; row < ROWS - 1; row++) {
+    for (let col = 1; col < COLS - 1; col++) {
+      if (MAP[row][col] !== '0') continue;
+      const neighbors = [
+        { dr: -1, dc: 0, side: 'south' },
+        { dr: 1, dc: 0, side: 'north' },
+        { dr: 0, dc: -1, side: 'east' },
+        { dr: 0, dc: 1, side: 'west' }
+      ];
+      for (const n of neighbors) {
+        const wr = row + n.dr, wc = col + n.dc;
+        if (MAP[wr][wc] !== '1') continue;
+        const x = col*TILE + TILE/2, y = row*TILE + TILE/2;
+        const d = Math.hypot(x - violet.x, y - violet.y);
+        if (d > 90 && d < 260) {
+          options.push({ x, y, wallX: wc*TILE + TILE/2, wallY: wr*TILE + TILE/2, side: n.side });
+        }
+      }
+    }
+  }
+  if (!options.length) return { x: violet.x, y: violet.y, wallX: violet.x, wallY: violet.y, side: 'north' };
+  return options[Math.floor(Math.random() * options.length)];
+}
+
+// ─── New Patrol Target ───
+function newPatrol() {
+  let tries = 0;
+  while (tries++ < 20) {
+    let cx = Math.floor(Math.random() * (COLS - 2)) + 1;
+    let cy = Math.floor(Math.random() * (ROWS - 2)) + 1;
+    if (MAP[cy][cx] === '0') {
+      violet.tx = cx * TILE + TILE/2;
+      violet.ty = cy * TILE + TILE/2;
+      return;
+    }
+  }
+}
+
+// ─── Update Player ───
+function updatePlayer() {
+  let dx = 0, dy = 0;
+  if (keys['w'] || keys['arrowup']) dy -= 1;
+  if (keys['s'] || keys['arrowdown']) dy += 1;
+  if (keys['a'] || keys['arrowleft']) dx -= 1;
+  if (keys['d'] || keys['arrowright']) dx += 1;
+  if (dx || dy) {
+    let len = Math.hypot(dx, dy);
+    dx /= len; dy /= len;
+    let s = player.spd;
+    if (iframes > 0) s *= 1.4; // escape burst
+    if (player.panicBoost > 0) s *= 1.35; // automatic panic burst (no extra input)
+    move(player, dx * s, dy * s);
+    player.ang = Math.atan2(dy, dx);
+    player.vx = dx; player.vy = dy;
+  } else { player.vx = 0; player.vy = 0; }
+
+  if (player.panicBoost > 0) player.panicBoost--;
+  if (player.panicCD > 0) player.panicCD--;
+
+  // Collect files
+  for (let f of files) {
+    if (f.got) continue;
+    f.pulse += 0.06;
+    if (Math.hypot(player.x - f.x, player.y - f.y) < player.r + 12) {
+      f.got = true;
+      collected++;
+      for (let i = 0; i < 12; i++) {
+        particles.push({ x: f.x, y: f.y, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, life: 30, color: '#f1c40f' });
+      }
+    }
+  }
+
+  // Evidence must be destroyed in the incinerator before the exit unlocks.
+  const inIncinerator = player.x > 1.7*TILE && player.x < 4.3*TILE && player.y > 11.3*TILE && player.y < 13.5*TILE;
+  if (collected >= TOTAL_FILES && inIncinerator && keys['e']) {
+    exitDoor.unlocked = true;
+    flashGold = 20;
+  }
+
+  // Check exit
+  if (exitDoor.unlocked) {
+    if (player.x > exitDoor.x - 4 && player.x < exitDoor.x + exitDoor.w + 4 &&
+        player.y > exitDoor.y - 4 && player.y < exitDoor.y + exitDoor.h + 4) {
+      state = 'win';
+    }
+  }
+
+  if (iframes > 0) iframes--;
+}
+
+// ─── Update Violet AI ───
+function updateViolet() {
+  let los = hasLOS(violet.x, violet.y, player.x, player.y);
+  let dist = Math.hypot(player.x - violet.x, player.y - violet.y);
+  let trapHit = traps.some(t => t.triggered && t.life > 0);
+
+  // State machine
+  if (los && dist < 320) {
+    violet.state = 'chase';
+    violet.lmx = player.x; violet.lmy = player.y;
+  } else if (trapHit) {
+    violet.state = 'hunt';
+  } else if (violet.state === 'chase' || violet.state === 'hunt') {
+    let d = Math.hypot(violet.lmx - violet.x, violet.lmy - violet.y);
+    if (d < 25) { violet.state = 'patrol'; newPatrol(); }
+  } else if (violet.state === 'patrol') {
+    let d = Math.hypot(violet.tx - violet.x, violet.ty - violet.y);
+    if (d < 25) newPatrol();
+  }
+
+  // Automatic panic burst: Violet closing in during a chase triggers a brief
+  // player speed boost with no extra input required (accessibility constraint).
+  if (violet.state === 'chase' && dist < 80 && player.panicCD <= 0 && player.panicBoost <= 0) {
+    player.panicBoost = 90;
+    player.panicCD = 360;
+    flashGold = 25;
+    playPanicTone();
+    for (let i = 0; i < 14; i++) {
+      particles.push({ x: player.x, y: player.y, vx: (Math.random()-0.5)*5, vy: (Math.random()-0.5)*5, life: 30, color: '#f1c40f' });
+    }
+  }
+
+  // Speed
+  let spd = violet.spd;
+  if (violet.state === 'chase') spd = violet.chaseSpd;
+  if (violet.state === 'hunt') spd = violet.huntSpd;
+  if (violet.boost > 0) { spd *= 1.3; violet.boost--; }
+
+  // Target
+  let tx, ty;
+  if (violet.state === 'chase') { tx = player.x; ty = player.y; }
+  else if (violet.state === 'hunt') { tx = violet.lmx; ty = violet.lmy; }
+  else { tx = violet.tx; ty = violet.ty; }
+
+  let ang = Math.atan2(ty - violet.y, tx - violet.x);
+  move(violet, Math.cos(ang) * spd, Math.sin(ang) * spd);
+
+  // Drop Nightingale traps
+  violet.trapCD++;
+  if (violet.trapCD > 240 && traps.filter(t => !t.triggered).length < 3) {
+    const site = chooseNightingaleSite();
+    traps.push({ ...site, type: 'nightingale', triggered: false, life: 0, pulse: 0, maxLife: 240 });
+    violet.trapCD = 0;
+  }
+
+  // Catch player
+  if (Math.hypot(player.x - violet.x, player.y - violet.y) < player.r + violet.r && iframes <= 0) {
+    health--;
+    iframes = 120;
+    flashRed = 30;
+    shake = 12;
+    violet.caughtFlash = 20;
+    for (let i = 0; i < 20; i++) {
+      particles.push({ x: player.x, y: player.y, vx: (Math.random()-0.5)*6, vy: (Math.random()-0.5)*6, life: 35, color: '#e74c3c' });
+    }
+    if (health <= 0) {
+      state = 'lose';
+    } else {
+      // Respawn somewhere fresh, away from Violet, rather than right next to her
+      let spot = randomFloorPos(220, violet.x, violet.y);
+      player.x = spot.x;
+      player.y = spot.y;
+    }
+  }
+  if (violet.caughtFlash > 0) violet.caughtFlash--;
+}
+
+// ─── Update Traps ───
+function updateTraps() {
+  for (let t of traps) {
+    t.pulse += 0.05;
+    if (!t.triggered) {
+      let d = Math.hypot(player.x - t.x, player.y - t.y);
+      // Canon-inspired behavior: the painted ward sings when the Guilty moves past it.
+      if (d < 52 && Math.hypot(player.vx || 0, player.vy || 0) > 0.2) {
+        t.triggered = true;
+        t.life = t.maxLife;
+        violet.boost = 180;
+        violet.lmx = player.x; violet.lmy = player.y;
+        playNightingaleSong();
+        for (let i = 0; i < 15; i++) {
+          particles.push({ x: t.x, y: t.y, vx: (Math.random()-0.5)*5, vy: (Math.random()-0.5)*5, life: 40, color: '#9b59b6' });
+        }
+      }
+    } else {
+      t.life--;
+    }
+  }
+  traps = traps.filter(t => !(t.triggered && t.life <= 0));
+}
+
+// ─── Update Particles ───
+function updateParticles() {
+  for (let p of particles) {
+    p.x += p.vx; p.y += p.vy;
+    p.vx *= 0.95; p.vy *= 0.95;
+    p.life--;
+  }
+  particles = particles.filter(p => p.life > 0);
+}
+
+// ═══ RENDER ═══
+function render() {
+  ctx.save();
+  if (shake > 0) {
+    ctx.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake);
+    shake -= 0.5;
+  }
+
+  // Clear
+  ctx.fillStyle = '#050508';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw floor tiles
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      let x = c * TILE, y = r * TILE;
+      if (MAP[r][c] === '1') {
+        ctx.fillStyle = '#1a1520';
+        ctx.fillRect(x, y, TILE, TILE);
+        ctx.strokeStyle = '#2d2438';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, TILE, TILE);
+        // Brick pattern
+        ctx.strokeStyle = '#15101c';
+        ctx.beginPath();
+        ctx.moveTo(x, y + TILE/2); ctx.lineTo(x + TILE, y + TILE/2);
+        ctx.moveTo(x + TILE/2, y); ctx.lineTo(x + TILE/2, y + TILE/2);
+        ctx.stroke();
+      } else {
+        // Morgue floor tile
+        ctx.fillStyle = c % 2 === r % 2 ? '#0e0b16' : '#0a0812';
+        ctx.fillRect(x, y, TILE, TILE);
+        ctx.strokeStyle = '#1a1425';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x, y, TILE, TILE);
+        // Subtle grout lines
+        if (c > 0 && r > 0) {
+          ctx.strokeStyle = '#110e1a';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x, y + TILE/2); ctx.lineTo(x + TILE, y + TILE/2);
+          ctx.moveTo(x + TILE/2, y); ctx.lineTo(x + TILE/2, y + TILE);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // Draw the story-led precinct rooms over the simple rectangular tile floor.
+  function roomLabel(label, x, y, width) {
+    ctx.save();
+    ctx.font = 'bold 10px Courier New';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lines = label.split('|');
+    const boxW = width || 150;
+    const boxH = lines.length * 13 + 8;
+    ctx.fillStyle = 'rgba(5,5,8,0.72)';
+    ctx.fillRect(x - boxW/2, y - boxH/2, boxW, boxH);
+    ctx.strokeStyle = 'rgba(155,89,182,0.45)';
+    ctx.strokeRect(x - boxW/2, y - boxH/2, boxW, boxH);
+    ctx.fillStyle = '#b8a9c9';
+    lines.forEach((line, i) => ctx.fillText(line, x, y - (lines.length-1)*6.5 + i*13));
+    ctx.restore();
+  }
+  function prop(x, y, w, h, fill, stroke) {
+    ctx.fillStyle = fill; ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = stroke || '#5c4d6d'; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
+  }
+  roomLabel('FORENSICS OFFICE', 4*TILE, 1.7*TILE, 142);
+  roomLabel('RECORDS & LOCKERS', 10.5*TILE, 1.7*TILE, 145);
+  roomLabel('PRECINCT INTAKE', 16*TILE, 1.7*TILE, 130);
+  roomLabel('MORGUE / FREEZERS', 4*TILE, 6.3*TILE, 142);
+  roomLabel('MAIN CORRIDOR', 10.5*TILE, 6.3*TILE, 132);
+  roomLabel('AUTOPSY ROOM', 16*TILE, 6.3*TILE, 128);
+  roomLabel('INCINERATOR', 4*TILE, 11.2*TILE, 120);
+  roomLabel('EVIDENCE STORAGE', 10.5*TILE, 11.2*TILE, 145);
+  roomLabel('EXIT VESTIBULE', 16*TILE, 11.2*TILE, 130);
+
+  // Forensics desks and filing cabinets.
+  prop(2*TILE, 3*TILE, 1.2*TILE, 0.55*TILE, '#26202e', '#776187');
+  prop(4.2*TILE, 3*TILE, 1.1*TILE, 0.55*TILE, '#26202e', '#776187');
+  prop(8.2*TILE, 3*TILE, 0.55*TILE, 1.1*TILE, '#34303b', '#8d7a9e');
+  prop(9*TILE, 3*TILE, 0.55*TILE, 1.1*TILE, '#34303b', '#8d7a9e');
+  prop(11.2*TILE, 3*TILE, 0.55*TILE, 1.1*TILE, '#34303b', '#8d7a9e');
+  // Morgue freezer drawers.
+  for (let i = 0; i < 3; i++) {
+    prop((1.5+i*1.45)*TILE, 8.7*TILE, 1.15*TILE, 0.48*TILE, '#202b34', '#617987');
+  }
+  // Autopsy table and restraints.
+  prop(14.7*TILE, 7.6*TILE, 2.3*TILE, 0.95*TILE, '#4a4651', '#b8a9c9');
+  prop(15.05*TILE, 7.78*TILE, 0.35*TILE, 0.18*TILE, '#7d2638', '#d98a9a');
+  prop(16.3*TILE, 7.78*TILE, 0.35*TILE, 0.18*TILE, '#7d2638', '#d98a9a');
+  // Incinerator and evidence shelving.
+  prop(2*TILE, 12*TILE, 2*TILE, 1.1*TILE, '#301a1a', '#b45a4a');
+  ctx.fillStyle = '#e67e22'; ctx.fillRect(2.45*TILE, 12.28*TILE, 1.1*TILE, 0.45*TILE);
+  for (let i = 0; i < 3; i++) prop((8.5+i*1.15)*TILE, 12.4*TILE, 0.72*TILE, 0.7*TILE, '#28212e', '#8d7a9e');
+
+  // Door thresholds: openings through the interior partition walls.
+  ctx.strokeStyle = '#8b7b98'; ctx.lineWidth = 2;
+  [4,10,16].forEach(c => { ctx.beginPath(); ctx.moveTo(c*TILE+5, 5*TILE+TILE/2); ctx.lineTo(c*TILE+TILE-5, 5*TILE+TILE/2); ctx.stroke(); });
+  [4,10,16].forEach(c => { ctx.beginPath(); ctx.moveTo(c*TILE+5, 10*TILE+TILE/2); ctx.lineTo(c*TILE+TILE-5, 10*TILE+TILE/2); ctx.stroke(); });
+  [2,7,12].forEach(row => { [7,13].forEach(c => { ctx.beginPath(); ctx.moveTo(c*TILE+TILE/2, row*TILE+5); ctx.lineTo(c*TILE+TILE/2, row*TILE+TILE-5); ctx.stroke(); }); });
+
+  // Draw exit door
+  let doorOpen = !!exitDoor.unlocked;
+  ctx.fillStyle = doorOpen ? '#1a4d2e' : '#3a1a1a';
+  ctx.fillRect(exitDoor.x, exitDoor.y, exitDoor.w, exitDoor.h);
+  ctx.strokeStyle = doorOpen ? '#2ecc71' : '#666';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(exitDoor.x, exitDoor.y, exitDoor.w, exitDoor.h);
+  ctx.fillStyle = doorOpen ? '#2ecc71' : '#888';
+  ctx.font = '10px Courier New';
+  ctx.textAlign = 'center';
+  ctx.fillText(doorOpen ? 'EXIT' : 'LOCKED', exitDoor.x + exitDoor.w/2, exitDoor.y + exitDoor.h/2 + 3);
+
+  // Draw case files
+  for (let f of files) {
+    if (f.got) continue;
+    let p = Math.sin(f.pulse) * 3;
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    ctx.fillStyle = 'rgba(241,196,15,' + (0.15 + Math.sin(f.pulse)*0.1) + ')';
+    ctx.beginPath(); ctx.arc(0, 0, 18 + p, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#f1c40f';
+    ctx.fillRect(-8, -6, 16, 12);
+    ctx.fillStyle = '#d4ac0d';
+    ctx.fillRect(-8, -6, 16, 3);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(-5, -1, 10, 1);
+    ctx.fillRect(-5, 1, 7, 1);
+    ctx.restore();
+  }
+
+  // Draw Nightingale's Canvas as painted wall sigils with a sound-trigger radius.
+  for (let t of traps) {
+    ctx.save();
+    ctx.translate(t.wallX, t.wallY);
+    const pulse = Math.sin(t.pulse) * 0.25 + 0.75;
+    if (!t.triggered) {
+      ctx.fillStyle = 'rgba(155,89,182,' + (0.12 * pulse) + ')';
+      ctx.fillRect(-TILE/2+4, -TILE/2+4, TILE-8, TILE-8);
+      ctx.strokeStyle = '#9b59b6';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-TILE/2+5, -TILE/2+5, TILE-10, TILE-10);
+      ctx.fillStyle = '#d8a8ff';
+      ctx.font = 'bold 20px Georgia';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('♫', 0, 0);
+      ctx.strokeStyle = 'rgba(199,125,255,0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(0, 0, 10 + Math.sin(t.pulse*2)*2, 0, Math.PI*2); ctx.stroke();
+    } else {
+      const a = t.life / t.maxLife;
+      ctx.fillStyle = 'rgba(199,125,255,' + (0.5 * a) + ')';
+      ctx.fillRect(-TILE/2+3, -TILE/2+3, TILE-6, TILE-6);
+      ctx.strokeStyle = 'rgba(231,76,60,' + a + ')';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-TILE/2+3, -TILE/2+3, TILE-6, TILE-6);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 20px Georgia';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('♫', 0, 0);
+      // Sound waves indicate that Violet has been given the Guilty's last location.
+      ctx.strokeStyle = 'rgba(199,125,255,' + a + ')';
+      ctx.beginPath(); ctx.arc(0, 0, 18 + (1-a)*12, -0.9, 0.9); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, 23 + (1-a)*15, 2.2, 4.1); ctx.stroke();
+    }
+    ctx.restore();
+
+    if (!t.triggered) {
+      ctx.strokeStyle = 'rgba(155,89,182,0.10)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(t.x, t.y, 52, 0, Math.PI*2); ctx.stroke();
+    }
+  }
+
+  // Draw particles
+  for (let p of particles) {
+    ctx.globalAlpha = p.life / 40;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+  }
+  ctx.globalAlpha = 1;
+
+  // Draw player (The Guilty)
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.ellipse(0, player.r, player.r*0.9, player.r*0.3, 0, 0, Math.PI*2); ctx.fill();
+  // Body — forensics blue coat
+  let pColor = iframes > 0 ? '#5dade2' : '#2471a3';
+  ctx.fillStyle = pColor;
+  ctx.beginPath(); ctx.arc(0, 0, player.r, 0, Math.PI*2); ctx.fill();
+  // Coat lapels
+  ctx.strokeStyle = iframes > 0 ? '#aed6f1' : '#1a5276';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(-4, -player.r+4); ctx.lineTo(0, -4); ctx.lineTo(4, -player.r+4);
+  ctx.stroke();
+  // Direction indicator
+  ctx.strokeStyle = '#85c1e9';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(Math.cos(player.ang) * player.r, Math.sin(player.ang) * player.r);
+  ctx.stroke();
+  // Iframes shimmer
+  if (iframes > 0 && frame % 6 < 3) {
+    ctx.strokeStyle = 'rgba(93,173,226,0.5)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, player.r + 5, 0, Math.PI*2); ctx.stroke();
+  }
+  ctx.restore();
+
+  // Draw Violet
+  ctx.save();
+  ctx.translate(violet.x, violet.y);
+  let ang = Math.atan2(player.y - violet.y, player.x - violet.x);
+  // Glow
+  let glowR = violet.state === 'chase' ? 48 : violet.state === 'hunt' ? 56 : 28;
+  let grad = ctx.createRadialGradient(0, 0, 0, 0, 0, glowR);
+  grad.addColorStop(0, violet.state === 'chase' ? 'rgba(231,76,60,0.25)' : 'rgba(155,89,182,0.3)');
+  grad.addColorStop(1, 'rgba(155,89,182,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(0, 0, glowR, 0, Math.PI*2); ctx.fill();
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.beginPath(); ctx.ellipse(0, violet.r, violet.r*0.9, violet.r*0.3, 0, 0, Math.PI*2); ctx.fill();
+  // Varsity jacket body
+  let vBase = violet.caughtFlash > 0 ? '#e74c3c' : '#6c3483';
+  ctx.fillStyle = vBase;
+  ctx.beginPath(); ctx.arc(0, 0, violet.r, 0, Math.PI*2); ctx.fill();
+  // Jacket sleeves — cream accent
+  ctx.strokeStyle = violet.caughtFlash > 0 ? '#f1948a' : '#d7bde2';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(0, 0, violet.r, Math.PI*0.6, Math.PI*1.4); ctx.stroke();
+  // Jersey 88
+  ctx.fillStyle = violet.caughtFlash > 0 ? '#fff' : '#c77dff';
+  ctx.font = 'bold 7px Courier New';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('88', 0, 1);
+  // Hockey stick — rotates toward player
+  ctx.save();
+  ctx.rotate(ang);
+  ctx.strokeStyle = '#f0d9ff';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(violet.r - 2, 0);
+  ctx.lineTo(violet.r + 10, -4);
+  ctx.lineTo(violet.r + 14, 2);
+  ctx.stroke();
+  // Stick tape wrap
+  ctx.strokeStyle = '#9b59b6';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(violet.r + 2, -1);
+  ctx.lineTo(violet.r + 6, -2);
+  ctx.stroke();
+  ctx.restore();
+  // Eyes
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(-4, -3, 2.5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -3, 2.5, 0, Math.PI*2); ctx.fill();
+  let pupilColor = violet.state === 'chase' ? '#e74c3c' : violet.state === 'hunt' ? '#f39c12' : '#2c3e50';
+  ctx.fillStyle = pupilColor;
+  ctx.beginPath(); ctx.arc(-4, -3, 1.2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(4, -3, 1.2, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Vignette
+  let vGrad = ctx.createRadialGradient(W/2, H/2, 150, W/2, H/2, 450);
+  vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  vGrad.addColorStop(1, 'rgba(0,0,0,0.6)');
+  ctx.fillStyle = vGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Red flash when hit
+  if (flashRed > 0) {
+    ctx.fillStyle = 'rgba(231,76,60,' + (flashRed/30 * 0.4) + ')';
+    ctx.fillRect(0, 0, W, H);
+    flashRed--;
+  }
+
+  // Gold edge-flash: panic burst cue (edges glow, center stays clear)
+  if (flashGold > 0) {
+    let gGrad = ctx.createRadialGradient(W/2, H/2, 180, W/2, H/2, W/2);
+    let a = (flashGold/25) * 0.55;
+    gGrad.addColorStop(0, 'rgba(241,196,15,0)');
+    gGrad.addColorStop(1, 'rgba(241,196,15,' + a + ')');
+    ctx.fillStyle = gGrad;
+    ctx.fillRect(0, 0, W, H);
+    flashGold--;
+  }
+
+  ctx.restore();
+}
+
+// ─── UI ───
+function updateUI() {
+  let hearts = '';
+  for (let i = 0; i < 3; i++) hearts += `<span class="heart ${i < health ? 'full' : 'empty'}"></span>`;
+  let fileStr = '';
+  for (let i = 0; i < TOTAL_FILES; i++) fileStr += i < collected ? '📁' : '▢';
+  document.getElementById('ui').innerHTML =
+    `HP: ${hearts}<br>FILES: ${fileStr} (${collected}/${TOTAL_FILES})`;
+
+  let st = '';
+  if (violet) {
+    if (violet.state === 'chase') st = '<span class="warn">⚠ SEEN</span>';
+    else if (violet.state === 'hunt') st = '<span class="pur">🦇 HUNTING</span>';
+    else st = '<span style="color:#5c4d6d">...searching</span>';
+  }
+  let trapStr = traps ? traps.filter(t => t.triggered).length : 0;
+  document.getElementById('status').innerHTML = `${st}<br>Nightingales: ${traps ? traps.length : 0} (${trapStr} singing)`;
+}
+
+// ─── Shared controls reminder, reused on every overlay screen ───
+const CONTROLS_HTML = `
+  <div class="overlay-controls">
+    <span class="kbs">WASD</span> / <span class="kbs">Arrows</span> — Move<br>
+    🟡 Collect 3 Case Files &nbsp;|&nbsp; <span class="kbs">E</span> at Incinerator &nbsp;|&nbsp; 🔥 Unlock exit &nbsp;|&nbsp; 🟣 Avoid Violet
+  </div>`;
+
+// Roomy coordination replaces the retired Discord invite service.
+const ROOMY_INVITE_URL = 'https://roomy.space/join?space=did%3Aplc%3Af62tthd7cmjpfvtlet2crpsq&invite=631116db109c5a7f4c38f03edd57269d';
+const ENCORE_HTML = `
+  <div class="encore" id="encoreInvite">
+    <div class="encore-text">
+      <b>STAY FOR THE ENCORE</b>
+      Continue with Loptr Lab on Roomy — discuss the story, share feedback, and find future playtests.<br>
+      <a href="${ROOMY_INVITE_URL}" target="_blank" rel="noopener noreferrer" class="encore-link" id="encoreLink">Join Loptr Lab on Roomy →</a>
+      <p>Joining is optional and does not automatically grant playtester access.</p>
+    </div>
+  </div>`;
+
+// ─── Overlay Screens ───
+// The Halloween invitation is available after either outcome.
+const HALLOWEEN_EVENT_HTML = `
+  <a href="https://ibloud.github.io/inpatient-corridors-review/event/" class="event-link">Halloween event details →</a>`;
+
+function showOverlay(title, body, btn, extra) {
+  const ov = document.getElementById('overlay');
+  ov.innerHTML = `<h2>${title}</h2>${body}${CONTROLS_HTML}${extra || ''}<button id="restartBtn">${btn}</button>`;
+  ov.classList.remove('hid');
+  document.getElementById('restartBtn').onclick = () => {
+    ov.classList.add('hid');
+    initGame();
+    state = 'playing';
+  };
+}
+
+// ─── Main Loop ───
+function loop() {
+  if (state === 'playing') {
+    frame++;
+    updatePlayer();
+    updateViolet();
+    updateTraps();
+    updateParticles();
+    updateUI();
+    render();
+
+    if (state === 'win') {
+      showOverlay(
+        '✅ ESCAPED',
+        '<p class="good">You destroyed the evidence and escaped the Morgue.</p>' +
+        '<p>But Violet is still out there. Waiting.</p>',
+        'AGAIN',
+        ENCORE_HTML + HALLOWEEN_EVENT_HTML
+      );
+    } else if (state === 'lose') {
+      showOverlay(
+        '🟣 CAUGHT',
+        '<p class="warn">Violet drags you to the Autopsy Slab.</p>' +
+        '<p>The last thing you hear is the Nightingale singing.</p>',
+        'RETRY',
+        HALLOWEEN_EVENT_HTML
+      );
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+// ─── Start (curtains pull back) ───
+document.getElementById('startBtn').onclick = () => {
+  document.getElementById('overlay').classList.add('hid');
+  document.getElementById('curtainL').classList.add('pulled');
+  document.getElementById('curtainR').classList.add('pulled');
+  initGame();
+  state = 'playing';
+};
+
+initGame();
+loop();
+</script>
+</body>
+</html>
