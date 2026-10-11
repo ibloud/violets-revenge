@@ -17,7 +17,7 @@
 <div class="metrics" id="caseMetrics" aria-live="polite"></div>
 <div id="caseEvidence" class="review-list"></div>
 <div class="row" style="margin-top:12px"><label><input id="decisionEmpathic" type="checkbox"> This decision leaned on an empathic inference (Proposal)</label><button id="closeContradiction">Close selected contradiction</button><button id="empathyLens">Use Empathy Lens</button><button id="attemptVerdict" class="primary">Attempt verdict</button><button id="showLedger">Build Verdict Ledger</button></div>
-<p id="caseMessage" class="small" aria-live="polite"></p>
+<p id="caseMessage" class="small" aria-live="polite"></p><h3>Case event log <span class="status">Proposal</span></h3><ol id="caseEventLog" class="log" aria-live="polite"></ol>
 <div id="ledgerView"></div>
 <h2 style="margin-top:18px">Public episode bundle <span class="status">REVEAL_LEVEL=0</span></h2><div id="episodeBundle" class="small"></div>
 </section>
@@ -69,6 +69,7 @@ const list=$('caseEvidence');list.replaceChildren();for(const e of casebook.case
 $('closeContradiction').disabled=!casebook.case.evidence.some(e=>e.id===selectedEvidence&&e.status==='contradiction'&&e.open!==false);
 $('empathyLens').disabled=casebook.empathyUsed;$('attemptVerdict').disabled=Boolean(casebook.ledger?.confirmation?.result==='confirmed'&&casebook.case.decisions.length>0);
 const episode=publicEpisodeBundle(REVEAL_LEVEL);$('episodeBundle').textContent=episode.episodes.map(e=>e.title+' · spoiler level '+e.spoiler_level+' · '+e.status).join(' | ')||'No public entries.';
+const caseLog=$('caseEventLog');caseLog.replaceChildren();for(const event of casebook.events){const li=document.createElement('li');li.textContent=event.type.replaceAll('_',' ')+(event.reason?': '+event.reason:'')+(event.evidenceId?' · '+event.evidenceId:'')+'.';caseLog.append(li)}
 const ledger=$('ledgerView');ledger.replaceChildren();if(casebook.ledger){const h=document.createElement('h3');h.textContent='Verdict Ledger · Proposal';ledger.append(h);for(const [label,items] of [['Known facts',casebook.ledger.known],['Witness claims',casebook.ledger.witnessClaims],['Inferences',casebook.ledger.inferred],['Contradictions',casebook.ledger.contradictions],['Unresolved',casebook.ledger.unresolved],['Decision audit',casebook.ledger.decisions]]){const p=document.createElement('p');p.className='small';p.textContent=label+': '+(items.length?items.map(x=>x.label||x.text||x.id).join('; '):'none');ledger.append(p)}}
 }
 $('showBoard').addEventListener('click',()=>{$('boardView').hidden=false;$('casebookView').hidden=true;});
