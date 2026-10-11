@@ -2,7 +2,7 @@
 
 **Status:** design proposal updated with project-lead preferences on 2026-10-11; not an adopted ruleset  
 **Applies to:** Violet's Revenge card-game / bot / browser demo only  
-**Selected direction:** board-and-card duel, dice-based combat, survival terminal condition  
+**Selected direction:** connected rooms/zones with cards, one die plus modifiers against a target number, escape-versus-capture survival objective  
 **Related game:** Veiled Dominion remains separate  
 **Production impact:** documentation only; no game code or production behavior changes
 
@@ -44,9 +44,9 @@ This is a proposed scaffold, not canon. The project lead has selected board-and-
 
 ### 1. Establish the game mode
 
-Choose one before coding:
+**Selected: board-and-card duel using connected rooms/zones.** This is the project lead's provisional design preference, not a claim that this board is established in franchise canon. Model the board as a graph: rooms are nodes and doors/passages are edges. This suits a horror setting and lets the demo show navigation without assuming a chessboard or importing Veiled Dominion's piece movement.
 
-**Selected: board-and-card duel.** This is the project lead's design preference for the demo, not a claim that a board-and-card duel is already established in the franchise canon. Before implementation, specify the board's shape and coordinates, which units occupy it, each unit's movement, whether units block or capture one another, and how cards alter legal actions. Do not import Veiled Dominion's chess pieces, three phases, or card rules merely because that database references a board.
+Still unresolved: the map layout, starting rooms, number and role of units, whether doors can lock, movement limits, occupancy, line-of-sight, capture procedure, and how cards modify movement. Do not import Veiled Dominion's chess pieces, three phases, or card rules merely because that database references a board.
 
 ### 2. Define the canonical state
 
@@ -89,7 +89,7 @@ Every step must say which actions are legal, whether the step can be skipped, an
 - whether a roll can be rerolled or modified, and whether a result can trigger multiple effects;
 - how the browser/bot records the result and how tests inject a fixed roll.
 
-**Provisional design recommendation, not approved canon:** begin playtests with one six-sided die (d6) and a transparent formula such as `d6 + applicable modifier vs. a published target number`. Avoid simultaneous opposed rolls until the first version works; they add tie and sequencing cases. Keep the die result injectable in tests so the same scenario can be replayed. Do not set final modifiers, target numbers, damage, or costs until the source inventory and balance pass support them.
+**Selected approach:** one die plus modifiers against a target number. **Provisional design recommendation, not approved canon:** begin playtests with one six-sided die (d6). A test succeeds when `d6 + applicable modifier >= target number`. For a first balance pass, playtest target numbers 4 (routine) and 6 (difficult); these are placeholders, not final values. Define whether a natural 1 or 6 has any special meaning (recommend no special result in the first pass), how modifiers stack, whether a card must be committed before rolling, and whether failed actions consume the action/resource. Keep the die result injectable in tests so the same scenario can be replayed.
 
 ### 5. Define resource and card lifecycle
 
@@ -97,16 +97,17 @@ Specify starting resources, legal costs, resource gain timing, whether costs can
 
 ### 6. Define survival as the terminal condition
 
-**Selected: survival.** The engine needs a clear survival state for each side and a precise rule for when that state reaches its failure threshold. The design record must still resolve what is being survived (for example, a shared match survival track, each player's vitality, or a survival objective), how damage and recovery alter it, whether a player can be rescued, and what happens if both sides fail on the same resolution.
+**Selected: escape versus capture.** This replaces a generic life-points-only interpretation of survival for the current design draft. The franchise roadmap's existing asymmetry—Violet hunts the Guilty while the Guilty seek evidence and escape—is a thematic anchor, but it does not prove these exact tabletop win rules.
 
-**Provisional design recommendation, not approved canon:** represent each player's survival as an explicit numeric track; the match ends when a player's track reaches its defined failure threshold. Choose the starting value and damage scale only after card effects and dice math are inventoried. The engine must emit a terminal result that tests can verify. Until the survival definition is approved and tested, do not claim an official win, award a Roomy reward, or infer a win merely because a hand is empty.
+**Provisional playtest strawman, not approved canon:** the Guilty side wins if an eligible Guilty unit reaches an exit after meeting the still-to-be-defined evidence requirement; Violet wins if all Guilty units are captured or otherwise rendered unable to escape under an explicit rule. Define what counts as capture, whether capture is automatic or requires a successful die test, whether captured units can be rescued, how many exits exist, whether evidence is required, and what happens if an exit and capture occur in the same resolution. Decide whether any survival/health track supplements this objective or is unnecessary in the first demo. The engine must emit one testable terminal result. Until this is approved and tested, do not claim an official win or award a Roomy reward.
 
 ## Required mechanics decision record
 
 Before implementation, mark each item as **source-confirmed**, **lead-approved proposal**, or **unresolved**:
 
 - [ ] Canonical Violet's Revenge card list and exact text
-- [x] Board-and-card duel selected as design direction (board topology and movement unresolved)
+- [x] Board-and-card duel selected as design direction
+- [x] Connected rooms/zones selected as provisional board topology; exact map and movement unresolved
 - [ ] Player count and turn order
 - [ ] Starting hand, draw, discard, and reshuffle rules
 - [ ] Starting RP and all RP costs/gains
@@ -114,8 +115,9 @@ Before implementation, mark each item as **source-confirmed**, **lead-approved p
 - [ ] Attack, block, damage, tie, and reaction rules
 - [ ] Card effect timing, stacking, duration, and target legality
 - [ ] Any board, piece types, movement, capture, and hidden-information rules
-- [ ] Survival track, failure threshold, simultaneous failure, surrender, and restart behavior
-- [x] Dice-based combat selected as design direction; die type, formula, modifiers, ties, and reproducible tests unresolved
+- [x] Escape-versus-capture selected as provisional survival objective; evidence, exits, capture, rescue, and tie/terminal precedence unresolved
+- [x] One die plus modifiers against a target number selected as design direction; d6 and TN 4/6 are playtest placeholders only
+- [ ] Surrender and restart behavior
 - [ ] Whether any cross-game lore/card reference is intentional
 
 ## Test gates
@@ -150,9 +152,9 @@ Before implementation, mark each item as **source-confirmed**, **lead-approved p
 
 The lead selected these directions for the Violet's Revenge card demo:
 
-- **Board-and-card duel** — selected; board layout, units, and movement are still to be designed or recovered from Violet's Revenge-specific sources.
-- **Dice-based combat** — selected; exact die, target/contest formula, modifiers, tie rules, and damage remain unresolved.
-- **Survival terminal condition** — selected; what survival measures, starting value, failure threshold, and simultaneous-failure rule remain unresolved.
+- **Connected rooms/zones with cards** — selected provisionally; the map, unit roles, movement, doors, and capture procedure remain unresolved.
+- **One die plus modifiers against a target number** — selected; d6 with test target numbers 4 and 6 is only a playtest starting point, not canon.
+- **Escape versus capture** — selected provisionally; evidence requirements, exits, capture/rescue procedure, and terminal precedence remain unresolved.
 
 These are design preferences, not proof of original canon. They supersede the generic card-only/deterministic options above. Veiled Dominion remains a separate game and is not a source of default rules for this demo.
 
@@ -166,10 +168,68 @@ Therefore, this card-table experience should be documented as a **Violet's Reven
 
 The next specification should define these in order:
 
-1. **Board contract:** grid dimensions or other topology; coordinates; spawn/setup; unit identities and roles; movement distance; blocked squares; occupancy; capture/removal; and any escape/goal spaces. Start with the smallest board that supports meaningful choices, but do not select final dimensions until a source review or playtest rationale is recorded.
+1. **Room graph contract:** define rooms and connecting passages; setup/start rooms; exits; evidence locations; doors/locks if any; legal movement; occupancy; and how a capture can occur. Prefer a small, readable map for the demo, but keep the final layout unresolved until source review/playtesting.
 2. **Turn/action contract:** player order; number of movement and card actions per turn; when cards can be played; legal targets; response windows; and whether playing a card consumes an action or resource.
-3. **Dice contract:** one explicit die procedure, target or opposed-roll formula, modifiers, ties, rerolls, and exactly when damage/effects are applied. Use an injectable deterministic roll source in tests.
-4. **Survival contract:** define the track(s), starting value, failure threshold, damage, healing, prevention, rescue, and simultaneous failure. A survival track reaching its threshold must create a single authoritative terminal result.
+3. **Dice contract:** d6 plus modifiers against a target number; define which actions roll, TN selection, modifier stacking, whether failure consumes an action, and whether cards are committed before a roll. Use an injectable deterministic roll source in tests.
+4. **Escape/capture contract:** define who can escape, whether evidence is required, how capture works, whether rescue exists, and which outcome takes precedence if conditions are met simultaneously. Emit one authoritative terminal result.
 5. **Card contract:** every card has a unique ID, original text/source, legal target, timing, action/resource cost, effect type, duration, and test cases. Until Violet's Revenge-specific cards are found or approved, do not fill the demo with Veiled Dominion cards.
 6. **Prototype acceptance:** a complete sample match can start, accept only legal movement/card actions, resolve fixed and random dice rolls, update survival, reach a tested terminal state, and restart cleanly. The bot and browser must use the same rules engine.
+
+
+
+## Provisional rules skeleton for review (not canon)
+
+This skeleton turns the lead's preferences into something that can be playtested while leaving important choices visibly unresolved.
+
+### Board model
+
+- Represent the location map as a graph: each room is a node; each open connection is an edge.
+- A unit may move only along a connection declared open by the board data.
+- **Provisional movement candidate:** one room transition per movement action. Whether this is free, costs the turn's movement action, or requires a roll is unresolved.
+- Each room should carry explicit tags where relevant: `start`, `exit`, `evidence`, `hazard`, or `locked`. Tags do not themselves define behavior; rules must define what each one does.
+- The first board should be small enough to inspect at a glance. Exact room count, layout, and start/exit positions are unresolved.
+
+### Turn model
+
+A candidate turn sequence for playtesting:
+
+1. Apply start-of-turn effects.
+2. Draw a card if the approved draw rule says to.
+3. Take the allowed movement and card actions in the approved order.
+4. Resolve any required d6 checks.
+5. Apply effects and update board/evidence/capture state.
+6. Check escape and capture terminal conditions.
+7. Pass the turn.
+
+The number of actions, whether a player can move and play a card in one turn, reaction windows, and draw timing remain unresolved.
+
+### Dice check
+
+For the first prototype only, test `d6 + modifier >= target number`. Use target number 4 for a routine check and 6 for a difficult check during early playtests. These values are provisional tuning handles, not canonical rules. No automatic critical success/failure on a natural 6/1 is recommended in the first pass; revisit only if playtests show a need.
+
+A rules definition must name: who rolls; what triggers the roll; the target number; allowed modifiers; whether a card is spent before or after the roll; what happens on success/failure; and whether the action/resource is consumed on failure. If a card adds a modifier, it must specify its timing and whether it stacks with other modifiers.
+
+### Escape versus capture
+
+A candidate asymmetric objective:
+
+- **Guilty side:** locate/secure any required evidence, then reach a designated exit and satisfy the escape condition.
+- **Violet side:** prevent escape by capturing all eligible Guilty units or meeting another explicitly approved capture objective.
+- **Unresolved:** evidence count/handling, whether every Guilty must escape or one is enough, capture distance/roll, captured-unit status, rescue, and simultaneous escape/capture precedence.
+- Do not add a generic HP track unless the source inventory or playtest shows it is needed. Escape versus capture can be the primary terminal system by itself.
+
+### Minimum vertical-slice acceptance criteria
+
+A first browser prototype is ready for review when a tester can:
+
+- start a match on a small connected-room map;
+- move only along legal room connections;
+- play at least one approved card with clear cost, timing, and target;
+- resolve a d6 check against a visible target number;
+- see a logged roll, modifier, and outcome;
+- test an escape and a capture path to a terminal result;
+- restart without leftover state;
+- replay fixed-roll test cases deterministically.
+
+Until Violet's Revenge-specific card sources are identified or the lead approves original demo cards, use clearly labeled placeholder cards for mechanics tests rather than importing Veiled Dominion's deck.
 
