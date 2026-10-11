@@ -41,6 +41,14 @@ test('preset values are applied to catch rolls and capture thresholds', () => {
   assert.equal(handoff.events.findLast(event => event.type === 'catch_roll').target, 4);
   assert.equal(handoff.strikes, 0);
 
+  handoff.strikes = 2;
+  handoff.positions.assailant = handoff.positions.violet;
+  handoff.activeSide = 'violet';
+  handoff.actionsLeft = 2;
+  run(handoff, 'violet', 'catch');
+  assert.equal(handoff.strikes, 3);
+  assert.equal(handoff.terminal.result, 'captured');
+
   const tuned = createGame({ preset: 'tuned', rng: rig([3, 6, 6]) });
   tuned.positions.assailant = tuned.positions.violet;
   tuned.activeSide = 'violet';
