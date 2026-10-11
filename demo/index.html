@@ -10,7 +10,7 @@
 <svg viewBox="0 0 800 440" aria-hidden="true"><g stroke="#738094" stroke-width="4" stroke-linecap="round"><path d="M390 80V220M130 90L390 220M130 220H390M390 220V360M390 220H650M130 220V90M130 360H390M650 220V360"/></g></svg><div id="rooms"></div></div>
 <div class="pending"><strong>Selected action:</strong> <span id="pendingText">None</span><div class="row" id="targetRow" hidden><label for="cardTarget">Door to lock</label><select id="cardTarget"></select></div><div class="row" style="margin-top:8px"><button id="confirm" class="primary" disabled>Confirm action</button><button id="cancel" disabled>Cancel</button><button id="endTurn">End turn</button></div></div></section>
 <section class="panel"><h2>Available actions <span class="status">Proposal</span></h2><div class="actions" id="actions"></div><h2 style="margin-top:16px">Current hand <span class="status">Placeholder cards</span></h2><div class="hand" id="hand"></div><p class="small">Cards are placeholders, not canon. Each has an ID and source/status note.</p></section></div>
-<section class="panel"><h2>Event log <span class="status">Rules engine</span></h2><ol id="eventLog" class="log" aria-live="polite"></ol></section>
+<section class="panel"><h2>Event log <span class="status">Rules engine</span></h2><ol id="eventLog" class="log" aria-live="polite"></ol></section></div>
 <section class="panel" id="casebookView" hidden>
 <h2>Casebook tutorial <span class="status">Proposal · not canon</span></h2>
 <p class="small">All evidence and text below are placeholders. No origin, attack, or character scene is depicted. Review the evidence status before attempting a verdict.</p>
@@ -20,7 +20,7 @@
 <p id="caseMessage" class="small" aria-live="polite"></p>
 <div id="ledgerView"></div>
 <h2 style="margin-top:18px">Public episode bundle <span class="status">REVEAL_LEVEL=0</span></h2><div id="episodeBundle" class="small"></div>
-</section></div>
+</section>
 <details open><summary>Open for review — proposals and unresolved decisions</summary><p class="small">Review and comment on <a href="https://github.com/ibloud/violets-revenge/pull/50" target="_blank" rel="noreferrer">draft PR #50</a>.</p><ul class="review-list"><li><b>Board:</b> eight-room graph, Main Hall hub, file locations, and starting positions are Proposal.</li><li><b>Match:</b> Assailant acts first; two actions per turn; hand of three; draw one per turn; reshuffle discard pile when deck empties.</li><li><b>Balance:</b> search TN 5; catch TN 3, or 6 with Quiet Steps; capture at three strikes. All are Proposal.</li><li><b>Cards:</b> all 24 are placeholder cards; no Veiled Dominion cards or rules are used.</li><li><b>Hidden information:</b> Violet sees only a last revealed location, which may be stale; scan, sigil, Luminol, and Spotlight can reveal.</li><li><b>Unresolved:</b> final graph, card timing and wording, human-play balance, and future card canon.</li><li><b>Out of scope:</b> Casebook, Season 2, arcade mode, canon-document edits, CI changes, original index touch fix, Roomy reward, merge, deployment.</li></ul></details>
 <p class="foot">The historical <code>/index.html</code> prototype is untouched. No music or lyrics are included. Node tests and a 2,000-game simulation are recorded; browser accessibility QA has not been performed.</p>
 </main>
