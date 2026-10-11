@@ -267,8 +267,8 @@ class TestEdgeCases:
 
     def test_save_state_with_default_filepath(self, temp_state_file, monkeypatch):
         """Verifies that save_state uses STATE_FILE when filepath not provided."""
-        import violet_bot
-        monkeypatch.setattr(violet_bot, "STATE_FILE", temp_state_file)
+        import violet_game_state
+        monkeypatch.setattr(violet_game_state, "STATE_FILE", temp_state_file)
 
         test_data = {"test": "default_save"}
         # Call without filepath argument
