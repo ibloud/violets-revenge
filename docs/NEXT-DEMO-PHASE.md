@@ -20,17 +20,15 @@
 4. Roomy is the community destination, not gameplay state or an authorization backend. The intended reward is shown on the demo's actual win screen only; loss/retry does not show it. Because the invite is embedded in a static client, describe this as a gameplay reward, not secure win verification.
 5. Any future Roomy automation would need a separate reviewed integration and opt-in controls. Do not create a bot or scrape/import Roomy discussions as part of this phase.
 
-## Rules gate before gameplay implementation
+## Rules authority and implementation gate
 
-The browser card table must not invent the missing rules. Before treating it as a faithful playable game, the lead must confirm:
+The project lead has now selected `CARD-TEXT-DATABASE.md` as the authoritative source for the Veiled Dominion card text. The audit in [VEILED-DOMINION-RULES-AUDIT.md](VEILED-DOMINION-RULES-AUDIT.md) identifies missing executable rules and terminal win/loss/draw conditions. That file is a card-text database, not yet a complete playable rules specification.
 
-- Which rules authority is canonical: the minimal behavior in `violet_bot.py`, or the broader 52-card rules in `CARD-TEXT-DATABASE.md` (including chess/phase mechanics).
-- Whether the player controls the opponent side against Violet, and how Violet's RP/health changes.
-- What card effects actually resolve in this phase, including response/defense timing and draw/discard behavior.
-- Exact end conditions and tie/no-cards behavior.
-- Whether the Roomy reward is tied to the demo's locally simulated win or should remain a non-claiming community link until a stronger verification mechanism exists.
+The audit branch adds `veiled-dominion-cards.js`, a text-only registry, and `tests/veiled-dominion-cards.test.cjs`, which checks that all 52 unique card records exist and critical ambiguous text is preserved. This registry deliberately contains no effect handlers and does not claim the game can yet be adjudicated.
 
-The first transport-separation milestone is now committed on this branch: `violet_game_state.py` holds the persistence helpers and the offline tests import it directly; `violet_bot.py` exits before importing Discord dependencies when run as a script, and `requirements.txt` no longer installs `discord.py` or `audioop-lts`. This is not yet a browser card-table port and does not claim full rules fidelity. The separate card-table UI and Roomy win-state gate remain the next implementation milestones after the rules authority and terminal conditions are approved.
+Before implementing card resolution or displaying a Veiled Dominion win reward, the lead must decide the missing mechanics listed in the audit, especially player count, phase scope, board/movement rules, RP/combat, response timing, draw/discard exhaustion, and explicit win/loss/draw conditions.
+
+The first transport-separation milestone remains on the preceding branch: `violet_game_state.py` holds persistence helpers; `violet_bot.py` exits before importing Discord dependencies when run as a script; and `requirements.txt` no longer installs `discord.py` or `audioop-lts`. This is not yet a browser card-table port and does not claim full rules fidelity.
 
 ## Implementation sequence
 
