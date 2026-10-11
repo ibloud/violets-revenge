@@ -30,7 +30,7 @@ The browser card table must not invent the missing rules. Before treating it as 
 - Exact end conditions and tie/no-cards behavior.
 - Whether the Roomy reward is tied to the demo's locally simulated win or should remain a non-claiming community link until a stronger verification mechanism exists.
 
-Until those questions are resolved, the first code milestone can safely extract transport-independent state logic and tests, but must not claim full rules fidelity.
+The first transport-separation milestone is now committed on this branch: `violet_game_state.py` holds the persistence helpers and the offline tests import it directly; `violet_bot.py` exits before importing Discord dependencies when run as a script, and `requirements.txt` no longer installs `discord.py` or `audioop-lts`. This is not yet a browser card-table port and does not claim full rules fidelity. The separate card-table UI and Roomy win-state gate remain the next implementation milestones after the rules authority and terminal conditions are approved.
 
 ## Implementation sequence
 
