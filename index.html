@@ -349,6 +349,9 @@ a:focus-visible,button:focus-visible{outline:3px solid #a9ffe6;outline-offset:4p
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 }
 
+/* Companion adventure links share one row with a clear gap. */
+.adventure-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:14px 0 16px;align-items:stretch}
+.adventure-links .event-link{width:100%;min-width:0;margin:0;padding:10px 12px;font-size:clamp(.75rem,1.4vw,.875rem);line-height:1.4;text-align:center;overflow-wrap:anywhere}
 
 </style>
 
@@ -409,7 +412,10 @@ a:focus-visible,button:focus-visible{outline:3px solid #a9ffe6;outline-offset:4p
 <section class="event-info" aria-labelledby="event-heading">
   <h2 id="event-heading">Violet's Revenge: The Forensics Trail</h2>
   <p>Explore the proposed Halloween event and its Minneapolis clue trail. Event planning is still in process.</p>
-  <a href="https://ibloud.github.io/inpatient-corridors-review/event/" class="event-link">Violet's Revenge event details →</a>
+  <nav class="adventure-links" aria-label="Violet adventures">
+    <a href="https://ibloud.github.io/inpatient-corridors-review/event/" class="event-link">Violet’s Revenge →</a>
+    <a href="https://adventure.made-sick.org/violets-remembrance" class="event-link">Violet’s Remembrance →</a>
+  </nav>
   <p>If you are caught, select RETRY and try again. Joining Roomy is optional; the public event details can be read without winning.</p>
   <p><a class="encore-link" href="story/">Read the Ink Experience →</a></p>
 </section>
