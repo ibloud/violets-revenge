@@ -2,6 +2,7 @@ import { appendEvent, reject } from './events.js';
 import { createRng } from './rng.js';
 import roomsData from '../data/rooms.json' with { type: 'json' };
 import cardsData from '../data/cards.placeholder.json' with { type: 'json' };
+import { resolveRulePreset } from './presets.js';
 
 const rooms = Object.fromEntries(roomsData.rooms.map(r => [r.id, r]));
 const roomIds = roomsData.rooms.map(r => r.id);
@@ -73,7 +74,7 @@ function search(s,side) {
   const room=s.positions.assailant;
   const file=Object.entries(s.files).find(([id,r])=>r===room&&!s.foundFiles.includes(id));
   const modifier=s.lockPick;s.lockPick=0;
-  const roll=s._rng.d6(),total=roll+modifier,target=5,success=total>=target;
+  const roll=s._rng.d6(),total=roll+modifier,target=s.ruleSettings.searchTarget,success=total>=target;
   spend(s);
   appendEvent(s,'search_roll',{side,room,roll,modifier,total,target,success,fileId:file?.[0]||null});
   if(success&&file){s.foundFiles.push(file[0]);appendEvent(s,'file_found',{fileId:file[0],room});}
@@ -112,12 +113,12 @@ function catchAssailant(s,side) {
   if(side!=='violet')return {ok:false,reason:'only_violet_catches'};
   if(s.positions.violet!==s.positions.assailant)return {ok:false,reason:'not_same_room'};
   if(s.round<=s.invulnerableThroughVioletTurn)return {ok:false,reason:'assailant_temporarily_uncatchable'};
-  const target=s.quietStepsUntilAssailantTurn?6:2,modifier=s.steadyHand;s.steadyHand=0;
+  const target=s.quietStepsUntilAssailantTurn?6:s.ruleSettings.catchTarget,modifier=s.steadyHand;s.steadyHand=0;
   const roll=s._rng.d6(),total=roll+modifier,success=total>=target;
   spend(s);appendEvent(s,'catch_roll',{roll,modifier,total,target,success});
   if(success){
     s.strikes++;
-    if(s.strikes>=2){s.positions.assailant='autopsy-room';s.terminal={result:'captured',location:'autopsy-room'};appendEvent(s,'terminal',s.terminal);}
+    if(s.strikes>=s.ruleSettings.strikesToCapture){s.positions.assailant='autopsy-room';s.terminal={result:'captured',location:'autopsy-room'};appendEvent(s,'terminal',s.terminal);}
     else {
       s.invulnerableThroughVioletTurn=s.round;
       const exits=rooms[s.positions.assailant].doors.filter(r=>!locked(s,s.positions.assailant,r));
@@ -154,10 +155,11 @@ function play(s,side,id,target) {
   appendEvent(s,'card_played',{side,cardId:id,name:card.name,effect:e,target:target||null,freeMove,freeAction});
   return {ok:true};
 }
-export function createGame({seed=1,rng=null}={}) {
-  const random=rng||createRng(seed),decks={};
+export function createGame({seed=1,rng=null,preset='tuned'}={}) {
+  const random=rng||createRng(seed),decks={},ruleSettings=resolveRulePreset(preset);
   for(const side of ['assailant','violet'])decks[side]=shuffle(catalog[side].map(c=>c.id),random);
   const s={status:'Proposal',source:'ChatGPT Prototype Handoff dated 2026-10-11; review rules only',
+    preset:ruleSettings.id,ruleSettings,
     round:1,activeSide:'assailant',actionsLeft:2,terminal:null,
     positions:{assailant:roomsData.starts.assailant,violet:roomsData.starts.violet},
     roomHistory:[roomsData.starts.assailant],
