@@ -47,66 +47,118 @@ a{color:#dfb6ff}
 <a href="forensics-trail.ink">Read the Ink source</a>
 </footer>
 </main>
-<script type="module">
-import { Compiler } from "https://esm.sh/inkjs@2.3.2/full";
-
+<script>
+/*
+  Local, dependency-free browser implementation of forensics-trail.ink.
+  The Ink source remains linked below; no remote compiler/runtime is required.
+*/
 const storyRoot = document.getElementById("story");
 const status = document.getElementById("status");
 const error = document.getElementById("error");
-let story;
+const reviewed = { record: false, witness: false, lab: false };
 
-function render() {
-  let text = "";
-  while (story.canContinue) text += story.Continue();
+const scenes = {
+  opening: {
+    paragraphs: [
+      "London. The forensic archive is quiet except for the ventilation and the soft click of a desk lamp.",
+      "Violet has been asked to review a file whose summary speaks with more certainty than its supporting pages. The task is not to decide what must have happened. It is to establish what the record can actually support.",
+      "This is a short, non-canon interactive example. Your choices shape the order of review, not the established story."
+    ],
+    choices: [{ text: "Begin the examination.", next: "trail" }]
+  },
+  trail: {
+    paragraphs: [
+      "The file is open. Three sources remain to be reviewed. Keep observation separate from interpretation; an unresolved point is not a failure.",
+      () => "Sources reviewed: " + Object.values(reviewed).filter(Boolean).length + " of 3."
+    ],
+    choices: [
+      { text: "Inspect the intake record.", next: "intake_record", show: () => !reviewed.record },
+      { text: "Read the witness account.", next: "witness_account", show: () => !reviewed.witness },
+      { text: "Review the laboratory note.", next: "lab_note", show: () => !reviewed.lab },
+      { text: "Close the file and write a cautious finding.", next: "finding" }
+    ]
+  },
+  intake_record: {
+    paragraphs: [
+      "The intake record establishes when the file entered the system and who logged it. It does not, by itself, establish the truth of every statement copied into the summary.",
+      "Violet marks the date and source. She leaves the conclusion field blank."
+    ],
+    onEnter: () => { reviewed.record = true; },
+    choices: [{ text: "Return to the file.", next: "trail" }]
+  },
+  witness_account: {
+    paragraphs: [
+      "The witness account contains a clear memory, a gap in the timeline, and one detail the witness says they inferred rather than saw.",
+      "Violet preserves the account in its own words. A sincere witness can still be mistaken; uncertainty is not an accusation."
+    ],
+    onEnter: () => { reviewed.witness = true; },
+    choices: [{ text: "Return to the file.", next: "trail" }]
+  },
+  lab_note: {
+    paragraphs: [
+      "The laboratory note records a result and the limits of the method used. It supports one narrow observation, not the broader story someone has written around it.",
+      "Violet records the result, the method, and what the test cannot tell her."
+    ],
+    onEnter: () => { reviewed.lab = true; },
+    choices: [{ text: "Return to the file.", next: "trail" }]
+  },
+  finding: {
+    paragraphs: [
+      "The file is not yet a verdict.",
+      "Violet separates what was directly recorded, what someone reported, what can reasonably be inferred, and what remains unresolved. She does not promote a gap into a fact just because the explanation would be convenient.",
+      () => Object.values(reviewed).every(Boolean)
+        ? "All three sources have been reviewed. The record is clearer, but clarity is not the same as certainty."
+        : "Some sources remain unread. Violet notes that limitation instead of pretending the review is complete.",
+      "This is the Examiner: patient, precise, and willing to leave a question open. The attack is not depicted here. The later acts remain part of the larger story structure, not this sample scene."
+    ],
+    choices: [
+      { text: "Return to the file.", next: "trail" },
+      { text: "Restart the experience.", next: "opening", restart: true }
+    ]
+  }
+};
+
+function render(sceneName) {
+  const scene = scenes[sceneName];
+  if (!scene) {
+    status.textContent = "Story error.";
+    error.hidden = false;
+    error.textContent = "This scene could not be opened. Reload the page to restart.";
+    return;
+  }
+  if (scene.onEnter) scene.onEnter();
   storyRoot.replaceChildren();
-  const parts = text.split(/\n\s*\n/).map(part => part.trim()).filter(Boolean);
-  for (const part of parts) {
-    const paragraph = document.createElement("p");
-    paragraph.textContent = part;
-    storyRoot.append(paragraph);
+  error.hidden = true;
+
+  for (const item of scene.paragraphs) {
+    const p = document.createElement("p");
+    p.textContent = typeof item === "function" ? item() : item;
+    storyRoot.append(p);
   }
-  const choices = story.currentChoices;
-  if (choices.length) {
-    const group = document.createElement("div");
-    group.className = "choices";
-    for (const choice of choices) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = choice.text;
-      button.addEventListener("click", () => {
-        if (choice.text.toLowerCase().includes("restart the experience")) {
-          story.ResetState();
-        } else {
-          story.ChooseChoiceIndex(choice.index);
-        }
-        render();
-      });
-      group.append(button);
-    }
-    storyRoot.append(group);
-    status.textContent = "Choose a path through the file.";
-  } else {
-    status.textContent = "End of this story sample.";
+
+  const group = document.createElement("div");
+  group.className = "choices";
+  for (const choice of scene.choices.filter(item => !item.show || item.show())) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = choice.text;
+    button.addEventListener("click", () => {
+      if (choice.restart) {
+        reviewed.record = false;
+        reviewed.witness = false;
+        reviewed.lab = false;
+      }
+      render(choice.next);
+    });
+    group.append(button);
   }
+  storyRoot.append(group);
+  status.textContent = sceneName === "finding"
+    ? "Finding recorded · non-canon sample"
+    : "Choose a path through the file.";
 }
 
-try {
-  const response = await fetch("./forensics-trail.ink");
-  if (!response.ok) throw new Error("Could not load Ink source.");
-  const source = await response.text();
-  const compiler = new Compiler(source, { sourceFilename: "forensics-trail.ink" });
-  story = compiler.Compile();
-  status.textContent = "Ink story loaded.";
-  render();
-} catch (err) {
-  console.error(err);
-  status.textContent = "Story unavailable.";
-  error.style.display = "block";
-  storyRoot.replaceChildren();
-  const p = document.createElement("p");
-  p.textContent = "The interactive story could not start. You can still read the Ink source using the link below.";
-  storyRoot.append(p);
-}
+render("opening");
 </script>
 </body>
 </html>
