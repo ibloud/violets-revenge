@@ -11,8 +11,6 @@ VAR examined_lab = false
 -> opening
 
 === opening ===
-# Violet's Revenge: The Forensics Trail
-
 London. The forensic archive is quiet except for the ventilation and the soft click of a desk lamp.
 
 Violet has been asked to review a file whose summary speaks with more certainty than its supporting pages. The task is not to decide what must have happened. It is to establish what the record can actually support.
@@ -66,7 +64,7 @@ Violet separates what was directly recorded, what someone reported, what can rea
 
 {examined_record and examined_witness and examined_lab:
     All three sources have been reviewed. The record is clearer, but clarity is not the same as certainty.
-- else:
+| else:
     Some sources remain unread. Violet notes that limitation instead of pretending the review is complete.
 }
 
