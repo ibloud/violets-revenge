@@ -15,9 +15,10 @@ Roomy hosts community discussion and links to browser playtests. GitHub records 
 
 ### Retained Python Discord bot (retired deployment path)
 
-- `violet_bot.py` retains historical card-game/state helpers; its entry point no longer opens a Discord connection.
-- `win_invite_endpoint.py` is retired and returns HTTP 410 without an invitation or Discord request.
-- `test_violet_bot.py` covers state and concurrency behavior.
+- `violet_bot.py` is retained as historical source and exits before importing Discord dependencies when run as a script.
+- `violet_game_state.py` contains the transport-independent JSON persistence helpers and turn constants used by offline tests; it does not implement the full card rules.
+- `win_invite_endpoint.py` is retired and returns HTTP 410 without an invitation or Discord request when run in its legacy Flask environment.
+- `test_violet_bot.py` now tests the pure state module instead of importing the Discord bot.
 
 ### Retained Node Discord bot (retired deployment path)
 
