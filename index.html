@@ -278,6 +278,24 @@ body.force-touch #touchControls{display:block}
   position:absolute;left:26px;bottom:8px;width:130px;text-align:center;
   font-size:9px;letter-spacing:2px;color:#6b5a80;pointer-events:none;
 }
+
+/* ── Board-and-card review build navigation ── */
+.review-nav{
+  width:100%;max-width:900px;margin:0 auto 18px;padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  border:1px solid #5c4d6d;border-left:4px solid var(--gold);border-radius:6px;
+  background:rgba(18,11,24,.96);font-size:12px;line-height:1.6;
+}
+.review-nav p{margin:0;color:#b8a9c9}
+.review-nav strong{display:block;color:var(--gold);letter-spacing:1px;font-size:13px}
+.review-nav a{
+  display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+  padding:10px 14px;border:1px solid var(--violet);border-radius:4px;
+  color:#f0d9ff;text-decoration:underline;white-space:normal;text-align:center;
+}
+.review-nav a:hover{background:rgba(155,89,182,.18)}
+.review-nav a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
 </style>
 
 <link rel="canonical" href="https://ibloud.github.io/violets-revenge/">
@@ -299,6 +317,14 @@ body.force-touch #touchControls{display:block}
 <a href="https://github.com/ibloud/violets-revenge" class="banner-hero" target="_blank" rel="noopener noreferrer">
   <img src="banner.png" alt="Violet_88: The Morgue Protocol v0.1" class="banner-img">
 </a>
+
+<nav class="review-nav" aria-label="Prototype versions">
+  <div>
+    <strong>ALTERNATE BUILD · BOARD + CARDS</strong>
+    <p>Open the in-development rules and interface review. This is a separate review build, not the original game or a player-ready release.</p>
+  </div>
+  <a href="demo/">Open Board + Card Review Build →</a>
+</nav>
 
 <div class="theatre">
   <div class="curtain" id="curtainL"></div>
