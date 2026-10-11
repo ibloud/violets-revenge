@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#100b16">
+<title>Violet's Revenge: The Forensics Trail — Interactive Story</title>
+<style>
+:root{color-scheme:dark;--bg:#08070b;--panel:#15101c;--panel2:#20172a;--ink:#e8deef;--muted:#b8a8c6;--violet:#c77dff;--gold:#f1c40f;--line:#554163}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#24132e 0,#08070b 58%);color:var(--ink);font:17px/1.7 Georgia,"Times New Roman",serif;min-height:100vh}
+main{max-width:780px;margin:auto;padding:24px 16px 56px}
+header{border:1px solid var(--line);border-top:4px solid var(--gold);background:rgba(21,16,28,.92);padding:22px;margin-bottom:16px}
+.eyebrow{font:700 .75rem/1.4 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+h1{font-size:clamp(1.8rem,5vw,2.7rem);line-height:1.15;margin:.45rem 0 .7rem;color:#ead7ff}
+header p{margin:.5rem 0;color:var(--muted)}
+.notice{border-left:3px solid var(--violet);background:#1a1423;padding:12px 14px;font: .9rem/1.55 system-ui,sans-serif;color:#d7c9e5}
+#story{background:rgba(21,16,28,.95);border:1px solid var(--line);padding:clamp(18px,4vw,32px);min-height:300px}
+#story h2{color:var(--violet);font-size:1.4rem;line-height:1.25}
+#story p{white-space:pre-line}
+.choices{display:grid;gap:10px;margin-top:24px}
+button,.back{font:600 1rem/1.4 system-ui,sans-serif;color:var(--ink);background:var(--panel2);border:1px solid #80649a;border-radius:7px;padding:13px 15px;min-height:48px;text-align:left;cursor:pointer}
+button:hover,.back:hover{background:#33233f;border-color:var(--violet)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;font: .9rem/1.5 system-ui,sans-serif}
+a{color:#dfb6ff}
+.status{color:var(--muted);font: .82rem/1.5 system-ui,sans-serif;margin-bottom:12px}
+#error{display:none;border:1px solid #9d4856;background:#28121a;padding:14px;margin-top:12px;font: .9rem/1.5 system-ui,sans-serif}
+@media(max-width:520px){main{padding:12px 10px 36px}header{padding:17px}#story{padding:17px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="eyebrow">Interactive narrative · Act I: The Examiner</div>
+<h1>Violet's Revenge: The Forensics Trail</h1>
+<p>A short branching story about evidence, inference, and the discipline of leaving an unanswered question open.</p>
+<div class="notice"><strong>Story sample — not new canon.</strong> Built around the current Story Bible's constraints. The attack is not depicted; this sample does not add to or revise established events.</div>
+</header>
+<div class="status" id="status" aria-live="polite">Loading the Ink story…</div>
+<section id="story" aria-live="polite" aria-label="Interactive story">
+<p>Preparing the file…</p>
+</section>
+<div id="error" role="alert" hidden></div>
+<footer>
+<a href="../">← Back to Violet's Revenge</a>
+<a href="forensics-trail.ink">Read the Ink source</a>
+</footer>
+</main>
+<script>
+/*
+  Local, dependency-free browser implementation of forensics-trail.ink.
+  The Ink source remains linked below; no remote compiler/runtime is required.
+*/
+const storyRoot = document.getElementById("story");
+const status = document.getElementById("status");
+const error = document.getElementById("error");
+const reviewed = { record: false, witness: false, lab: false };
+
+const scenes = {
+  opening: {
+    paragraphs: [
+      "London. The forensic archive is quiet except for the ventilation and the soft click of a desk lamp.",
+      "Violet has been asked to review a file whose summary speaks with more certainty than its supporting pages. The task is not to decide what must have happened. It is to establish what the record can actually support.",
+      "This is a short, non-canon interactive example. Your choices shape the order of review, not the established story."
+    ],
+    choices: [{ text: "Begin the examination.", next: "trail" }]
+  },
+  trail: {
+    paragraphs: [
+      "The file is open. Three sources remain to be reviewed. Keep observation separate from interpretation; an unresolved point is not a failure.",
+      () => "Sources reviewed: " + Object.values(reviewed).filter(Boolean).length + " of 3."
+    ],
+    choices: [
+      { text: "Inspect the intake record.", next: "intake_record", show: () => !reviewed.record },
+      { text: "Read the witness account.", next: "witness_account", show: () => !reviewed.witness },
+      { text: "Review the laboratory note.", next: "lab_note", show: () => !reviewed.lab },
+      { text: "Close the file and write a cautious finding.", next: "finding" }
+    ]
+  },
+  intake_record: {
+    paragraphs: [
+      "The intake record establishes when the file entered the system and who logged it. It does not, by itself, establish the truth of every statement copied into the summary.",
+      "Violet marks the date and source. She leaves the conclusion field blank."
+    ],
+    onEnter: () => { reviewed.record = true; },
+    choices: [{ text: "Return to the file.", next: "trail" }]
+  },
+  witness_account: {
+    paragraphs: [
+      "The witness account contains a clear memory, a gap in the timeline, and one detail the witness says they inferred rather than saw.",
+      "Violet preserves the account in its own words. A sincere witness can still be mistaken; uncertainty is not an accusation."
+    ],
+    onEnter: () => { reviewed.witness = true; },
+    choices: [{ text: "Return to the file.", next: "trail" }]
+  },
+  lab_note: {
+    paragraphs: [
+      "The laboratory note records a result and the limits of the method used. It supports one narrow observation, not the broader story someone has written around it.",
+      "Violet records the result, the method, and what the test cannot tell her."
+    ],
+    onEnter: () => { reviewed.lab = true; },
+    choices: [{ text: "Return to the file.", next: "trail" }]
+  },
+  finding: {
+    paragraphs: [
+      "The file is not yet a verdict.",
+      "Violet separates what was directly recorded, what someone reported, what can reasonably be inferred, and what remains unresolved. She does not promote a gap into a fact just because the explanation would be convenient.",
+      () => Object.values(reviewed).every(Boolean)
+        ? "All three sources have been reviewed. The record is clearer, but clarity is not the same as certainty."
+        : "Some sources remain unread. Violet notes that limitation instead of pretending the review is complete.",
+      "This is the Examiner: patient, precise, and willing to leave a question open. The attack is not depicted here. The later acts remain part of the larger story structure, not this sample scene."
+    ],
+    choices: [
+      { text: "Return to the file.", next: "trail" },
+      { text: "Restart the experience.", next: "opening", restart: true }
+    ]
+  }
+};
+
+function render(sceneName) {
+  const scene = scenes[sceneName];
+  if (!scene) {
+    status.textContent = "Story error.";
+    error.hidden = false;
+    error.textContent = "This scene could not be opened. Reload the page to restart.";
+    return;
+  }
+  if (scene.onEnter) scene.onEnter();
+  storyRoot.replaceChildren();
+  error.hidden = true;
+
+  for (const item of scene.paragraphs) {
+    const p = document.createElement("p");
+    p.textContent = typeof item === "function" ? item() : item;
+    storyRoot.append(p);
+  }
+
+  const group = document.createElement("div");
+  group.className = "choices";
+  for (const choice of scene.choices.filter(item => !item.show || item.show())) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = choice.text;
+    button.addEventListener("click", () => {
+      if (choice.restart) {
+        reviewed.record = false;
+        reviewed.witness = false;
+        reviewed.lab = false;
+      }
+      render(choice.next);
+    });
+    group.append(button);
+  }
+  storyRoot.append(group);
+  status.textContent = sceneName === "finding"
+    ? "Finding recorded · non-canon sample"
+    : "Choose a path through the file.";
+}
+
+render("opening");
+</script>
+</body>
+</html>
