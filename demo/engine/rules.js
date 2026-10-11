@@ -1,12 +1,9 @@
 import {
-  appendEvent,
-  reject
-}
-from './events.js';
+  appendEvent, reject
+} from './events.js';
 import {
   createRng
-}
-from './rng.js';
+} from './rng.js';
 import roomsData from '../data/rooms.json' with {
   type: 'json'
 };
@@ -15,13 +12,11 @@ import cardsData from '../data/cards.placeholder.json' with {
 };
 import {
   resolveRulePreset
-}
-from './presets.js';
+} from './presets.js';
 const rooms = Object.fromEntries(roomsData.rooms.map(r => [r.id, r]));
 const roomIds = roomsData.rooms.map(r => r.id);
 const catalog = {
-  assailant: cardsData.assailant,
-  violet: cardsData.violet
+  assailant: cardsData.assailant, violet: cardsData.violet
 };
 const copy = value => structuredClone(value);
 const other = side => side === 'assailant' ? 'violet' : 'assailant';
@@ -33,9 +28,7 @@ function shuffle(items, rng) {
   const result = [...items];
   for (let i=result.length-1;i>0;i--) {
     const j=rng.int(i+1);
-    [result[i],
-    result[j]]=[result[j],
-    result[i]];
+    [result[i],result[j]]=[result[j],result[i]];
   }
   return result;
 }
@@ -61,8 +54,7 @@ function drawTurn(s, side) {
   }
 }
 function advance(s) {
-  const ended=s.activeSide,
-  next=other(ended);
+  const ended=s.activeSide, next=other(ended);
   while(s.hands[ended].length>3) s.discards[ended].push(s.hands[ended].shift());
   if(ended==='violet') s.round++;
   s.activeSide=next;
@@ -90,22 +82,18 @@ function move(s,side,to,{
 }) {
   const from=s.positions[side];
   if(!roomIds.includes(to)) return {
-    ok:false,
-    reason:'unknown_room'
+    ok:false,reason:'unknown_room'
   };
   if(!adjacent(from,to)) return {
-    ok:false,
-    reason:'room_not_connected'
+    ok:false,reason:'room_not_connected'
   };
   if(locked(s,from,to)) return {
-    ok:false,
-    reason:'door_locked'
+    ok:false,reason:'door_locked'
   };
   const slowed=side==='assailant'&&s.graveDirt>0;
   const cost=slowed?2:(free?0:1);
   if((!free||slowed)&&s.actionsLeft<cost) return {
-    ok:false,
-    reason:'not_enough_actions'
+    ok:false,reason:'not_enough_actions'
   };
   if(slowed) s.graveDirt=0;
   s.positions[side]=to;
@@ -139,17 +127,13 @@ function move(s,side,to,{
 }
 function search(s,side) {
   if(side!=='assailant')return {
-    ok:false,
-    reason:'only_assailant_searches'
+    ok:false,reason:'only_assailant_searches'
   };
   const room=s.positions.assailant;
   const file=Object.entries(s.files).find(([id,r])=>r===room&&!s.foundFiles.includes(id));
   const modifier=s.lockPick;
   s.lockPick=0;
-  const roll=s._rng.d6(),
-  total=roll+modifier,
-  target=s.ruleSettings.searchTarget,
-  success=total>=target;
+  const roll=s._rng.d6(),total=roll+modifier,target=s.ruleSettings.searchTarget,success=total>=target;
   spend(s);
   appendEvent(s,'search_roll',{
     side,room,roll,modifier,total,target,success,fileId:file?.[0]||null
@@ -164,28 +148,20 @@ function search(s,side) {
     room
   });
   return {
-    ok:true,
-    outcome:{
-      roll,
-      modifier,
-      total,
-      target,
-      success
+    ok:true,outcome:{
+      roll,modifier,total,target,success
     }
   };
 }
 function burn(s,side) {
   if(side!=='assailant')return {
-    ok:false,
-    reason:'only_assailant_burns_files'
+    ok:false,reason:'only_assailant_burns_files'
   };
   if(s.positions.assailant!=='incinerator')return {
-    ok:false,
-    reason:'not_at_incinerator'
+    ok:false,reason:'not_at_incinerator'
   };
   if(s.foundFiles.length!==3)return {
-    ok:false,
-    reason:'all_files_required'
+    ok:false,reason:'all_files_required'
   };
   spend(s);
   s.burned=true;
@@ -199,16 +175,13 @@ function burn(s,side) {
 }
 function escape(s,side) {
   if(side!=='assailant')return {
-    ok:false,
-    reason:'only_assailant_escapes'
+    ok:false,reason:'only_assailant_escapes'
   };
   if(s.positions.assailant!=='exit-vestibule')return {
-    ok:false,
-    reason:'not_at_exit'
+    ok:false,reason:'not_at_exit'
   };
   if(!s.exitUnlocked)return {
-    ok:false,
-    reason:'exit_locked'
+    ok:false,reason:'exit_locked'
   };
   spend(s);
   s.terminal={
@@ -221,17 +194,14 @@ function escape(s,side) {
 }
 function sigil(s,side) {
   if(side!=='violet')return {
-    ok:false,
-    reason:'only_violet_sets_sigils'
+    ok:false,reason:'only_violet_sets_sigils'
   };
   if(s.sigils.length>=3)return {
-    ok:false,
-    reason:'sigil_limit_reached'
+    ok:false,reason:'sigil_limit_reached'
   };
   const room=s.positions.violet;
   if(s.sigils.some(x=>x.room===room))return {
-    ok:false,
-    reason:'sigil_already_in_room'
+    ok:false,reason:'sigil_already_in_room'
   };
   spend(s);
   s.sigils.push({
@@ -246,45 +216,35 @@ function sigil(s,side) {
 }
 function scan(s,side) {
   if(side!=='violet')return {
-    ok:false,
-    reason:'only_violet_scans'
+    ok:false,reason:'only_violet_scans'
   };
   spend(s);
   const hidden=s.scanHidden&&s.round<=s.hideUntilRound;
-  const target=s.positions.assailant,
-  here=s.positions.violet;
+  const target=s.positions.assailant,here=s.positions.violet;
   const visible=!hidden&&(target===here||adjacent(here,target));
   const result=hidden?'obscured':visible?'nearby':'not_nearby';
   appendEvent(s,'scan',{
     room:here,result,revealedRoom:null
   });
   return {
-    ok:true,
-    outcome:{
-      result,
-      revealedRoom:null
+    ok:true,outcome:{
+      result,revealedRoom:null
     }
   };
 }
 function catchAssailant(s,side) {
   if(side!=='violet')return {
-    ok:false,
-    reason:'only_violet_catches'
+    ok:false,reason:'only_violet_catches'
   };
   if(s.positions.violet!==s.positions.assailant)return {
-    ok:false,
-    reason:'not_same_room'
+    ok:false,reason:'not_same_room'
   };
   if(s.round<=s.invulnerableThroughVioletTurn)return {
-    ok:false,
-    reason:'assailant_temporarily_uncatchable'
+    ok:false,reason:'assailant_temporarily_uncatchable'
   };
-  const target=s.quietStepsUntilAssailantTurn?6:s.ruleSettings.catchTarget,
-  modifier=s.steadyHand;
+  const target=s.quietStepsUntilAssailantTurn?6:s.ruleSettings.catchTarget,modifier=s.steadyHand;
   s.steadyHand=0;
-  const roll=s._rng.d6(),
-  total=roll+modifier,
-  success=total>=target;
+  const roll=s._rng.d6(),total=roll+modifier,success=total>=target;
   spend(s);
   appendEvent(s,'catch_roll',{
     roll,modifier,total,target,success
@@ -294,8 +254,7 @@ function catchAssailant(s,side) {
     if(s.strikes>=s.ruleSettings.strikesToCapture){
       s.positions.assailant='autopsy-room';
       s.terminal={
-        result:'captured',
-        location:'autopsy-room'
+        result:'captured',location:'autopsy-room'
       };
       appendEvent(s,'terminal',s.terminal);
     }
@@ -303,8 +262,7 @@ function catchAssailant(s,side) {
       s.invulnerableThroughVioletTurn=s.round;
       const exits=rooms[s.positions.assailant].doors.filter(r=>!locked(s,s.positions.assailant,r));
       if(exits.length){
-        const to=exits[s._rng.int(exits.length)],
-        from=s.positions.assailant;
+        const to=exits[s._rng.int(exits.length)],from=s.positions.assailant;
         s.positions.assailant=to;
         s.roomHistory.push(to);
         appendEvent(s,'forced_move',{
@@ -317,30 +275,21 @@ function catchAssailant(s,side) {
     }
   }
   return {
-    ok:true,
-    outcome:{
-      roll,
-      modifier,
-      total,
-      target,
-      success,
-      strikes:s.strikes
+    ok:true,outcome:{
+      roll,modifier,total,target,success,strikes:s.strikes
     }
   };
 }
 function play(s,side,id,target) {
   if(!id||!s.hands[side].includes(id))return {
-    ok:false,
-    reason:'card_not_in_hand'
+    ok:false,reason:'card_not_in_hand'
   };
   const card=catalog[side].find(c=>c.id===id);
   if(!card)return {
-    ok:false,
-    reason:'unknown_card'
+    ok:false,reason:'unknown_card'
   };
   const e=card.effect;
-  let freeMove=false,
-  freeAction=false;
+  let freeMove=false,freeAction=false;
   if(e==='shortcut'||e==='patrol'){
     const r=move(s,side,target,{
       free:true
@@ -350,8 +299,7 @@ function play(s,side,id,target) {
   }
   else if(e==='lock_pick'&&side==='assailant'){
     if(s.actionsLeft<2)return{
-      ok:false,
-      reason:'lock_pick_needs_action_for_search'
+      ok:false,reason:'lock_pick_needs_action_for_search'
     };
     s.lockPick=1;
   }
@@ -370,8 +318,7 @@ function play(s,side,id,target) {
   }
   else if(e==='canvas'&&side==='violet'){
     if(s.sigils.length>=3||s.sigils.some(x=>x.room===s.positions.violet))return {
-      ok:false,
-      reason:'sigil_limit_or_duplicate'
+      ok:false,reason:'sigil_limit_or_duplicate'
     };
     s.sigils.push({
       id:s.nextSigilId++,room:s.positions.violet
@@ -394,19 +341,15 @@ function play(s,side,id,target) {
   }
   else if(e==='lockdown'&&side==='violet'){
     if(!target||!target.includes('|'))return {
-      ok:false,
-      reason:'lockdown_requires_door_key'
+      ok:false,reason:'lockdown_requires_door_key'
     };
-    const [a,
-    b]=target.split('|');
+    const [a,b]=target.split('|');
     if(!adjacent(a,b))return {
-      ok:false,
-      reason:'door_does_not_exist'
+      ok:false,reason:'door_does_not_exist'
     };
     s.lockedDoors[key(a,b)]=s.round+1;
   } else return {
-    ok:false,
-    reason:'card_effect_not_available_to_side'
+    ok:false,reason:'card_effect_not_available_to_side'
   };
   s.hands[side]=s.hands[side].filter(x=>x!==id);
   s.discards[side].push(id);
@@ -423,59 +366,29 @@ export function createGame({
 }
 ={
 }) {
-  const random=rng||createRng(seed),
-  decks={
-  },
-  ruleSettings=resolveRulePreset(preset);
+  const random=rng||createRng(seed),decks={
+  },ruleSettings=resolveRulePreset(preset);
   for(const side of ['assailant','violet'])decks[side]=shuffle(catalog[side].map(c=>c.id),random);
   const s={
-    status:'Proposal',
-    source:'ChatGPT Prototype Handoff dated 2026-10-11; review rules only',
-    preset:ruleSettings.id,
-    ruleSettings,
-    round:1,
-    activeSide:'assailant',
-    actionsLeft:2,
-    terminal:null,
+    status:'Proposal',source:'ChatGPT Prototype Handoff dated 2026-10-11; review rules only',
+    preset:ruleSettings.id,ruleSettings,
+    round:1,activeSide:'assailant',actionsLeft:2,terminal:null,
     positions:{
-      assailant:roomsData.starts.assailant,
-      violet:roomsData.starts.violet
+      assailant:roomsData.starts.assailant,violet:roomsData.starts.violet
     },
     roomHistory:[roomsData.starts.assailant],
     files:{
-      'case-file-1':'forensics-office',
-      'case-file-2':'records-lockers',
-      'case-file-3':'evidence-storage'
+      'case-file-1':'forensics-office','case-file-2':'records-lockers','case-file-3':'evidence-storage'
     },
-    foundFiles:[],
-    burned:false,
-    exitUnlocked:false,
-    strikes:0,
-    invulnerableThroughVioletTurn:0,
-    decks,
-    discards:{
-      assailant:[],
-      violet:[]
+    foundFiles:[],burned:false,exitUnlocked:false,strikes:0,invulnerableThroughVioletTurn:0,
+    decks,discards:{
+      assailant:[],violet:[]
+    },hands:{
+      assailant:[],violet:[]
     },
-    hands:{
-      assailant:[],
-      violet:[]
-    },
-    sigils:[],
-    nextSigilId:1,
-    revealedRoom:null,
-    revealedRooms:[],
-    scanHidden:false,
-    hideUntilRound:0,
-    smokeCharges:0,
-    quietStepsUntilAssailantTurn:0,
-    steadyHand:0,
-    lockPick:0,
-    graveDirt:0,
-    lockedDoors:{
-    },
-    events:[],
-    _rng:random
+    sigils:[],nextSigilId:1,revealedRoom:null,revealedRooms:[],scanHidden:false,hideUntilRound:0,smokeCharges:0,
+    quietStepsUntilAssailantTurn:0,steadyHand:0,lockPick:0,graveDirt:0,lockedDoors:{
+    },events:[],_rng:random
   };
   for(const side of ['assailant','violet'])for(let i=0;i<3;i++)draw(s,side);
   appendEvent(s,'game_started',{
@@ -507,39 +420,32 @@ export function act(s,side,action) {
     case 'play':result=play(s,side,input.cardId,input.target);
     break;
     case 'concede':s.terminal={
-      result:'conceded',
-      concededBy:side
+      result:'conceded',concededBy:side
     };
     appendEvent(s,'terminal',s.terminal);
     return {
-      ok:true,
-      state:s
+      ok:true,state:s
     };
     case 'end_turn':appendEvent(s,'turn_ended',{
       side
     });
     advance(s);
     return {
-      ok:true,
-      state:s
+      ok:true,state:s
     };
     default:return rejectAction(s,input.type||'unknown','unknown_action');
   }
   if(!result?.ok)return rejectAction(s,input.type,result?.reason||'illegal_action');
   if(!terminal(s)&&s.actionsLeft<=0)advance(s);
   return {
-    ok:true,
-    state:s,
-    outcome:result.outcome
+    ok:true,state:s,outcome:result.outcome
   };
 }
 export function publicState(s,viewer) {
   const {
-    _rng,
-    ...data
+    _rng,...data
   }
-  =s,
-  out=copy(data);
+  =s,out=copy(data);
   if(viewer==='violet'){
     out.events=out.events.filter(e=>!(e.type==='moved'&&e.side==='assailant')&&!(e.type==='search_roll'&&e.side==='assailant')&&e.type!=='search_empty'&&e.type!=='file_found');
     out.positions.assailant=s.revealedRoom;
@@ -562,8 +468,7 @@ export function cardList(side){
 }
 export function cloneGameState(s){
   const {
-    _rng,
-    ...data
+    _rng,...data
   }
   =s;
   return copy(data);
