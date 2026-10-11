@@ -35,13 +35,13 @@ export function closeContradiction(casebook,evidenceId) {
   casebook.events.push({seq:casebook.events.length+1,type:'contradiction_closed',evidenceId,status:'Proposal'});
   return {ok:true};
 }
-export function attemptVerdict(casebook,decisionText='[PLACEHOLDER — not canon] Attempted case action') {
+export function attemptVerdict(casebook,decisionText='[PLACEHOLDER — not canon] Attempted case action',options={}) {
   const gate=confirmation(casebook);
   if(gate.result!=='confirmed') {
     casebook.events.push({seq:casebook.events.length+1,type:'action_rejected',reason:'case_'+gate.result,gate:clone(gate),status:'Proposal'});
     return {ok:false,reason:'case_'+gate.result,gate};
   }
-  const decision={text:decisionText,gate:'confirmed',empathicInferenceUsed:casebook.case.evidence.some(e=>e.status==='inference'&&e.tag==='empathic'),status:'Proposal'};
+  const decision={text:decisionText,gate:'confirmed',empathicInferenceUsed:Boolean(options.usedEmpathicInference&&casebook.case.evidence.some(e=>e.status==='inference'&&e.tag==='empathic')),status:'Proposal'};
   casebook.case.decisions.push(decision);
   casebook.events.push({seq:casebook.events.length+1,type:'case_action_accepted',decision:clone(decision)});
   return {ok:true,decision:clone(decision)};
