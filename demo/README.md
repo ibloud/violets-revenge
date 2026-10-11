@@ -33,11 +33,11 @@ The simulation bots use seeded rolls and a simple deterministic strategy. Violet
 
 | Stage | Strikes to capture | Catch TN | Search TN | Assailant win rate | Mean rounds | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| Scan-secrecy baseline | 3 | 3 | 5 | 76.1% | 9.09 | Proposal simulation, outside win-rate target |
-| After strike-count adjustment | 2 | 3 | 5 | 63.7% | 8.24 | Proposal simulation, outside win-rate target |
-| After catch-TN adjustment | 2 | 2 | 5 | 57.9% | 7.92 | Proposal simulation, win-rate target met; rounds 0.08 below target |
+| Starting handoff values | 3 | 4 | 4 | 93.8% | 8.61 | Proposal simulation, outside win-rate target |
+| After strike-count adjustment | 2 | 4 | 4 | 84.7% | 8.25 | Proposal simulation, outside win-rate target |
+| After catch-TN adjustment | 2 | 2 | 4 | 74.2% | 7.83 | Proposal simulation, outside win-rate target |
+| After search-TN adjustment | 2 | 2 | 5 | 57.9% | 7.92 | Proposal simulation, win-rate target met; rounds 0.08 below target |
 | Search TN 6 trial | 2 | 2 | 6 | 27.7% | 7.76 | Proposal simulation, reverted: outside win-rate target |
-| Selected simulation setting | 2 | 2 (Quiet Steps: 6) | 5 | 57.9% | 7.92 | Proposal simulation, win-rate target met; rounds slightly short |
 
 **Current values are Proposal only:** two strikes; catch `d6 + modifier >= 2` (Quiet Steps sets TN 6); search `d6 + modifier >= 5`. No natural 1/6 effects. The selected local simulation recorded 1,158 Assailant escapes and 842 captures across 2,000 seeds, with a mean of 7.92 rounds and no guarded/conceded games. Human playtesting is still required.
 
