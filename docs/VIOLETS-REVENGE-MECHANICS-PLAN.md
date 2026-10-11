@@ -63,16 +63,17 @@ All state changes should pass through one rules engine; the browser UI and bot m
 
 ### 3. Define the turn state machine
 
-Write a transition table before coding. For a card-only mode, a candidate sequence is:
+Write a transition table before coding. For the selected board-and-card direction, a candidate sequence is:
 
-1. Start turn.
-2. Apply start-of-turn effects.
-3. Draw according to the approved draw rule.
-4. Take the permitted action(s).
-5. Resolve any response or reaction.
-6. Apply damage, recovery, and end-of-effect timing.
-7. Check the approved terminal condition.
-8. Pass turn.
+1. Start turn and apply start-of-turn effects.
+2. Draw according to the approved draw rule.
+3. Take the permitted board action(s) and/or play card(s), in the approved order.
+4. Resolve any response or reaction.
+5. Resolve dice checks and apply movement, damage, recovery, and effect timing exactly once.
+6. Check the survival terminal condition.
+7. Pass turn.
+
+This sequence is a proposed workflow, not adopted canon; action count, order, and draw timing still require a decision.
 
 Every step must say which actions are legal, whether the step can be skipped, and when the next player acts. If a board/phase system is confirmed, define those states separately rather than assuming that Phase I/II/III from Veiled Dominion carries over.
 
