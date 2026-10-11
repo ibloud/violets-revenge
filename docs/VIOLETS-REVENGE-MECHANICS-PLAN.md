@@ -2,7 +2,7 @@
 
 **Status:** design proposal updated with project-lead preferences on 2026-10-11; not an adopted ruleset  
 **Applies to:** Violet's Revenge card-game / bot / browser demo only  
-**Selected direction:** connected rooms/zones with cards, one die plus modifiers against a target number, escape-versus-capture survival objective  
+**Selected direction:** simple rectangular/square precinct floor plan with a morgue and connected rooms, cards, one die plus modifiers against a target number, escape-versus-capture survival objective  
 **Related game:** Veiled Dominion remains separate  
 **Production impact:** documentation only; no game code or production behavior changes
 
@@ -44,9 +44,11 @@ This is a proposed scaffold, not canon. The project lead has selected board-and-
 
 ### 1. Establish the game mode
 
-**Selected: board-and-card duel using connected rooms/zones.** This is the project lead's provisional design preference, not a claim that this board is established in franchise canon. Model the board as a graph: rooms are nodes and doors/passages are edges. This suits a horror setting and lets the demo show navigation without assuming a chessboard or importing Veiled Dominion's piece movement.
+**Selected: a simple rectangular or square floor plan for a precinct that includes a morgue.** This is the project lead's direction and is grounded thematically in the Violet's Revenge franchise roadmap, which names a tight, claustrophobic Forensics Morgue and Office, hidden case files in desks/lockers, an incinerator that unlocks an exit, and an autopsy table where Violet takes a captured Assailant. The room graph remains an implementation detail for door connections—not a reason to make the board an abstract sprawling network.
 
-Still unresolved: the map layout, starting rooms, number and role of units, whether doors can lock, movement limits, occupancy, line-of-sight, capture procedure, and how cards modify movement. Do not import Veiled Dominion's chess pieces, three phases, or card rules merely because that database references a board.
+**Provisional room inventory based on the story and lead's direction:** precinct entry/exit, main corridor, forensics office, records/case-file room, locker/storage area, morgue/freezer room, autopsy room/table, incinerator/evidence-disposal room, and a small connecting hall. These are candidate spaces for the demo map, not all confirmed canon locations. Use a clean top-down rectangle/square with labeled rooms and visible doors; keep the number of rooms small enough to understand at a glance. Case files should be placed in desks/lockers, the incinerator should be linked to the exit-unlock objective if that loop is approved, and the autopsy table should support Violet's capture loop.
+
+Still unresolved: final room count and adjacency, exact start locations, which of these rooms are canonical versus prototype additions, number and role of units, door/lock behavior, movement limits, occupancy, line-of-sight, capture procedure, and how cards modify movement. Do not import Veiled Dominion's chess pieces, three phases, or card rules merely because that database references a board.
 
 ### 2. Define the canonical state
 
@@ -152,7 +154,7 @@ Before implementation, mark each item as **source-confirmed**, **lead-approved p
 
 The lead selected these directions for the Violet's Revenge card demo:
 
-- **Connected rooms/zones with cards** — selected provisionally; the map, unit roles, movement, doors, and capture procedure remain unresolved.
+- **Simple rectangular/square precinct floor plan with a morgue** — selected provisionally; candidate story anchors include the forensics office, case-file desks/lockers, incinerator, exit door, and autopsy table; exact layout and canonical status of added rooms remain unresolved.
 - **One die plus modifiers against a target number** — selected; d6 with test target numbers 4 and 6 is only a playtest starting point, not canon.
 - **Escape versus capture** — selected provisionally; evidence requirements, exits, capture/rescue procedure, and terminal precedence remain unresolved.
 
@@ -168,7 +170,7 @@ Therefore, this card-table experience should be documented as a **Violet's Reven
 
 The next specification should define these in order:
 
-1. **Room graph contract:** define rooms and connecting passages; setup/start rooms; exits; evidence locations; doors/locks if any; legal movement; occupancy; and how a capture can occur. Prefer a small, readable map for the demo, but keep the final layout unresolved until source review/playtesting.
+1. **Precinct floor-plan contract:** use a simple rectangular/square outline with a compact set of named rooms, including a morgue. Define room adjacency/doors, start locations, exit, evidence/case-file placements, incinerator, and autopsy table. Use the franchise roadmap's Forensics Morgue and Office, desks/lockers, incinerator, exit door, and autopsy table as source-grounded anchors; label any extra precinct rooms as prototype additions until canon review.
 2. **Turn/action contract:** player order; number of movement and card actions per turn; when cards can be played; legal targets; response windows; and whether playing a card consumes an action or resource.
 3. **Dice contract:** d6 plus modifiers against a target number; define which actions roll, TN selection, modifier stacking, whether failure consumes an action, and whether cards are committed before a roll. Use an injectable deterministic roll source in tests.
 4. **Escape/capture contract:** define who can escape, whether evidence is required, how capture works, whether rescue exists, and which outcome takes precedence if conditions are met simultaneously. Emit one authoritative terminal result.
@@ -183,11 +185,12 @@ This skeleton turns the lead's preferences into something that can be playtested
 
 ### Board model
 
-- Represent the location map as a graph: each room is a node; each open connection is an edge.
-- A unit may move only along a connection declared open by the board data.
+- Draw the board as a **simple top-down rectangle or square**, subdivided into a small number of named rooms and corridors. This is a precinct map with a morgue, not an abstract network diagram.
+- Under the visual floor plan, represent each room as a node and each door/passsage as an edge so legal movement can be validated.
+- Story-grounded candidate rooms/features: Forensics Office; Records/Case Files (desks and lockers); Morgue/Freezers; Autopsy Room/Table; Incinerator/Evidence Disposal; Main Hall/Corridor; Precinct Entry/Exit. Some connecting rooms are prototype additions pending canon review.
 - **Provisional movement candidate:** one room transition per movement action. Whether this is free, costs the turn's movement action, or requires a roll is unresolved.
-- Each room should carry explicit tags where relevant: `start`, `exit`, `evidence`, `hazard`, or `locked`. Tags do not themselves define behavior; rules must define what each one does.
-- The first board should be small enough to inspect at a glance. Exact room count, layout, and start/exit positions are unresolved.
+- Give each room explicit tags where relevant: `start`, `exit`, `evidence`, `incinerator`, `autopsy`, `hazard`, or `locked`. Tags are labels until an approved rule defines their effect.
+- Keep room count, exact adjacency, dimensions, and start/exit positions unresolved until the map is reviewed against source material and playtested.
 
 ### Turn model
 
@@ -232,4 +235,16 @@ A first browser prototype is ready for review when a tester can:
 - replay fixed-roll test cases deterministically.
 
 Until Violet's Revenge-specific card sources are identified or the lead approves original demo cards, use clearly labeled placeholder cards for mechanics tests rather than importing Veiled Dominion's deck.
+
+
+
+## Story-led board correction — 2026-10-11
+
+The project lead clarified that the board should be a simple rectangle or square containing rooms in a precinct, including a morgue. The earlier “connected rooms/zones” wording was too abstract by itself and did not make the floor-plan requirement explicit. The board specification has been corrected accordingly.
+
+The franchise roadmap's Phase 1 describes *Violet's Revenge: The Morgue* as a tight, claustrophobic Forensics Morgue and Office. Its explicit play-loop anchors are case files hidden in desks and lockers, an incinerator that destroys evidence and unlocks the exit door, Violet's traps, and an autopsy table where she takes a captured Assailant. These should guide the prototype layout and objective flow.
+
+**Layout direction for the next design pass:** a compact top-down precinct floor plan with a simple rectangular/square outer boundary; readable room divisions; doors/corridors between rooms; a morgue/freezer room; a forensics office; records/case-file desks and lockers; an incinerator/evidence-disposal room; an autopsy room/table; and a clear entry/exit. Keep it small and legible. The underlying code may represent doors as graph edges, but the player-facing board should look like a floor plan.
+
+**Still unresolved / must not be presented as canon:** exact dimensions and room count; which extra precinct rooms exist in franchise canon; starting positions; exact door connections; movement range and action costs; how evidence is collected/destroyed; whether the card demo retains the roadmap's exit-unlock condition; capture tests and rescue; and how Violet's Nightingale/grave-dirt mechanics translate into cards. The room list is a source-guided prototype proposal, not a claim that every room has been canonically established.
 
