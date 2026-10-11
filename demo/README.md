@@ -29,13 +29,13 @@ The simulation bots use seeded rolls and a simple deterministic strategy. Violet
 
 | Stage | Strikes to capture | Catch TN | Search TN | Assailant win rate | Mean rounds | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| Corrected-route baseline | 3 | 4 | 4 | 86.5% | 8.32 | Proposal simulation, outside win-rate target |
-| After strike-count adjustment | 2 | 4 | 4 | 73.3% | 7.61 | Proposal simulation, outside both targets |
-| After catch-TN adjustment | 2 | 3 | 4 | 65.0% | 7.20 | Proposal simulation, outside both targets |
-| After search-TN adjustment | 2 | 3 | 5 | 40.1% | 6.63 | Proposal simulation, win-rate target met; rounds too short |
-| Selected simulation setting | 3 | 3 (Quiet Steps: 6) | 5 | 56.8% | 8.06 | Proposal simulation, within both target ranges |
+| Scan-secrecy baseline | 3 | 3 | 5 | 76.1% | 9.09 | Proposal simulation, outside win-rate target |
+| After strike-count adjustment | 2 | 3 | 5 | 63.7% | 8.24 | Proposal simulation, outside win-rate target |
+| After catch-TN adjustment | 2 | 2 | 5 | 57.9% | 7.92 | Proposal simulation, win-rate target met; rounds 0.08 below target |
+| Search TN 6 trial | 2 | 2 | 6 | 27.7% | 7.76 | Proposal simulation, reverted: outside win-rate target |
+| Selected simulation setting | 2 | 2 (Quiet Steps: 6) | 5 | 57.9% | 7.92 | Proposal simulation, win-rate target met; rounds slightly short |
 
-**Current values are Proposal only:** three strikes; catch `d6 + modifier >= 3` (Quiet Steps sets TN 6); search `d6 + modifier >= 5`. No natural 1/6 effects. The selected local simulation recorded 1,136 Assailant escapes and 864 captures across 2,000 seeds, with a mean of 8.06 rounds and no guarded/conceded games. Human playtesting is still required.
+**Current values are Proposal only:** two strikes; catch `d6 + modifier >= 2` (Quiet Steps sets TN 6); search `d6 + modifier >= 5`. No natural 1/6 effects. The selected local simulation recorded 1,158 Assailant escapes and 842 captures across 2,000 seeds, with a mean of 7.92 rounds and no guarded/conceded games. Human playtesting is still required.
 
 ## Known limitations
 
