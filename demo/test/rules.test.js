@@ -225,3 +225,32 @@ test('fixed seed gives repeatable event history', () => {
   }
   assert.deepEqual(playThrough(), playThrough());
 });
+
+test('failed tuned catch adds no strike', () => {
+  const state = createGame({ preset: 'tuned', rng: rig([1]) });
+  state.positions.assailant = state.positions.violet;
+  state.activeSide = 'violet';
+  state.actionsLeft = 2;
+
+  const result = act(state, 'violet', { type: 'catch' });
+  assert.equal(result.ok, true);
+  assert.equal(result.outcome.success, false);
+  assert.equal(state.strikes, 0);
+});
+
+test('default preset is Tuned and Quiet Steps sets catch TN 6 in both presets', () => {
+  assert.equal(createGame().preset, 'tuned');
+
+  for (const preset of ['handoff-defaults', 'tuned']) {
+    const state = createGame({ preset, rng: rig([6]) });
+    state.positions.assailant = state.positions.violet;
+    state.activeSide = 'assailant';
+    state.actionsLeft = 2;
+    state.quietStepsUntilAssailantTurn = state.round + 1;
+    state.activeSide = 'violet';
+    state.actionsLeft = 2;
+
+    run(state, 'violet', 'catch');
+    assert.equal(state.events.findLast(event => event.type === 'catch_roll').target, 6);
+  }
+});
