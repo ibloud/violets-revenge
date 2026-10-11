@@ -310,7 +310,7 @@ body.force-touch #touchControls{display:block}
       <h2>VIOLET'S REVENGE</h2>
       <p class="pur"><strong>PROTOTYPE v0.1 — Game Jam Build</strong></p>
       <p>You are <span class="warn">THE GUILTY</span>. You wake in a morgue.
-      Collect <strong>3 Case Files</strong> and reach the <strong>Exit Door</strong>.</p>
+      Collect <strong>3 Case Files</strong>, destroy the evidence at the <strong>Incinerator</strong> with <span class="kbs">E</span>, then reach the <strong>Exit Door</strong>.</p>
       <p>Violet hunts you. She paints <span class="pur">Nightingale sigils</span> on the precinct walls. Run past one and it sings, revealing your location.</p>
       <p class="warn">She catches you 3 times... it's the Autopsy Slab.</p>
       <button id="startBtn">BEGIN</button>
@@ -412,6 +412,26 @@ function playPanicTone() {
     osc.connect(gain); gain.connect(audioCtx.destination);
     osc.start(t); osc.stop(t + 0.32);
   } catch (e) { /* audio unavailable, visual/particle feedback still covers it */ }
+}
+
+function playNightingaleSong() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const t = audioCtx.currentTime;
+    [880, 1174.66].forEach((hz, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const start = t + i * 0.09;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(hz, start);
+      osc.frequency.exponentialRampToValueAtTime(hz * 1.18, start + 0.16);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.11, start + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.22);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(start); osc.stop(start + 0.24);
+    });
+  } catch (e) { /* visual cue remains if browser audio is blocked */ }
 }
 let particles = [];
 
@@ -1109,7 +1129,7 @@ function updateUI() {
 const CONTROLS_HTML = `
   <div class="overlay-controls">
     <span class="kbs">WASD</span> / <span class="kbs">Arrows</span> — Move<br>
-    🟡 Collect 3 Case Files &nbsp;|&nbsp; 🔥 Incinerator unlocks exit &nbsp;|&nbsp; 🟣 Avoid Violet
+    🟡 Collect 3 Case Files &nbsp;|&nbsp; <span class="kbs">E</span> at Incinerator &nbsp;|&nbsp; 🔥 Unlock exit &nbsp;|&nbsp; 🟣 Avoid Violet
   </div>`;
 
 // Roomy coordination replaces the retired Discord invite service.
