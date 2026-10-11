@@ -1,0 +1,18 @@
+# Deploy the browser prototype and its static assets only.
+# The retired Flask invite endpoint must not be deployed as a function or served as source.
+**/*.py
+requirements.txt
+
+# Keep project documentation and development tooling out of the public deployment.
+docs/
+tests/
+.github/
+js-bot/
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.env.*
+game_state.json
+game_state.json.corrupt.*
