@@ -3,215 +3,159 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#09070d">
-<title>Violet's Card Table — Violet's Revenge</title>
+<meta name="theme-color" content="#100b16">
+<title>Franchise Variant Lab — Float Cards</title>
 <style>
-:root{color-scheme:dark;--bg:#09070d;--panel:#17111f;--panel2:#21172b;--line:#493459;--ink:#e8deef;--muted:#b4a3c3;--violet:#c77dff;--gold:#f1c40f;--red:#ff7272;--green:#8ee0ad}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top,#24132f 0,#09070d 55%);color:var(--ink);font:16px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;min-height:100vh}
-main{width:min(1080px,100% - 32px);margin:0 auto;padding:28px 0 56px}
-a{color:var(--violet)}a:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
-header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:18px}
-.kicker{color:var(--gold);letter-spacing:.16em;text-transform:uppercase;font-size:.75rem}
-h1,h2,p{margin-top:0}h1{font:italic 700 clamp(2rem,5vw,3.6rem)/1.05 Georgia,serif;color:var(--violet);margin:.4rem 0}
-.subtitle{color:var(--muted);max-width:66ch;margin:0}
-.toplink{white-space:nowrap}
-.panel{background:linear-gradient(145deg,rgba(33,23,43,.96),rgba(17,12,23,.98));border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:20px}
-.panel h2{font:700 1.25rem Georgia,serif;color:var(--violet);margin-bottom:8px}
-.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
-.rule{border:1px solid #3b2a48;border-radius:8px;padding:12px;background:#100c16}
-.rule strong{display:block;color:var(--gold);font-size:.8rem;letter-spacing:.06em;margin-bottom:4px}
-.gamebar{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin:18px 0}
-.score{background:#100c16;border:1px solid var(--line);border-radius:8px;padding:14px}
-.score:last-child{text-align:right}.score-name{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
-.hp{font-size:1.65rem;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
-.vs{color:var(--muted);font-size:.8rem;text-align:center}
-.pips{display:flex;gap:4px;margin-top:8px}.score:last-child .pips{justify-content:flex-end}
-.pip{height:5px;flex:1;max-width:22px;background:#493459;border-radius:2px}.pip.live{background:var(--violet)}
-.table{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.side{border:1px solid var(--line);border-radius:8px;padding:16px;background:rgba(9,7,13,.45);min-width:0}
-.side h3{margin:0 0 12px;font-size:1rem}.side h3 span{display:block;color:var(--muted);font-size:.75rem;font-weight:400}
-.hand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.card{min-height:116px;border-radius:7px;border:1px solid #d8cbdc;background:#f7f0e4;color:#17111f;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:pointer;font-family:Georgia,serif;transition:transform .12s,border-color .12s;box-shadow:0 3px 0 #4b3c52}
-.card:hover:not(:disabled){transform:translateY(-3px)}
-.card[aria-pressed=true]{outline:3px solid var(--gold);outline-offset:2px;transform:translateY(-3px)}
-.card:disabled{cursor:default;opacity:.8}
-.card.red{color:#b42036}.rank{font-size:1.65rem;font-weight:700;line-height:1}.suit{font-size:1.55rem;line-height:1.2}.card small{font:10px ui-monospace,monospace;margin-top:6px;letter-spacing:.06em}
-.card.back{background:repeating-linear-gradient(45deg,#261533,#261533 7px,#3a2148 7px,#3a2148 14px);border:2px solid #a981bd;color:#d9b9f0;cursor:default}
-.card.back .suit{font-size:2rem}
-.selection{min-height:28px;color:var(--muted);font-size:.82rem;margin:14px 0 8px}
-.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-button.action{font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--violet);border-radius:6px;padding:10px 16px;background:#382047;color:#fff}
-button.action.primary{background:var(--violet);color:#170c20;border-color:var(--violet)}
-button.action:disabled{opacity:.45;cursor:not-allowed}
-.status{color:var(--muted);font-size:.9rem;min-height:1.5em;margin:14px 0 0}
-.result{padding:14px;border-left:3px solid var(--violet);background:#100c16;border-radius:0 6px 6px 0;margin-top:16px}
-.result strong{color:var(--gold)}.result.win{border-color:var(--green)}.result.loss{border-color:var(--red)}
-.log{display:grid;gap:8px;padding:0;list-style:none;margin:12px 0 0}.log li{display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid #34253e;padding:8px 0;color:var(--muted);font-size:.84rem}.log b{color:var(--ink);min-width:3.5rem}
-.note{color:var(--muted);font-size:.82rem}.footer{margin-top:24px;color:var(--muted);font-size:.78rem}
-@media(max-width:680px){main{width:calc(100% - 20px);padding-top:18px}.rules{grid-template-columns:1fr}.gamebar{grid-template-columns:1fr 1fr}.vs{grid-column:1/-1;grid-row:2}.table{grid-template-columns:1fr}.card{min-height:100px}.side{padding:12px}.hand{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+:root{color-scheme:dark;--bg:#100b16;--panel:#1d1427;--panel2:#281a34;--line:#543c66;--ink:#f1e8f7;--muted:#c0afcc;--brand:#e35d6a;--accent:#ffd166;--danger:#ff7777;--success:#91e5b1}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,var(--panel2),var(--bg) 62%);color:var(--ink);font:16px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;min-height:100vh}
+main{width:min(1120px,calc(100% - 32px));margin:auto;padding:26px 0 48px}a{color:var(--accent)}button,input{font:inherit}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:18px}
+.kicker{font-size:.73rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}h1,h2,h3,p{margin-top:0}h1{font:italic 700 clamp(2rem,5vw,3.5rem)/1.05 Georgia,serif;color:var(--brand);margin:.4rem 0}.subtitle{max-width:68ch;color:var(--muted);margin:0}
+.layout{display:grid;grid-template-columns:minmax(250px,.72fr) minmax(0,1.6fr);gap:18px;align-items:start}.panel{background:linear-gradient(145deg,var(--panel),rgba(14,10,20,.98));border:1px solid var(--line);border-radius:10px;padding:18px;margin-top:18px;min-width:0}.panel h2{font:700 1.2rem Georgia,serif;color:var(--brand);margin-bottom:8px}
+.controls{display:grid;gap:12px}.field{display:grid;gap:5px}.field label{font-size:.78rem;color:var(--muted)}.field input[type=text]{width:100%;padding:9px 10px;border-radius:5px;border:1px solid var(--line);background:#100b16;color:var(--ink)}.field input[type=color]{width:100%;height:38px;padding:3px;border-radius:5px;border:1px solid var(--line);background:#100b16}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.action{cursor:pointer;border:1px solid var(--brand);border-radius:6px;padding:9px 12px;background:var(--panel2);color:var(--ink);font-weight:700}.action.primary{background:var(--brand);color:#160d1b;border-color:var(--brand)}.help,.note{font-size:.78rem;color:var(--muted)}
+.disclosure{border-left:3px solid var(--accent);padding:12px;background:#120d18;border-radius:0 6px 6px 0;font-size:.8rem;color:var(--muted)}.disclosure strong{color:var(--accent)}
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.rule{border:1px solid var(--line);border-radius:7px;padding:11px;background:rgba(10,7,14,.45);font-size:.84rem}.rule strong{display:block;color:var(--accent);font-size:.74rem;margin-bottom:4px}
+.gamebar{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:16px 0}.score{background:#100b16;border:1px solid var(--line);border-radius:7px;padding:12px}.score:last-child{text-align:right}.score-name{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.07em}.hp{font-size:1.5rem;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}.vs{text-align:center;color:var(--muted);font-size:.75rem}.pips{display:flex;gap:3px;margin-top:7px}.score:last-child .pips{justify-content:flex-end}.pip{height:4px;flex:1;max-width:22px;background:var(--line);border-radius:2px}.pip.live{background:var(--brand)}
+.table{display:grid;grid-template-columns:1fr 1fr;gap:12px}.side{border:1px solid var(--line);border-radius:7px;padding:12px;min-width:0;background:rgba(8,6,12,.35)}.side h3{font-size:.95rem;margin-bottom:10px}.side h3 span{display:block;color:var(--muted);font-size:.72rem;font-weight:400}
+.hand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.card{min-height:104px;border-radius:6px;border:1px solid #e3d8e8;background:#f8f0e3;color:#17111d;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:Georgia,serif;box-shadow:0 3px 0 #4b3c52;transition:transform .12s}.card.red{color:#b42036}.card:hover:not(:disabled){transform:translateY(-3px)}.card[aria-pressed=true]{outline:3px solid var(--accent);outline-offset:1px;transform:translateY(-3px)}.card:disabled{cursor:default;opacity:.85}.rank{font-size:1.5rem;font-weight:700;line-height:1}.suit{font-size:1.4rem;line-height:1.2}.card small{font:9px ui-monospace,monospace;margin-top:5px}.card.back{background:repeating-linear-gradient(45deg,#25172e,#25172e 7px,#382344 7px,#382344 14px);border:2px solid var(--brand);color:var(--brand);cursor:default}.selection{min-height:25px;font-size:.77rem;color:var(--muted);margin:12px 0 8px}.result{padding:12px;border-left:3px solid var(--brand);background:#100b16;border-radius:0 6px 6px 0;margin-top:12px;font-size:.84rem}.result strong{color:var(--accent)}.result.win{border-color:var(--success)}.result.loss{border-color:var(--danger)}.status{font-size:.84rem;color:var(--muted);min-height:1.4em;margin:12px 0 0}.log{display:grid;gap:6px;padding:0;list-style:none;margin:10px 0 0}.log li{display:flex;gap:10px;border-bottom:1px solid var(--line);padding:7px 0;color:var(--muted);font-size:.8rem}.log b{color:var(--ink);min-width:3.4rem}.footer{margin-top:22px;color:var(--muted);font-size:.75rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.rules{grid-template-columns:1fr}}@media(max-width:520px){main{width:calc(100% - 18px);padding-top:16px}.table{grid-template-columns:1fr}.gamebar{gap:6px}.score{padding:9px}.card{min-height:90px}.panel{padding:13px}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
 </style>
 </head>
 <body>
 <main>
 <header>
-  <div><div class="kicker">Violet's Revenge · The Card Table</div><h1>Float Cards</h1><p class="subtitle">A reconstructed playable version of the retired card-table rules. The deck is ordinary; the stakes are not.</p></div>
-  <a class="toplink" href="./index.html">← Return to The Morgue</a>
+ <div><div class="kicker">Interactive IP toolkit · prototype</div><h1 id="brand-title">The Red Balloon</h1><p class="subtitle" id="brand-tagline">A custom-branded variant demo built on the Float Cards rules skeleton.</p></div>
+ <div class="kicker">Branding sandbox · v0.2</div>
 </header>
 
-<section class="panel" aria-labelledby="rules-title">
-  <h2 id="rules-title">Rules of the table</h2>
-  <p>Each side receives six cards from a shuffled standard 52-card deck and begins with 10 Resolve Points (RP). Choose one card; your opponent commits one too. Both are revealed together. The higher rank deals 1 RP damage. Ties deal no damage.</p>
-  <div class="rules">
-    <div class="rule"><strong>01 · COMMIT</strong>Choose one card from your hand each round. You cannot reuse it.</div>
-    <div class="rule"><strong>02 · REVEAL</strong>Rank decides the round: 2 is lowest, Ace is highest. Suits have no mechanical effect in this version.</div>
-    <div class="rule"><strong>03 · SURVIVE</strong>Reach 0 RP to lose. If the hands run out first, the higher remaining RP wins.</div>
-  </div>
-</section>
+<div class="layout">
+ <aside>
+  <section class="panel" aria-labelledby="custom-title">
+   <h2 id="custom-title">Variant branding controls</h2>
+   <p class="help">Change the presentation layer without changing the underlying card rules. This is a local preview; values are not saved or uploaded.</p>
+   <form class="controls" id="brand-form">
+    <div class="field"><label for="brand-name">Variant / franchise name</label><input id="brand-name" type="text" maxlength="64" value="The Red Balloon"></div>
+    <div class="field"><label for="brand-tagline-input">Tagline</label><input id="brand-tagline-input" type="text" maxlength="140" value="A custom-branded variant demo built on the Float Cards rules skeleton."></div>
+    <div class="field"><label for="player-label">Player role label</label><input id="player-label" type="text" maxlength="32" value="The Investigator"></div>
+    <div class="field"><label for="opponent-label">Opponent role label</label><input id="opponent-label" type="text" maxlength="32" value="The Visitor"></div>
+    <div class="field"><label for="brand-color">Primary brand color</label><input id="brand-color" type="color" value="#e35d6a"></div>
+    <div class="field"><label for="accent-color">Accent color</label><input id="accent-color" type="color" value="#ffd166"></div>
+    <div class="actions"><button class="action primary" type="submit">Apply branding</button><button class="action" id="reset-brand" type="button">Reset sample</button></div>
+   </form>
+  </section>
+  <section class="panel" aria-labelledby="disclosure-title">
+   <h2 id="disclosure-title">IP disclosure & inspiration</h2>
+   <div class="disclosure">
+    <strong>Unofficial inspiration prototype.</strong> This sample acknowledges Dallas XY’s Pennywise character as the creative inspiration identified for this variant. It is not affiliated with, sponsored by, or endorsed by Dallas XY or any rights holder. “Pennywise,” “IT,” and associated character elements may be protected by their respective owners. This prototype uses no official character artwork, logos, or script excerpts. Obtain appropriate permissions and review applicable rights before any public, monetized, or franchise release. Attribution is not permission.
+   </div>
+   <p class="help">For a new partner IP, replace this notice with project-specific source credits, ownership/permission status, license terms, and required attribution. Do not treat this sample disclosure as legal advice or as proof that rights are cleared.</p>
+  </section>
+ </aside>
 
-<section class="panel" aria-labelledby="match-title">
-  <div class="kicker" id="match-title">Active match</div>
-  <div class="gamebar" aria-label="Resolve point scores">
-    <div class="score"><div class="score-name">You · Guilty</div><div class="hp" id="player-rp">10 RP</div><div class="pips" id="player-pips" aria-hidden="true"></div></div>
+ <div>
+  <section class="panel" aria-labelledby="rules-title">
+   <div class="kicker">Playable mechanics test</div><h2 id="rules-title">Float Cards · generic rules layer</h2>
+   <p>Each side receives six cards from a shuffled standard 52-card deck and begins with 10 Resolve Points (RP). Commit one card each round. The cards reveal together; the higher rank deals 1 RP damage. Ties deal no damage.</p>
+   <div class="rules">
+    <div class="rule"><strong>01 · COMMIT</strong>Choose one card from your hand each round. Used cards cannot be replayed.</div>
+    <div class="rule"><strong>02 · REVEAL</strong>Ranks run from 2 (lowest) to Ace (highest). Suits have no effect in this ruleset.</div>
+    <div class="rule"><strong>03 · ENDGAME</strong>Zero RP loses. If both hands run out first, higher remaining RP wins; equal RP is a draw.</div>
+   </div>
+  </section>
+
+  <section class="panel" aria-labelledby="match-title">
+   <div class="kicker" id="match-title">Live preview · branded by controls</div>
+   <div class="gamebar" aria-label="Resolve point scores">
+    <div class="score"><div class="score-name" id="player-name">The Investigator</div><div class="hp" id="player-rp">10 RP</div><div class="pips" id="player-pips" aria-hidden="true"></div></div>
     <div class="vs">ROUND<br><strong id="round-number">1</strong></div>
-    <div class="score"><div class="score-name">The Opponent</div><div class="hp" id="opponent-rp">10 RP</div><div class="pips" id="opponent-pips" aria-hidden="true"></div></div>
-  </div>
-
-  <div class="table">
-    <div class="side">
-      <h3>Your hand <span id="hand-count">6 cards remaining</span></h3>
-      <div class="hand" id="player-hand" aria-label="Your cards"></div>
-      <p class="selection" id="selection-help" aria-live="polite">Select a card to commit it.</p>
-      <div class="actions"><button class="action primary" id="commit" disabled>Commit card</button><button class="action" id="restart">New match</button></div>
-    </div>
-    <div class="side">
-      <h3>Opponent's hand <span id="opponent-hand-count">6 cards remaining</span></h3>
-      <div class="hand" id="opponent-hand" aria-label="Opponent's cards"></div>
-      <p class="selection">Their choice stays hidden until both cards are committed.</p>
-      <div class="result" id="round-result" aria-live="polite"><strong>The table is waiting.</strong><br>Choose a card to begin.</div>
-    </div>
-  </div>
-  <p class="status" id="game-status" role="status">Your move. The opponent will choose from the same pre-round state.</p>
-</section>
-
-<section class="panel" aria-labelledby="record-title">
-  <h2 id="record-title">Autopsy log</h2>
-  <p class="note">Each entry records the reveal and its mechanical consequence. The narration is flavor; the rules engine determines the result.</p>
-  <ol class="log" id="history"><li id="empty-log">No rounds recorded yet.</li></ol>
-</section>
-<p class="footer">Prototype note: this preserves the recovered Float Cards mechanics. It does not use the separate Veiled Dominion chess/card-effect database, and it does not connect to Discord.</p>
+    <div class="score"><div class="score-name" id="opponent-name">The Visitor</div><div class="hp" id="opponent-rp">10 RP</div><div class="pips" id="opponent-pips" aria-hidden="true"></div></div>
+   </div>
+   <div class="table">
+    <div class="side"><h3>Your hand <span id="hand-count">6 cards remaining</span></h3><div class="hand" id="player-hand" aria-label="Your cards"></div><p class="selection" id="selection-help" aria-live="polite">Select a card to commit it.</p><div class="actions"><button class="action primary" id="commit" type="button" disabled>Commit card</button><button class="action" id="restart" type="button">New match</button></div></div>
+    <div class="side"><h3>Opponent's hand <span id="opponent-hand-count">6 cards remaining</span></h3><div class="hand" id="opponent-hand" aria-label="Opponent's cards"></div><p class="selection">The opponent's card stays hidden until reveal.</p><div class="result" id="round-result" aria-live="polite"><strong>The table is waiting.</strong><br>Choose a card to begin.</div></div>
+   </div>
+   <p class="status" id="game-status" role="status">Choose a card to begin.</p>
+  </section>
+  <section class="panel" aria-labelledby="record-title"><h2 id="record-title">Round log</h2><p class="help">Mechanical outcomes are kept separate from character voice and franchise-specific narrative.</p><ol class="log" id="history"><li>No rounds recorded yet.</li></ol></section>
+ </div>
+</div>
+<p class="footer">Platform test principle: reusable mechanics; replaceable brand, roles, colors, narrative, attribution, and rights metadata. This single-file demo is not yet a multi-tenant publishing system, rights registry, or production deployment.</p>
 </main>
 <script>
 (() => {
-  'use strict';
-  const SUITS = ['♠','♥','♦','♣'];
-  const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
-  const VALUE = Object.fromEntries(RANKS.map((r,i) => [r,i+2]));
-  const state = {player:[], opponent:[], rp:{player:10,opponent:10}, selected:null, round:1, status:'active', history:[]};
-  const $ = id => document.getElementById(id);
-
-  function freshDeck(){
-    return SUITS.flatMap(suit => RANKS.map(rank => ({rank,suit,code:rank+suit,value:VALUE[rank]})));
-  }
-  function shuffle(deck){
-    for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
-    return deck;
-  }
-  function newMatch(){
-    const deck=shuffle(freshDeck());
-    state.player=deck.slice(0,6);
-    state.opponent=deck.slice(6,12);
-    state.rp={player:10,opponent:10};
-    state.selected=null;state.round=1;state.status='active';state.history=[];
-    render();
-    $('round-result').className='result';
-    $('round-result').innerHTML='<strong>The table is waiting.</strong><br>Choose a card to begin.';
-    $('game-status').textContent='Your move. The opponent will choose from the same pre-round state.';
-  }
-  function chooseOpponentCard(){
-    const hand=[...state.opponent].sort((a,b)=>b.value-a.value);
-    if(state.rp.opponent<state.rp.player)return hand[0];
-    if(state.rp.opponent>state.rp.player)return hand[hand.length-1];
-    return hand[Math.floor(hand.length/2)];
-  }
-  function cardButton(card, disabled=false){
-    const button=document.createElement('button');
-    button.type='button';button.className='card'+(['♥','♦'].includes(card.suit)?' red':'');
-    button.disabled=disabled;button.setAttribute('aria-label',card.rank+' of '+({ '♠':'spades','♥':'hearts','♦':'diamonds','♣':'clubs'}[card.suit]));
-    button.setAttribute('aria-pressed',String(state.selected===card.code));
-    button.innerHTML='<span class="rank"></span><span class="suit"></span><small>CASE '+String(card.value).padStart(2,'0')+'</small>';
-    button.querySelector('.rank').textContent=card.rank;
-    button.querySelector('.suit').textContent=card.suit;
-    if(!disabled)button.addEventListener('click',()=>{state.selected=card.code;render();});
-    return button;
-  }
-  function renderHand(target, hand, disabled=false){
-    const node=$(target);node.replaceChildren();
-    hand.forEach(card=>node.appendChild(cardButton(card,disabled||state.status!=='active')));
-  }
-  function renderPips(target, score){
-    const node=$(target);node.replaceChildren();
-    for(let i=0;i<10;i++){const pip=document.createElement('span');pip.className='pip'+(i<score?' live':'');node.appendChild(pip);}
-  }
-  function render(){
-    renderHand('player-hand',state.player);
-    const opponentNode=$('opponent-hand');opponentNode.replaceChildren();
-    if(state.status==='active'){
-      for(let i=0;i<state.opponent.length;i++){const back=document.createElement('div');back.className='card back';back.setAttribute('aria-label','Hidden opponent card');back.innerHTML='<span class="suit">✣</span><small>SEALED</small>';opponentNode.appendChild(back);}
-    }else state.opponent.forEach(card=>opponentNode.appendChild(cardButton(card,true)));
-    $('player-rp').textContent=state.rp.player+' RP';
-    $('opponent-rp').textContent=state.rp.opponent+' RP';
-    renderPips('player-pips',state.rp.player);renderPips('opponent-pips',state.rp.opponent);
-    $('round-number').textContent=state.round;
-    $('hand-count').textContent=state.player.length+' cards remaining';
-    $('opponent-hand-count').textContent=state.opponent.length+' cards remaining';
-    $('commit').disabled=state.status!=='active'||!state.selected;
-    const selected=state.player.find(c=>c.code===state.selected);
-    $('selection-help').textContent=selected?'Selected: '+selected.rank+selected.suit+'. Commit when ready.':'Select a card to commit it.';
-    const history=$('history');history.replaceChildren();
-    if(!state.history.length){const li=document.createElement('li');li.textContent='No rounds recorded yet.';history.appendChild(li);}
-    state.history.slice().reverse().forEach(item=>{
-      const li=document.createElement('li');const b=document.createElement('b');b.textContent='Round '+item.round;
-      const span=document.createElement('span');span.textContent=item.text;li.append(b,span);history.appendChild(li);
-    });
-  }
-  function finishIfNeeded(){
-    if(state.rp.player<=0&&state.rp.opponent<=0)state.status='draw';
-    else if(state.rp.player<=0)state.status='lost';
-    else if(state.rp.opponent<=0)state.status='won';
-    else if(!state.player.length||!state.opponent.length){
-      state.status=state.rp.player===state.rp.opponent?'draw':state.rp.player>state.rp.opponent?'won':'lost';
-    }
-  }
-  function commit(){
-    if(state.status!=='active'||!state.selected)return;
-    const playerCard=state.player.find(c=>c.code===state.selected);
-    if(!playerCard)return;
-    // The opponent chooses before the reveal, from the same pre-round state.
-    const opponentCard=chooseOpponentCard();
-    state.player=state.player.filter(c=>c.code!==playerCard.code);
-    state.opponent=state.opponent.filter(c=>c.code!==opponentCard.code);
-    let result;
-    if(playerCard.value>opponentCard.value){state.rp.opponent--;result='You win the round; opponent loses 1 RP.';}
-    else if(playerCard.value<opponentCard.value){state.rp.player--;result='The opponent wins the round; you lose 1 RP.';}
-    else result='Tie. No RP damage.';
-    state.history.push({round:state.round,text:playerCard.code+' vs '+opponentCard.code+' — '+result});
-    state.selected=null;finishIfNeeded();
-    const box=$('round-result');
-    box.className='result'+(state.status==='won'?' win':state.status==='lost'?' loss':'');
-    const heading=state.status==='won'?'You survive the Purge.':state.status==='lost'?'The autopsy is complete.':state.status==='draw'?'A deadlock.':'Round '+state.round+' resolved.';
-    box.replaceChildren();
-    const strong=document.createElement('strong');strong.textContent=heading;
-    const line=document.createElement('div');line.textContent='Your card: '+playerCard.rank+playerCard.suit+' · Opponent: '+opponentCard.rank+opponentCard.suit+'. '+result;
-    box.append(strong,document.createElement('br'),line);
-    if(state.status==='active'){$('game-status').textContent='Round resolved. Choose your next card.';state.round++;}
-    else $('game-status').textContent=state.status==='won'?'Match won. Violet has not forgotten.':state.status==='lost'?'Match lost. The slab is waiting.':'The match ends in a draw.';
-    render();
-  }
-  $('commit').addEventListener('click',commit);
-  $('restart').addEventListener('click',newMatch);
-  newMatch();
+ 'use strict';
+ const SUITS=['♠','♥','♦','♣'],RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+ const VALUE=Object.fromEntries(RANKS.map((r,i)=>[r,i+2]));
+ const defaults={name:'The Red Balloon',tagline:'A custom-branded variant demo built on the Float Cards rules skeleton.',player:'The Investigator',opponent:'The Visitor',brand:'#e35d6a',accent:'#ffd166'};
+ const state={player:[],opponent:[],rp:{player:10,opponent:10},selected:null,round:1,status:'active',history:[]};
+ const $=id=>document.getElementById(id);
+ function applyBranding(event){
+  if(event)event.preventDefault();
+  const name=$('brand-name').value.trim()||defaults.name;
+  const tagline=$('brand-tagline-input').value.trim()||defaults.tagline;
+  document.documentElement.style.setProperty('--brand',$('brand-color').value);
+  document.documentElement.style.setProperty('--accent',$('accent-color').value);
+  $('brand-title').textContent=name;$('brand-tagline').textContent=tagline;
+  $('player-name').textContent=$('player-label').value.trim()||defaults.player;
+  $('opponent-name').textContent=$('opponent-label').value.trim()||defaults.opponent;
+ }
+ function resetBranding(){
+  $('brand-name').value=defaults.name;$('brand-tagline-input').value=defaults.tagline;
+  $('player-label').value=defaults.player;$('opponent-label').value=defaults.opponent;
+  $('brand-color').value=defaults.brand;$('accent-color').value=defaults.accent;applyBranding();
+ }
+ function shuffle(deck){for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}return deck;}
+ function newMatch(){
+  const deck=shuffle(SUITS.flatMap(suit=>RANKS.map(rank=>({rank,suit,code:rank+suit,value:VALUE[rank]}))));
+  state.player=deck.slice(0,6);state.opponent=deck.slice(6,12);state.rp={player:10,opponent:10};state.selected=null;state.round=1;state.status='active';state.history=[];
+  $('round-result').className='result';$('round-result').innerHTML='<strong>The table is waiting.</strong><br>Choose a card to begin.';
+  $('game-status').textContent='Choose a card to begin.';render();
+ }
+ function chooseOpponentCard(){
+  const hand=[...state.opponent].sort((a,b)=>b.value-a.value);
+  if(state.rp.opponent<state.rp.player)return hand[0];
+  if(state.rp.opponent>state.rp.player)return hand[hand.length-1];
+  return hand[Math.floor(hand.length/2)];
+ }
+ function cardButton(card,disabled=false){
+  const b=document.createElement('button');b.type='button';b.className='card'+(['♥','♦'].includes(card.suit)?' red':'');b.disabled=disabled;
+  b.setAttribute('aria-label',card.rank+' of '+({'♠':'spades','♥':'hearts','♦':'diamonds','♣':'clubs'}[card.suit]));b.setAttribute('aria-pressed',String(state.selected===card.code));
+  b.innerHTML='<span class="rank"></span><span class="suit"></span><small>RANK '+card.value+'</small>';
+  b.querySelector('.rank').textContent=card.rank;b.querySelector('.suit').textContent=card.suit;
+  if(!disabled)b.addEventListener('click',()=>{state.selected=card.code;render();});return b;
+ }
+ function renderPips(target,score){const n=$(target);n.replaceChildren();for(let i=0;i<10;i++){const p=document.createElement('span');p.className='pip'+(i<score?' live':'');n.appendChild(p);}}
+ function render(){
+  const ph=$('player-hand');ph.replaceChildren();state.player.forEach(c=>ph.appendChild(cardButton(c,state.status!=='active')));
+  const oh=$('opponent-hand');oh.replaceChildren();
+  if(state.status==='active'){for(let i=0;i<state.opponent.length;i++){const back=document.createElement('div');back.className='card back';back.setAttribute('aria-label','Hidden opponent card');back.innerHTML='<span class="suit">✣</span><small>SEALED</small>';oh.appendChild(back);}}
+  else state.opponent.forEach(c=>oh.appendChild(cardButton(c,true)));
+  $('player-rp').textContent=state.rp.player+' RP';$('opponent-rp').textContent=state.rp.opponent+' RP';renderPips('player-pips',state.rp.player);renderPips('opponent-pips',state.rp.opponent);
+  $('round-number').textContent=state.round;$('hand-count').textContent=state.player.length+' cards remaining';$('opponent-hand-count').textContent=state.opponent.length+' cards remaining';
+  $('commit').disabled=state.status!=='active'||!state.selected;
+  const chosen=state.player.find(c=>c.code===state.selected);$('selection-help').textContent=chosen?'Selected: '+chosen.rank+chosen.suit+'. Commit when ready.':'Select a card to commit it.';
+  const log=$('history');log.replaceChildren();if(!state.history.length){const li=document.createElement('li');li.textContent='No rounds recorded yet.';log.appendChild(li);}
+  state.history.slice().reverse().forEach(item=>{const li=document.createElement('li'),b=document.createElement('b'),span=document.createElement('span');b.textContent='Round '+item.round;span.textContent=item.text;li.append(b,span);log.appendChild(li);});
+ }
+ function finishIfNeeded(){
+  if(state.rp.player<=0&&state.rp.opponent<=0)state.status='draw';else if(state.rp.player<=0)state.status='lost';else if(state.rp.opponent<=0)state.status='won';
+  else if(!state.player.length||!state.opponent.length)state.status=state.rp.player===state.rp.opponent?'draw':state.rp.player>state.rp.opponent?'won':'lost';
+ }
+ function commit(){
+  if(state.status!=='active'||!state.selected)return;
+  const pc=state.player.find(c=>c.code===state.selected);if(!pc)return;const oc=chooseOpponentCard();
+  state.player=state.player.filter(c=>c.code!==pc.code);state.opponent=state.opponent.filter(c=>c.code!==oc.code);
+  let outcome;if(pc.value>oc.value){state.rp.opponent--;outcome='You win the round; opponent loses 1 RP.';}else if(pc.value<oc.value){state.rp.player--;outcome='Opponent wins the round; you lose 1 RP.';}else outcome='Tie. No RP damage.';
+  state.history.push({round:state.round,text:pc.code+' vs '+oc.code+' — '+outcome});state.selected=null;finishIfNeeded();
+  const box=$('round-result');box.className='result'+(state.status==='won'?' win':state.status==='lost'?' loss':'');box.replaceChildren();
+  const heading=state.status==='won'?'Match won.':state.status==='lost'?'Match lost.':state.status==='draw'?'Match drawn.':'Round '+state.round+' resolved.';
+  const strong=document.createElement('strong'),line=document.createElement('div');strong.textContent=heading;line.textContent='Your card: '+pc.code+' · Opponent: '+oc.code+'. '+outcome;box.append(strong,document.createElement('br'),line);
+  if(state.status==='active'){state.round++;$('game-status').textContent='Round resolved. Choose your next card.';}else $('game-status').textContent=heading+' Start a new match to play again.';
+  render();
+ }
+ $('brand-form').addEventListener('submit',applyBranding);$('reset-brand').addEventListener('click',resetBranding);$('commit').addEventListener('click',commit);$('restart').addEventListener('click',newMatch);
+ applyBranding();newMatch();
 })();
 </script>
 </body>
