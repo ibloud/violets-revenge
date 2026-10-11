@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#100b16">
+<title>Violet's Revenge: The Forensics Trail — Interactive Story</title>
+<style>
+:root{color-scheme:dark;--bg:#08070b;--panel:#15101c;--panel2:#20172a;--ink:#e8deef;--muted:#b8a8c6;--violet:#c77dff;--gold:#f1c40f;--line:#554163}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#24132e 0,#08070b 58%);color:var(--ink);font:17px/1.7 Georgia,"Times New Roman",serif;min-height:100vh}
+main{max-width:780px;margin:auto;padding:24px 16px 56px}
+header{border:1px solid var(--line);border-top:4px solid var(--gold);background:rgba(21,16,28,.92);padding:22px;margin-bottom:16px}
+.eyebrow{font:700 .75rem/1.4 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+h1{font-size:clamp(1.8rem,5vw,2.7rem);line-height:1.15;margin:.45rem 0 .7rem;color:#ead7ff}
+header p{margin:.5rem 0;color:var(--muted)}
+.notice{border-left:3px solid var(--violet);background:#1a1423;padding:12px 14px;font: .9rem/1.55 system-ui,sans-serif;color:#d7c9e5}
+#story{background:rgba(21,16,28,.95);border:1px solid var(--line);padding:clamp(18px,4vw,32px);min-height:300px}
+#story h2{color:var(--violet);font-size:1.4rem;line-height:1.25}
+#story p{white-space:pre-line}
+.choices{display:grid;gap:10px;margin-top:24px}
+button,.back{font:600 1rem/1.4 system-ui,sans-serif;color:var(--ink);background:var(--panel2);border:1px solid #80649a;border-radius:7px;padding:13px 15px;min-height:48px;text-align:left;cursor:pointer}
+button:hover,.back:hover{background:#33233f;border-color:var(--violet)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;font: .9rem/1.5 system-ui,sans-serif}
+a{color:#dfb6ff}
+.status{color:var(--muted);font: .82rem/1.5 system-ui,sans-serif;margin-bottom:12px}
+#error{display:none;border:1px solid #9d4856;background:#28121a;padding:14px;margin-top:12px;font: .9rem/1.5 system-ui,sans-serif}
+@media(max-width:520px){main{padding:12px 10px 36px}header{padding:17px}#story{padding:17px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="eyebrow">Interactive narrative · Act I: The Examiner</div>
+<h1>Violet's Revenge: The Forensics Trail</h1>
+<p>A short branching story about evidence, inference, and the discipline of leaving an unanswered question open.</p>
+<div class="notice"><strong>Story sample — not new canon.</strong> Built around the current Story Bible's constraints. The attack is not depicted; this sample does not add to or revise established events.</div>
+</header>
+<div class="status" id="status" aria-live="polite">Loading the Ink story…</div>
+<section id="story" aria-live="polite" aria-label="Interactive story">
+<p>Preparing the file…</p>
+</section>
+<div id="error" role="alert">The Ink runtime could not be loaded. Check your connection and reload, or open the source story from the project repository.</div>
+<footer>
+<a href="../">← Back to Violet's Revenge</a>
+<a href="forensics-trail.ink">Read the Ink source</a>
+</footer>
+</main>
+<script type="module">
+import { Compiler } from "https://esm.sh/inkjs@2.3.2/full";
+
+const storyRoot = document.getElementById("story");
+const status = document.getElementById("status");
+const error = document.getElementById("error");
+let story;
+
+function render() {
+  let text = "";
+  while (story.canContinue) text += story.Continue();
+  storyRoot.replaceChildren();
+  const parts = text.split(/\n\s*\n/).map(part => part.trim()).filter(Boolean);
+  for (const part of parts) {
+    if (part.startsWith("# ")) {
+      const heading = document.createElement("h2");
+      heading.textContent = part.slice(2);
+      storyRoot.append(heading);
+    } else {
+      const paragraph = document.createElement("p");
+      paragraph.textContent = part;
+      storyRoot.append(paragraph);
+    }
+  }
+  const choices = story.currentChoices;
+  if (choices.length) {
+    const group = document.createElement("div");
+    group.className = "choices";
+    for (const choice of choices) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = choice.text;
+      button.addEventListener("click", () => {
+        story.ChooseChoiceIndex(choice.index);
+        render();
+      });
+      group.append(button);
+    }
+    storyRoot.append(group);
+    status.textContent = "Choose a path through the file.";
+  } else {
+    status.textContent = "End of this story sample.";
+  }
+}
+
+try {
+  const response = await fetch("./forensics-trail.ink");
+  if (!response.ok) throw new Error("Could not load Ink source.");
+  const source = await response.text();
+  const compiler = new Compiler(source, { sourceFilename: "forensics-trail.ink" });
+  story = compiler.Compile();
+  status.textContent = "Ink story loaded.";
+  render();
+} catch (err) {
+  console.error(err);
+  status.textContent = "Story unavailable.";
+  error.style.display = "block";
+  storyRoot.replaceChildren();
+  const p = document.createElement("p");
+  p.textContent = "The interactive story could not start. You can still read the Ink source using the link below.";
+  storyRoot.append(p);
+}
+</script>
+</body>
+</html>
