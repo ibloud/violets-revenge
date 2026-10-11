@@ -104,21 +104,20 @@ function scan(s,side) {
   const hidden=s.scanHidden&&s.round<=s.hideUntilRound;
   const target=s.positions.assailant,here=s.positions.violet;
   const visible=!hidden&&(target===here||adjacent(here,target));
-  if(visible){s.revealedRoom=target;s.revealedRooms.push(target);}
   const result=hidden?'obscured':visible?'nearby':'not_nearby';
-  appendEvent(s,'scan',{room:here,result,revealedRoom:visible?target:null});
-  return {ok:true,outcome:{result,revealedRoom:visible?target:null}};
+  appendEvent(s,'scan',{room:here,result,revealedRoom:null});
+  return {ok:true,outcome:{result,revealedRoom:null}};
 }
 function catchAssailant(s,side) {
   if(side!=='violet')return {ok:false,reason:'only_violet_catches'};
   if(s.positions.violet!==s.positions.assailant)return {ok:false,reason:'not_same_room'};
   if(s.round<=s.invulnerableThroughVioletTurn)return {ok:false,reason:'assailant_temporarily_uncatchable'};
-  const target=s.quietStepsUntilAssailantTurn?6:3,modifier=s.steadyHand;s.steadyHand=0;
+  const target=s.quietStepsUntilAssailantTurn?6:2,modifier=s.steadyHand;s.steadyHand=0;
   const roll=s._rng.d6(),total=roll+modifier,success=total>=target;
   spend(s);appendEvent(s,'catch_roll',{roll,modifier,total,target,success});
   if(success){
     s.strikes++;
-    if(s.strikes>=3){s.positions.assailant='autopsy-room';s.terminal={result:'captured',location:'autopsy-room'};appendEvent(s,'terminal',s.terminal);}
+    if(s.strikes>=2){s.positions.assailant='autopsy-room';s.terminal={result:'captured',location:'autopsy-room'};appendEvent(s,'terminal',s.terminal);}
     else {
       s.invulnerableThroughVioletTurn=s.round;
       const exits=rooms[s.positions.assailant].doors.filter(r=>!locked(s,s.positions.assailant,r));
@@ -133,7 +132,7 @@ function play(s,side,id,target) {
   const card=catalog[side].find(c=>c.id===id);if(!card)return {ok:false,reason:'unknown_card'};
   const e=card.effect;let freeMove=false,freeAction=false;
   if(e==='shortcut'||e==='patrol'){const r=move(s,side,target,{free:true});if(!r.ok)return r;freeMove=true;}
-  else if(e==='lock_pick'&&side==='assailant'){s.lockPick=1;}
+  else if(e==='lock_pick'&&side==='assailant'){if(s.actionsLeft<2)return{ok:false,reason:'lock_pick_needs_action_for_search'};s.lockPick=1;}
   else if(e==='quiet_steps'&&side==='assailant'){s.quietStepsUntilAssailantTurn=s.round+1;}
   else if(e==='smoke'&&side==='assailant'){s.smokeCharges++;}
   else if(e==='hide'&&side==='assailant'){s.scanHidden=true;s.hideUntilRound=s.round+1;}
