@@ -196,7 +196,7 @@ export function act(s,side,action) {
 export function publicState(s,viewer) {
   const {_rng,...data}=s,out=copy(data);
   if(viewer==='violet'){
-    out.events=out.events.filter(e=>!(e.type==='moved'&&e.side==='assailant')&&!(e.type==='search_roll'&&e.side==='assailant')&&e.type!=='file_found');
+    out.events=out.events.filter(e=>!(e.type==='moved'&&e.side==='assailant')&&!(e.type==='search_roll'&&e.side==='assailant')&&e.type!=='search_empty'&&e.type!=='file_found');
     out.positions.assailant=s.revealedRoom;out.assailantPositionKnown=s.revealedRoom!==null;
     out.hands.assailant=[];out.decks.assailant=[];out.discards.assailant=[];
     out.roomHistory=s.revealedRooms.slice(-2);
