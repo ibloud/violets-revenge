@@ -12,7 +12,7 @@ The breathing timing reference is the established Weaver/Pennywise sigil motion 
 
 ## A night in Derry
 
-The browser story, Float Chess and Float Cards source is present in `ibloud/sewers-and-shadows-bot` at the same commit. The previously listed Vercel URL redirects visitors to Vercel login, so it is not a working public playable destination. The remaining deployment action is to deploy the repository’s `browser/` app publicly or provide an authorized share link for the existing Vercel project. Violet’s precinct engine remains separate.
+The browser story, Float Chess and Float Cards source is present in `ibloud/sewers-and-shadows-bot` at the same commit. The public playable destination is `https://ibloud.github.io/sewers-and-shadows-bot/` and returns HTTP 200 with the expected Derry content. Violet’s precinct engine remains separate.
 
 ## Root scope
 
