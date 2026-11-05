@@ -1,0 +1,32 @@
+{
+  "status":"Proposal",
+  "source":"ChatGPT Prototype Handoff dated 2026-10-11; original placeholder wording only, not canon",
+  "assailant":[
+    {"id":"A-01","name":"Quiet Steps","effect":"quiet_steps","status":"Proposal","source":"Handoff; catch TN becomes 6 until Assailant's next turn"},
+    {"id":"A-02","name":"Quiet Steps","effect":"quiet_steps","status":"Proposal","source":"Handoff; catch TN becomes 6 until Assailant's next turn"},
+    {"id":"A-03","name":"Lock-Pick","effect":"lock_pick","status":"Proposal","source":"Handoff; +1 to this search"},
+    {"id":"A-04","name":"Lock-Pick","effect":"lock_pick","status":"Proposal","source":"Handoff; +1 to this search"},
+    {"id":"A-05","name":"Shortcut","effect":"shortcut","status":"Proposal","source":"Handoff; move one room without spending an action"},
+    {"id":"A-06","name":"Shortcut","effect":"shortcut","status":"Proposal","source":"Handoff; move one room without spending an action"},
+    {"id":"A-07","name":"Smoke","effect":"smoke","status":"Proposal","source":"Handoff; cancel next sigil trigger"},
+    {"id":"A-08","name":"Smoke","effect":"smoke","status":"Proposal","source":"Handoff; cancel next sigil trigger"},
+    {"id":"A-09","name":"Hide","effect":"hide","status":"Proposal","source":"Handoff; next scan does not reveal Assailant until Assailant's next turn"},
+    {"id":"A-10","name":"Hide","effect":"hide","status":"Proposal","source":"Handoff; next scan does not reveal Assailant until Assailant's next turn"},
+    {"id":"A-11","name":"Second Wind","effect":"second_wind","status":"Proposal","source":"Handoff; remove 1 strike"},
+    {"id":"A-12","name":"Second Wind","effect":"second_wind","status":"Proposal","source":"Handoff; remove 1 strike"}
+  ],
+  "violet":[
+    {"id":"V-01","name":"Nightingale's Canvas","effect":"canvas","status":"Proposal","source":"Handoff; set sigil without spending an action"},
+    {"id":"V-02","name":"Nightingale's Canvas","effect":"canvas","status":"Proposal","source":"Handoff; set sigil without spending an action"},
+    {"id":"V-03","name":"Grave Dirt Sachet","effect":"grave_dirt","status":"Proposal","source":"Handoff; Assailant's next move out costs 2 actions"},
+    {"id":"V-04","name":"Grave Dirt Sachet","effect":"grave_dirt","status":"Proposal","source":"Handoff; Assailant's next move out costs 2 actions"},
+    {"id":"V-05","name":"Luminol","effect":"luminol","status":"Proposal","source":"Handoff; reveal Assailant's last 2 rooms"},
+    {"id":"V-06","name":"Luminol","effect":"luminol","status":"Proposal","source":"Handoff; reveal Assailant's last 2 rooms"},
+    {"id":"V-07","name":"Spotlight","effect":"spotlight","status":"Proposal","source":"Handoff; reveal Assailant's room"},
+    {"id":"V-08","name":"Patrol","effect":"patrol","status":"Proposal","source":"Handoff; move one room without spending an action"},
+    {"id":"V-09","name":"Patrol","effect":"patrol","status":"Proposal","source":"Handoff; move one room without spending an action"},
+    {"id":"V-10","name":"Steady Hand","effect":"steady_hand","status":"Proposal","source":"Handoff; +1 to next catch"},
+    {"id":"V-11","name":"Steady Hand","effect":"steady_hand","status":"Proposal","source":"Handoff; +1 to next catch"},
+    {"id":"V-12","name":"Lockdown","effect":"lockdown","status":"Proposal","source":"Handoff; name a door unavailable until Violet's next turn"}
+  ]
+}

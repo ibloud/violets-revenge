@@ -1,0 +1,16 @@
+{
+  "status": "Proposal",
+  "source": "ChatGPT Prototype Handoff dated 2026-10-11; placeholder graph, pending review",
+  "rooms": [
+    {"id":"main-hall","name":"Main Hall","status":"Proposal","source":"Handoff room list; hub placeholder","doors":["exit-vestibule","forensics-office","records-lockers","morgue-freezers","evidence-storage"]},
+    {"id":"exit-vestibule","name":"Exit Vestibule","status":"Proposal","source":"Handoff room list; exit placeholder","doors":["main-hall"]},
+    {"id":"forensics-office","name":"Forensics Office","status":"Proposal","source":"Handoff room list; file location placeholder","file":"case-file-1","doors":["main-hall","records-lockers"]},
+    {"id":"records-lockers","name":"Records & Lockers","status":"Proposal","source":"Handoff room list; file location placeholder","file":"case-file-2","doors":["main-hall","forensics-office"]},
+    {"id":"evidence-storage","name":"Evidence Storage","status":"Proposal","source":"Handoff room list; file location placeholder","file":"case-file-3","doors":["main-hall","incinerator"]},
+    {"id":"morgue-freezers","name":"Morgue/Freezers","status":"Proposal","source":"Handoff room list; Assailant start placeholder","doors":["main-hall","autopsy-room"]},
+    {"id":"autopsy-room","name":"Autopsy Room","status":"Proposal","source":"Handoff room list; Violet start placeholder","doors":["morgue-freezers"]},
+    {"id":"incinerator","name":"Incinerator","status":"Proposal","source":"Handoff room list; burn-files interaction placeholder","doors":["evidence-storage"]}
+  ],
+  "starts": {"assailant":"morgue-freezers","violet":"autopsy-room","status":"Proposal","source":"ChatGPT Prototype Handoff dated 2026-10-11"},
+  "note": "Graph is intentionally a proposal. Adjacency follows the supplied list exactly; the room graph is not canon."
+}
