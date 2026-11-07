@@ -4,7 +4,9 @@
 
 ### Browser prototype
 
-- `index.html` is the authoritative playable prototype.
+- Audited 7 November 2026: root `index.html` redirects to `/pitch/#money`; retained card mockup code has no match resolver. Older root-Canvas guidance is stale.
+- `demo/index.html` calls `demo/engine/rules.js` for the precinct review proposal; `demo/test/` verifies its rules. Historical Canvas gameplay remains in `archive/v0.1/index.html`.
+- Confirm a permanent gameplay entry with the maintainer; this documentation correction does not change routes or promote prototype content into canon.
 - `assets/css/style.css` owns shared styling.
 - No framework or build pipeline is required.
 - Gameplay changes should remain small, testable, and accessible.
