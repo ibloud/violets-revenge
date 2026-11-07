@@ -52,7 +52,7 @@ A 1v4 multiplayer horror game (PC first, console later).
 
 ## 🧰 Current Implementation and Local Setup
 
-The authoritative runnable prototype is `index.html`, supported by `assets/css/style.css`. Unity and Unreal are unselected future candidates, not current requirements.
+At the 7 November 2026 main snapshot, `index.html` immediately redirects to `/pitch/#money`; its retained card-selection mockup does not resolve a match. Runnable browser gameplay remains in `demo/` (precinct review proposal) and `archive/v0.1/` (historical Canvas prototype). Older root-Canvas descriptions need maintainer reconciliation before choosing a permanent gameplay entry. Unity and Unreal remain unselected future candidates.
 
 ### Browser prototype
 
@@ -60,7 +60,9 @@ The authoritative runnable prototype is `index.html`, supported by `assets/css/s
 python -m http.server 8000
 ```
 
-Open `http://localhost:8000`.
+Open `http://localhost:8000/demo/` for the precinct review prototype, or `http://localhost:8000/archive/v0.1/` for the historical Canvas game.
+
+For the precinct rules, run `node --test demo/test/*.test.js`. See [the code-navigation example](docs/TRAINEE-ONBOARDING.md#inspect-one-browser-behavior) before changing a behavior.
 
 ### Python checks
 
