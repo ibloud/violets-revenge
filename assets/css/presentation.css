@@ -11,3 +11,14 @@
 /* Restore the simple reading layout; no reserved symbol column. */
 #grad-student-gameplay .section-heading{display:block}
 #grad-student-gameplay .section-heading>p{max-width:none;margin-top:24px}
+
+/* Grad Student practice: full-width reading flow, no reserved side column. */
+.micro-task{margin:32px 0 48px;padding:clamp(18px,3vw,36px);border:1px solid var(--violet);background:var(--panel);color:var(--ink)}
+.micro-task h3{font-size:clamp(1.6rem,3vw,2.4rem);line-height:1.2}.micro-task h4{font:700 1.1rem/1.4 system-ui,sans-serif}
+.micro-task fieldset{margin:20px 0;padding:18px;border:1px solid var(--steel);min-width:0}.micro-task legend{font-weight:700;padding:0 8px}
+.micro-task label{display:block;padding:12px 0;line-height:1.6;cursor:pointer}.micro-task input[type=radio]{width:20px;height:20px;margin:0 12px 0 0;vertical-align:middle}
+.micro-task button{min-height:48px;margin:8px 10px 8px 0;cursor:pointer}.micro-task .outline-button{background:transparent;color:var(--ink);border-color:var(--violet)}
+.micro-task select,.micro-task textarea{display:block;width:100%;max-width:100%;min-height:48px;padding:12px;background:var(--obsidian);color:var(--ink);border:1px solid var(--steel);font:inherit}
+.micro-task blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--violet)}.micro-sources article+article{border-top:1px solid var(--line);margin-top:20px;padding-top:8px}
+.micro-task pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--obsidian);padding:16px;font:14px/1.6 monospace}.micro-task :focus-visible{outline:3px solid var(--violet);outline-offset:4px}.micro-task [hidden]{display:none!important}
+.micro-task dt{font-weight:700;margin-top:12px}.micro-task dd{margin:4px 0 16px}
