@@ -8,13 +8,6 @@
 
 .city-hero-art{margin-top:clamp(18px,4vw,48px);background:#11131a;border:1px solid #4b4651;position:relative;overflow:hidden}.city-hero-art img{display:block;width:100%;height:auto;object-fit:contain;object-position:center}.city-hero-art:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0b0c1040,transparent 42%,#0b0c1030);pointer-events:none}.city-hero-art figcaption{padding:10px 14px;color:#a9a0ad;font:11px/1.4 monospace;letter-spacing:.03em}.visual-development{background:#e9dfcd;color:#24201d;max-width:none;margin-top:0;padding-block:clamp(40px,7vw,100px)}.visual-development .section-heading{max-width:1280px;margin-inline:auto;padding-inline:clamp(20px,6vw,80px)}.visual-development .kicker,.visual-development h2{color:#24201d}.visual-development .section-heading>p{color:#51483d}.wardrobe-study{max-width:1440px;margin:36px auto 0;padding-inline:clamp(20px,6vw,80px)}.wardrobe-study img{display:block;width:100%;height:auto;border:1px solid #a58c69;box-shadow:14px 14px 0 #24201d18}.wardrobe-study figcaption{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-top:16px;color:#51483d;font:12px monospace;letter-spacing:.05em}.image-modal-card{max-width:1440px}.image-modal-card>img{display:block;width:100%;height:auto;margin-block:20px;border:1px solid #6c5f50}.image-enlarge{color:#24201d;border-color:#8e7755}.image-enlarge:hover{background:#24201d;color:#e9dfcd}@media(max-width:700px){.city-hero-art{width:100%;margin-top:0}.city-hero-art img{height:auto;object-fit:contain;object-position:center}.wardrobe-study{padding-inline:20px}.wardrobe-study figcaption{align-items:flex-start;flex-direction:column}.visual-development .section-heading{padding-inline:20px}}
 
-/* Grad Student proposed signal: scoped, stable geometry, seven-second opacity breath. */
-#grad-student-gameplay .section-heading{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(180px,.7fr);gap:clamp(24px,4vw,60px);align-items:start}
-#grad-student-gameplay .section-heading>p{max-width:42ch;width:auto}
-.grad-signal{margin:0;text-align:center;color:#c6a5ef}.grad-signal svg{display:block;width:min(100%,260px);height:auto;margin:auto}.grad-signal figcaption{font:14px/1.6 system-ui,sans-serif;color:#ded6e6}.grad-signal small{color:#b7adbf}.grad-signal button{margin-top:16px;min-height:48px}
-.grad-signal-breath{animation:grad-signal-breathe 7s ease-in-out infinite}.grad-signal.is-paused .grad-signal-breath{animation-play-state:paused}
-@keyframes grad-signal-breathe{0%,100%{opacity:1}50%{opacity:.5}}
-body.reduced-motion .grad-signal-breath{animation:none}
-@media(prefers-reduced-motion:reduce){.grad-signal-breath{animation:none}}
-@media(max-width:1000px){#grad-student-gameplay .section-heading{grid-template-columns:minmax(0,1fr) minmax(180px,.6fr)}#grad-student-gameplay .section-heading>div{grid-column:1/-1}}
-@media(max-width:600px){#grad-student-gameplay .section-heading{grid-template-columns:1fr}.grad-signal svg{width:180px}}
+/* Restore the simple reading layout; no reserved symbol column. */
+#grad-student-gameplay .section-heading{display:block}
+#grad-student-gameplay .section-heading>p{max-width:none;margin-top:24px}
