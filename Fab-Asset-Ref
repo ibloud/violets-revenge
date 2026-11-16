@@ -80,6 +80,8 @@ Texture-based moving distortion + Niagara particle distortion waves + swarm-beha
 
 ## 6. Animation — Violet (Player Character)
 
+**Signature-prop performance constraint:** Existing locomotion and takedown packs do not establish Violet's field-hockey-stick choreography. Preserve the stick in reference art and animation blocking; see [`docs/VIOLET_CHARACTER_GENERATION_SHEET.md`](docs/VIOLET_CHARACTER_GENERATION_SHEET.md) for prop/full-body panels and [`docs/VIOLET_STICK_SCENE_TREATMENT.md`](docs/VIOLET_STICK_SCENE_TREATMENT.md) for the proposed Old Hollywood umbrella-dance / HBCU stepping-inspired movement study. Do not buy motion assets or implement new choreography before owner and cultural review.
+
 ### Locomotion & Stealth
 **Female Locomotion Animation Pack**
 **URL:** https://www.fab.com/listings/02a01085-878e-41af-8889-610eed0916b3
